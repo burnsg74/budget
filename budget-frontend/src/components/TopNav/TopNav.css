@@ -1,0 +1,19 @@
+.top-nav {
+    background-color: var(--top-nav-color);
+    padding: 5px 5px 5px 10px;
+}
+
+.top-nav ul {
+    display: flex;
+    gap: 1rem;
+    list-style-type: none
+}
+
+.top-nav a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.top-nav a:hover {
+    color: #d1d5db
+}
