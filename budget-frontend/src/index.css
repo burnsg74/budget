@@ -32,91 +32,88 @@ body {
     margin: unset;
 }
 
-main {
-    padding: 10px;
-}
 h1 {
     font-size: 2em;
     color: #454545;
 }
 
-.container-fuild {
-    width: 100%;
-    padding-right: 1.5rem;
-    padding-left: 1.5rem;
-    margin-right: auto;
-    margin-left: auto;
-}
+/*.container-fuild {*/
+/*    width: 100%;*/
+/*    padding-right: 1.5rem;*/
+/*    padding-left: 1.5rem;*/
+/*    margin-right: auto;*/
+/*    margin-left: auto;*/
+/*}*/
 
-.mt-3 {
-    margin-top: 1rem !important;
-}
+/*.mt-3 {*/
+/*    margin-top: 1rem !important;*/
+/*}*/
 
-.row {
-    display: flex;
-    flex-wrap: wrap;
-    margin-right: -0.75rem;
-    margin-left: -0.75rem;
-}
+/*.row {*/
+/*    display: flex;*/
+/*    flex-wrap: wrap;*/
+/*    margin-right: -0.75rem;*/
+/*    margin-left: -0.75rem;*/
+/*}*/
 
-.col,
-.col-3,
-.col-6 {
-    position: relative;
-    width: 100%;
-    padding-right: 0.75rem;
-    padding-left: 0.75rem;
-}
+/*.col,*/
+/*.col-3,*/
+/*.col-6 {*/
+/*    position: relative;*/
+/*    width: 100%;*/
+/*    padding-right: 0.75rem;*/
+/*    padding-left: 0.75rem;*/
+/*}*/
 
-.col-3 {
-    flex: 0 0 auto;
-    width: 25%;
-}
+/*.col-3 {*/
+/*    flex: 0 0 auto;*/
+/*    width: 25%;*/
+/*}*/
 
-.col-6 {
-    flex: 0 0 auto;
-    width: 50%;
-}
+/*.col-6 {*/
+/*    flex: 0 0 auto;*/
+/*    width: 50%;*/
+/*}*/
 
-.table {
-    width: 100%;
-    margin-bottom: 1rem;
-    color: #212529;
-    border-collapse: collapse;
-}
+/*.table {*/
+/*    width: 100%;*/
+/*    margin-bottom: 1rem;*/
+/*    color: #212529;*/
+/*    border-collapse: collapse;*/
+/*}*/
 
-.table th {
-    vertical-align: bottom;
-    border-bottom: 2px solid #dee2e6;
-}
+/*.table th {*/
+/*    vertical-align: bottom;*/
+/*    border-bottom: 2px solid #dee2e6;*/
+/*}*/
 
-.table td,
-.table th {
-    vertical-align: top;
-    border-top: 1px solid #dee2e6;
-    white-space: nowrap;
-}
+/*.table td,*/
+/*.table th {*/
+/*    vertical-align: top;*/
+/*    border-top: 1px solid #dee2e6;*/
+/*    white-space: nowrap;*/
+/*}*/
 
-thead th,
-tbody th,
-tfoot th {
-    text-align: left;
-}
+/*thead th,*/
+/*tbody th,*/
+/*tfoot th {*/
+/*    text-align: left;*/
+/*}*/
 
-.table-primary,
-.table-primary>td,
-.table-primary>th {
-    background-color: #cfe2ff;
-}
+/*.table-primary,*/
+/*.table-primary > td,*/
+/*.table-primary > th {*/
+/*    background-color: #cfe2ff;*/
+/*}*/
 
-.text-end {
-    text-align: right !important;
-}
+/*.text-end {*/
+/*    text-align: right !important;*/
+/*}*/
 
-.total {
-    font-weight: bold;
-}
+/*.total {*/
+/*    font-weight: bold;*/
+/*}*/
 
-.table>tbody {
-    vertical-align: inherit;
-}
+/*.table > tbody {*/
+/*    vertical-align: inherit;*/
+/*}*/

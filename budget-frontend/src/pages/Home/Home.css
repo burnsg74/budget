@@ -1,0 +1,124 @@
+
+:root {
+    --color-bill: #f4cccc;
+    --color-loan: #cfe2f3;
+    --color-credit-card: #fff2cc;
+    --color-income: #d9ead3;
+    --color-other: #fff9e6;
+    --color-unknown: #e0e0e0;
+    --color-household: #f7e6b5;
+    --color-footer: #e3e3e3;
+    --color-footer-shadow: #bebebe;
+    --color-table-header-bg: #f2f2f2;
+    --color-header: #f2f2f2;
+    --color-table-hover-bg: #f1f1f1;
+    --color-nav-button: #6c757d;
+    --color-nav-button-hover: #5a6268;
+    --color-nav-bg: #e6e2e2;
+    --color-navbar-shadow: gray;
+    --color-text: rgba(69, 69, 69, 0.82);
+    --color-border: #ddd;
+}
+
+.table {
+    border-collapse: collapse;
+}
+
+.table th, .table td {
+    border: 1px solid var(--color-border);
+    padding: 8px;
+    text-align: left;
+}
+
+.bill {
+    background-color: var(--color-bill);
+}
+
+.loan {
+    background-color: var(--color-loan);
+}
+
+.credit-card {
+    background-color: var(--color-credit-card);
+}
+
+.income {
+    background-color: var(--color-income);
+}
+
+.other {
+    background-color: var(--color-other);
+}
+
+.unknown {
+    background-color: var(--color-unknown);
+}
+
+.household {
+    background-color: var(--color-household);
+}
+
+.footer {
+    background-color: var(--color-footer);
+    font-weight: bold;
+    border-top: 1px solid var(--color-footer-shadow);
+    box-shadow: 0 5px 2px -2px var(--color-footer-shadow);
+}
+.spacer td {
+    background: unset !important;
+    border: unset !important;
+}
+
+.table th {
+    background-color: var(--color-header);
+}
+
+.table tr td:first-child {
+    text-align: right;
+}
+
+.table tr td:last-child {
+    text-align: right;
+}
+.nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
+    background-color: var(--color-nav-bg);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 2px 2px -2px #bebebe;
+}
+.nav-title {
+    flex: 1;
+    text-align: center;
+    font-size: 24px;
+    color: var(--color-text);
+}
+
+.nav-button {
+    background-color: var(--color-nav-button);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 10px;
+    border-radius: 5px;
+}
+
+.nav-button:hover {
+    background-color: var(--color-nav-button-hover);
+}
+
+.columns {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px;
+    gap: 10px;
+}
+
+table td {
+    text-align: right;
+}

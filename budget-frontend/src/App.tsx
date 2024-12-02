@@ -1,6 +1,6 @@
 import TopNav from "./components/TopNav/TopNav.tsx";
 import { Route, Routes } from "react-router-dom";
-import Home from "./pages/HomePage.tsx";
+import Home from "./pages/Home/Home.tsx";
 import Calendar from "./pages/CalendarPage.tsx";
 import Accounts from "./pages/AccountsPage.tsx";
 import Ledger from "./pages/LedgerPage.tsx";

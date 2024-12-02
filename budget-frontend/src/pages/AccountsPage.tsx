@@ -75,7 +75,7 @@ const AccountsPage: React.FC = () => {
     return (
         <div>
             <h1>Accounts</h1>
-            <div className="ag-theme-quartz" style={{ height: 500 }}>
+            <div className="ag-theme-quartz" style={{ height: "90vh" }}>
                 <AgGridReact rowData={accounts}
                              columnDefs={columnDefs}
                              onCellValueChanged={onCellValueChanged}

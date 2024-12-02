@@ -144,30 +144,6 @@ const AccountManager: React.FC = () => {
         }
     };
 
-    // const fetchBudget = async () => {
-    //     const query = ` SELECT *, strftime('%Y-%m', 'now') as CurrentMonth, Ledger.Date
-    //                     FROM Budget
-    //                              LEFT JOIN Ledger ON Ledger.ToAccountID = Budget.AccountID AND
-    //                                                  strftime('%Y-%m', Ledger.Date) = strftime('%Y-%m', 'now')
-    //                     WHERE Budget.Type != 'Household'
-    //                     ORDER BY DueDay;
-    //     `;
-    //     try {
-    //         let response = await fetch("/api/db", {
-    //             method: "POST",
-    //             headers: {
-    //                 "Content-Type": "application/json",
-    //             },
-    //             body: JSON.stringify({query}),
-    //         });
-    //
-    //         let data: Budget[] = await response.json();
-    //         setBudgetData(data);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
-
     const fetchHousehold = async () => {
         const query = `
             SELECT Accounts.Name,
@@ -223,18 +199,7 @@ const AccountManager: React.FC = () => {
             <div className="row">
                 <div className="col-3">
                     <table id="budget-table" className="table">
-                        <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Day</th>
-                            <th>Amount</th>
-                        </tr>
-                        </thead>
                         <tbody>
-
-                        <tr>
-                            <td colSpan={3}>&nbsp;</td>
-                        </tr>
                         <tr>
                             <th colSpan={3}>Bills</th>
                         </tr>

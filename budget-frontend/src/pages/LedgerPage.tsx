@@ -87,7 +87,7 @@ const LedgersPage: React.FC = () => {
                     <button type="submit">Upload</button>
                 </form>
             </div>
-            <div className="ag-theme-quartz" style={{height: 500}}>
+            <div className="ag-theme-quartz"  style={{ height: "90vh" }}>
                 <AgGridReact rowData={ledgers} columnDefs={columnDefs}/>
             </div>
         </div>
