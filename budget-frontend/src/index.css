@@ -1,24 +1,15 @@
 :root {
+    --background-color: #f5f5f5;
+    --border-color: #e0e0e0;
+    --header-color: #454545;
     --primary-color: #4caf50;
     --secondary-color: #ff9800;
-    --background-color: #f5f5f5;
     --text-color: #212121;
-    --border-color: #e0e0e0;
     --top-nav-color: #064e3b;
 }
 
-html,
-body,
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-ul,
-ol,
-li {
+/*Reset CSS*/
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     border: 0;
@@ -27,93 +18,14 @@ li {
     vertical-align: baseline;
 }
 
+/*Global CSS*/
 body {
     font-family: Arial, sans-serif;
     margin: unset;
+    background: #ececec;
 }
 
 h1 {
     font-size: 2em;
-    color: #454545;
+    color: var(--header-color);
 }
-
-/*.container-fuild {*/
-/*    width: 100%;*/
-/*    padding-right: 1.5rem;*/
-/*    padding-left: 1.5rem;*/
-/*    margin-right: auto;*/
-/*    margin-left: auto;*/
-/*}*/
-
-/*.mt-3 {*/
-/*    margin-top: 1rem !important;*/
-/*}*/
-
-/*.row {*/
-/*    display: flex;*/
-/*    flex-wrap: wrap;*/
-/*    margin-right: -0.75rem;*/
-/*    margin-left: -0.75rem;*/
-/*}*/
-
-/*.col,*/
-/*.col-3,*/
-/*.col-6 {*/
-/*    position: relative;*/
-/*    width: 100%;*/
-/*    padding-right: 0.75rem;*/
-/*    padding-left: 0.75rem;*/
-/*}*/
-
-/*.col-3 {*/
-/*    flex: 0 0 auto;*/
-/*    width: 25%;*/
-/*}*/
-
-/*.col-6 {*/
-/*    flex: 0 0 auto;*/
-/*    width: 50%;*/
-/*}*/
-
-/*.table {*/
-/*    width: 100%;*/
-/*    margin-bottom: 1rem;*/
-/*    color: #212529;*/
-/*    border-collapse: collapse;*/
-/*}*/
-
-/*.table th {*/
-/*    vertical-align: bottom;*/
-/*    border-bottom: 2px solid #dee2e6;*/
-/*}*/
-
-/*.table td,*/
-/*.table th {*/
-/*    vertical-align: top;*/
-/*    border-top: 1px solid #dee2e6;*/
-/*    white-space: nowrap;*/
-/*}*/
-
-/*thead th,*/
-/*tbody th,*/
-/*tfoot th {*/
-/*    text-align: left;*/
-/*}*/
-
-/*.table-primary,*/
-/*.table-primary > td,*/
-/*.table-primary > th {*/
-/*    background-color: #cfe2ff;*/
-/*}*/
-
-/*.text-end {*/
-/*    text-align: right !important;*/
-/*}*/
-
-/*.total {*/
-/*    font-weight: bold;*/
-/*}*/
-
-/*.table > tbody {*/
-/*    vertical-align: inherit;*/
-/*}*/

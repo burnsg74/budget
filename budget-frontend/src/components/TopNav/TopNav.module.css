@@ -1,19 +1,19 @@
-.top-nav {
+.topNav {
     background-color: var(--top-nav-color);
     padding: 5px 5px 5px 10px;
 }
 
-.top-nav ul {
+.topNav ul {
     display: flex;
     gap: 1rem;
     list-style-type: none
 }
 
-.top-nav a {
+.topNav a {
     color: #ffffff;
     text-decoration: none;
 }
 
-.top-nav a:hover {
+.topNav a:hover {
     color: #d1d5db
 }

@@ -17,17 +17,39 @@
     --color-nav-bg: #e6e2e2;
     --color-navbar-shadow: gray;
     --color-text: rgba(69, 69, 69, 0.82);
-    --color-border: #ddd;
+    --color-border: #b1b1b1;
 }
 
-.table {
+.left-table {
     border-collapse: collapse;
+    border-left: 2px solid #000 !important;
+    border-bottom: 2px solid #000 !important;
 }
 
-.table th, .table td {
+.bb {
+    border-bottom: 2px solid #000 !important;
+}
+
+.bt {
+    border-top: 2px solid #000 !important;
+}
+
+.left-table th, .left-table td {
     border: 1px solid var(--color-border);
-    padding: 8px;
+    padding: 3px;
+}
+
+.left-table td:last-child {
+    border-right: 2px solid #000 !important;
+}
+
+.title {
+    padding-left: 5px;
+    font-weight: bold;
+    margin: 10px;
     text-align: left;
+    border-top: 2px solid #000 !important;
+    border-right: 2px solid #000 !important;
 }
 
 .bill {
@@ -37,21 +59,36 @@
 .loan {
     background-color: var(--color-loan);
 }
+.loan td {
+    padding-left: 15px;
+}
 
 .credit-card {
     background-color: var(--color-credit-card);
+}
+.credit-card td {
+    padding-left: 15px;
 }
 
 .income {
     background-color: var(--color-income);
 }
+.income td {
+    padding-left: 15px;
+}
 
 .other {
     background-color: var(--color-other);
 }
+.other td {
+    padding-left: 15px;
+}
 
 .unknown {
     background-color: var(--color-unknown);
+}
+.unknown td {
+    padding-left: 15px;
 }
 
 .household {
@@ -69,17 +106,10 @@
     border: unset !important;
 }
 
-.table th {
+.left-table th {
     background-color: var(--color-header);
 }
 
-.table tr td:first-child {
-    text-align: right;
-}
-
-.table tr td:last-child {
-    text-align: right;
-}
 .nav-bar {
     display: flex;
     justify-content: space-between;
@@ -121,4 +151,25 @@
 
 table td {
     text-align: right;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.summery-table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid var(--color-border);
+}
+
+.summery-table th {
+    background-color: var(--color-table-header-bg);
+    border: 1px solid var(--color-border);
+    padding: 5px;
+}
+
+.summery-table td {
+    border: 1px solid var(--color-border);
+    padding: 5px;
 }

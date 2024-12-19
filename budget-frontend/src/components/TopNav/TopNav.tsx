@@ -1,9 +1,9 @@
 import {Link} from 'react-router-dom';
-import './TopNav.css';
+import styles from "./TopNav.module.css";
 
 const TopNav = () => {
     return (
-        <nav className="top-nav">
+        <nav className={`${styles.topNav}`}>
             <ul>
                 <li>
                     <Link to="/">Budget</Link>
@@ -16,6 +16,9 @@ const TopNav = () => {
                 </li>
                 <li>
                     <Link to="/ledger">Ledger</Link>
+                </li>
+                <li>
+                    <Link to="/upload">Upload</Link>
                 </li>
             </ul>
         </nav>

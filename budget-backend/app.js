@@ -1,8 +1,8 @@
-const dotenv = require('dotenv');
-const express = require('express');
-const multer = require('multer');
-const sqlite3 = require('sqlite3');
-const uploadController = require('./controllers/UploadController');
+import dotenv from 'dotenv';
+import express from 'express';
+import multer from 'multer';
+import sqlite3 from 'sqlite3';
+import {handleUpload} from "./controllers/UploadController.js";
 
 const app = express();
 const upload = multer({dest: 'uploads/'});
@@ -67,7 +67,7 @@ app.post('/api/db', (req, res) => {
 });
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
-    uploadController.handleUpload(req, res).then();
+    handleUpload(req, res).then();
 });
 
 app.listen(port, () => {

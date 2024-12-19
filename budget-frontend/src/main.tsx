@@ -1,13 +1,11 @@
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import "./index.css";
+import App from "./App";
+import React from "react";
 import {BrowserRouter} from "react-router-dom";
+import {createRoot} from "react-dom/client";
 
-// StrictMode make two passes over the tree, first to detect side effects, and second to render the tree.
-// It helps to find potential problems in the application.
-// It is not recommended to use it in production.
 createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
-    <App />
+            <App/>
     </BrowserRouter>
 )
