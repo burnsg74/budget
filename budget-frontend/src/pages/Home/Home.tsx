@@ -26,29 +26,35 @@ const HomePage: React.FC = () => {
 
     // Effects
     useEffect(() => {
+        // SELECT a.id, a.name, a.due_day, a.budget_amount, SUM(l.amount) as cleared_amount, l.date
+        // FROM accounts a
+        //          LEFT JOIN ledger l ON l.to_account_id = a.id AND (l.date LIKE '2024-12%' OR l.date IS NULL)
+        // WHERE a.type = 'Loan'
+        //   AND a.active = 1
+        //
+        // GROUP BY a.id
+        // ORDER BY due_day
         const date = `${initialMonthYear.year}-${(initialMonthYear.month + 1).toString().padStart(2, '0')}` + '%';
         fetchData<IIncome[]>(`SELECT a.id, a.name, a.due_day, a.budget_amount, SUM(l.amount) as cleared_amount
                               FROM accounts a
-                                       LEFT JOIN ledger l ON l.from_account_id = a.id
+                                       LEFT JOIN ledger l
+                                                 ON l.from_account_id = a.id AND (l.date LIKE '${date}' OR l.date IS NULL)
                               WHERE a.type = 'Income'
                                 AND a.active = 1
-                                AND l.date LIKE '${date}'
                               GROUP BY a.id
                               ORDER BY due_day`).then(setIncomes);
         fetchData<IBudgetBill[]>(`SELECT a.id, a.name, a.due_day, a.budget_amount, SUM(l.amount) as cleared_amount
                                   FROM accounts a
-                                           LEFT JOIN ledger l ON l.to_account_id = a.id
+                                           LEFT JOIN ledger l ON l.to_account_id = a.id AND (l.date LIKE '${date}' OR l.date IS NULL)
                                   WHERE a.type = 'Bill'
                                     AND a.active = 1
-                                    AND l.date LIKE '${date}'
                                   GROUP BY a.id
                                   ORDER BY due_day`).then(setBills);
         fetchData<ILoan[]>(`SELECT a.id, a.name, a.due_day, a.budget_amount, SUM(l.amount) as cleared_amount
                             FROM accounts a
-                                     LEFT JOIN ledger l ON l.to_account_id = a.id
+                                     LEFT JOIN ledger l ON l.to_account_id = a.id AND (l.date LIKE '${date}' OR l.date IS NULL)
                             WHERE a.type = 'Loan'
                               AND a.active = 1
-                              AND l.date LIKE '${date}'
                             GROUP BY a.id
                             ORDER BY due_day`).then(setLoans);
         fetchData<ICreditCard[]>(`SELECT a.id, a.name, a.due_day, a.budget_amount, SUM(l.amount) as cleared_amount
@@ -56,31 +62,27 @@ const HomePage: React.FC = () => {
                                            LEFT JOIN ledger l ON l.to_account_id = a.id
                                   WHERE a.type = 'Credit Card'
                                     AND a.active = 1
-                                    AND l.date LIKE '${date}'
                                   GROUP BY a.id
                                   ORDER BY due_day`).then(setCreditCards);
         fetchData<IOther[]>(`SELECT a.id, a.name, SUM(l.amount) as cleared_amount
                              FROM accounts a
-                                      LEFT JOIN ledger l ON l.to_account_id = a.id
+                                      LEFT JOIN ledger l ON l.to_account_id = a.id AND (l.date LIKE '${date}' OR l.date IS NULL)
                              WHERE a.type = 'Other'
                                AND a.active = 1
-                               AND l.date LIKE '${date}'
                              GROUP BY a.id
                              ORDER BY due_day`).then(setOthers);
         fetchData<IUnknown[]>(`SELECT a.id, a.name, SUM(l.amount) as cleared_amount
                                FROM accounts a
-                                        LEFT JOIN ledger l ON l.to_account_id = a.id
+                                        LEFT JOIN ledger l ON l.to_account_id = a.id AND (l.date LIKE '${date}' OR l.date IS NULL)
                                WHERE a.type = 'Unknown'
                                  AND a.active = 1
-                                 AND l.date LIKE '${date}'
                                GROUP BY a.id
                                ORDER BY due_day`).then(setUnknowns);
         fetchData<IHousehold[]>(`SELECT a.id, a.name, a.budget_amount, SUM(l.amount) as cleared_amount
                                  FROM accounts a
-                                          LEFT JOIN ledger l ON l.to_account_id = a.id
+                                          LEFT JOIN ledger l ON l.to_account_id = a.id AND (l.date LIKE '${date}' OR l.date IS NULL)
                                  WHERE a.type = 'Household'
                                    AND a.active = 1
-                                   AND l.date LIKE '${date}'
                                  GROUP BY a.id
                                  ORDER BY due_day`).then(setHouseholds);
     }, []);
@@ -384,24 +386,28 @@ const HomePage: React.FC = () => {
                             <td className="credit-card">{formatCurrency(creditCards.reduce((sum, creditCard) => sum + creditCard.cleared_amount, 0))}</td>
                             <td className="credit-card">{formatCurrency(creditCards.reduce((sum, creditCard) => sum + (creditCard.budget_amount - creditCard.cleared_amount), 0))}</td>
                         </tr>
-                        <tr>
-                            <td className="income">Income</td>
-                            <td className="income">{formatCurrency(incomes.reduce((sum, income) => sum + income.budget_amount, 0))}</td>
-                            <td className="income">{formatCurrency(incomes.reduce((sum, income) => sum + income.cleared_amount, 0))}</td>
-                            <td className="income">{formatCurrency(incomes.reduce((sum, income) => sum + (income.budget_amount - income.cleared_amount), 0))}</td>
-                        </tr>
+                        {/*<tr>*/}
+                        {/*    <td className="income">Income</td>*/}
+                        {/*    <td className="income">{formatCurrency(incomes.reduce((sum, income) => sum + income.budget_amount, 0))}</td>*/}
+                        {/*    <td className="income">{formatCurrency(incomes.reduce((sum, income) => sum + income.cleared_amount, 0))}</td>*/}
+                        {/*    <td className="income">{formatCurrency(incomes.reduce((sum, income) => sum + (income.budget_amount - income.cleared_amount), 0))}</td>*/}
+                        {/*</tr>*/}
                         <tr>
                             <td className="household">Household</td>
                             <td className="household">{formatCurrency(households.reduce((sum, household) => sum + household.budget_amount, 0))}</td>
                             <td className="household">{formatCurrency(households.reduce((sum, household) => sum + household.cleared_amount, 0))}</td>
                             <td className="household">{formatCurrency(households.reduce((sum, household) => sum + (household.budget_amount - household.cleared_amount), 0))}</td>
                         </tr>
-                        <tr>
-                            <td className="other">Other</td>
-                            <td className="other">{formatCurrency(others.reduce((sum, other) => sum + other.cleared_amount, 0))}</td>
-                            <td className="other">{formatCurrency(others.reduce((sum, other) => sum + other.cleared_amount, 0))}</td>
-                            <td className="other"></td>
-                        </tr>
+                        {others.length > 0 && (
+                            <>
+                                <tr>
+                                    <td className="other">Other</td>
+                                    <td className="other">{formatCurrency(others.reduce((sum, other) => sum + other.cleared_amount, 0))}</td>
+                                    <td className="other">{formatCurrency(others.reduce((sum, other) => sum + other.cleared_amount, 0))}</td>
+                                    <td className="other"></td>
+                                </tr>
+                            </>
+                        )}
                         {/*Totals*/}
                         <tr>
                             <td></td>
@@ -410,7 +416,6 @@ const HomePage: React.FC = () => {
                                     bills.reduce((sum, bill) => sum + bill.budget_amount, 0) +
                                     loans.reduce((sum, loan) => sum + loan.budget_amount, 0) +
                                     creditCards.reduce((sum, creditCard) => sum + creditCard.budget_amount, 0) +
-                                    incomes.reduce((sum, income) => sum + income.budget_amount, 0) +
                                     households.reduce((sum, household) => sum + household.budget_amount, 0)
                                 )}
                             </td>
@@ -419,7 +424,6 @@ const HomePage: React.FC = () => {
                                     bills.reduce((sum, bill) => sum + bill.cleared_amount, 0) +
                                     loans.reduce((sum, loan) => sum + loan.cleared_amount, 0) +
                                     creditCards.reduce((sum, creditCard) => sum + creditCard.cleared_amount, 0) +
-                                    incomes.reduce((sum, income) => sum + income.cleared_amount, 0) +
                                     households.reduce((sum, household) => sum + household.cleared_amount, 0)
                                 )}
                             </td>
@@ -428,7 +432,6 @@ const HomePage: React.FC = () => {
                                     bills.reduce((sum, bill) => sum + (bill.budget_amount - bill.cleared_amount), 0) +
                                     loans.reduce((sum, loan) => sum + (loan.budget_amount - loan.cleared_amount), 0) +
                                     creditCards.reduce((sum, creditCard) => sum + (creditCard.budget_amount - creditCard.cleared_amount), 0) +
-                                    incomes.reduce((sum, income) => sum + (income.budget_amount - income.cleared_amount), 0) +
                                     households.reduce((sum, household) => sum + (household.budget_amount - household.cleared_amount), 0)
                                 )}
                             </td>
