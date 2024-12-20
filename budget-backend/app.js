@@ -51,15 +51,12 @@ app.post('/api/db', (req, res) => {
                 res.status(500).send(`Error executing ${operation} operation`);
                 return;
             }
-            if (operation === 'INSERT') {
-                res.send(`Record inserted, ID: ${this.lastID}`);
-            } else if (operation === 'UPDATE') {
-                res.send(`Record updated, ID: ${id}`);
-            } else if (operation === 'DELETE') {
-                res.send(`Record deleted, ID: ${id}`);
-            } else {
-                res.send('Query executed successfully');
-            }
+
+            res.json({
+                id: this.lastID,
+                changes: this.changes
+            });
+
         });
     }
 

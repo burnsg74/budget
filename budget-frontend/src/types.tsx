@@ -12,16 +12,6 @@ export interface IAccount {
 }
 export type IAccounts = IAccount[];
 
-export interface IBudget {
-    id: number;
-    account_id: number;
-    account_name: string;
-    type: string;
-    due_day: number;
-    due_amount: number;
-}
-export type IBudgets = IBudget[];
-
 export interface ILedger {
     id: number;
     date: string;
@@ -37,6 +27,7 @@ export interface ILedger {
 export type Ledgers = ILedger[];
 
 export interface IBudgetBill {
+    id: number;
     name: string;
     due_day: number;
     budget_amount: number;
@@ -44,6 +35,7 @@ export interface IBudgetBill {
 }
 
 export interface ICreditCard {
+    id: number;
     name: string;
     balance: number;
     due_day: number;
@@ -52,6 +44,7 @@ export interface ICreditCard {
 }
 
 export interface ILoan {
+    id: number;
     name: string;
     balance: number;
     due_day: number;
@@ -60,22 +53,27 @@ export interface ILoan {
 }
 
 export interface IHousehold {
+    id: number;
     name: string;
     budget_amount: number;
     cleared_amount: number;
 }
 
 export interface IOther {
+    id: number;
     name: string;
     cleared_amount: number;
 }
 
 export interface IUnknown {
+    id: number;
     name: string;
     cleared_amount: number;
 }
 
 export interface IIncome {
+    id: number;
     name: string;
+    budget_amount: number;
     cleared_amount: number;
 }
