@@ -173,3 +173,8 @@ table td {
     border: 1px solid var(--color-border);
     padding: 5px;
 }
+
+.rightColumn {
+    flex-grow: 1;
+    margin: 10px;
+}
