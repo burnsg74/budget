@@ -10,6 +10,7 @@ import styles from "./Accounts.module.css";
 const Accounts: React.FC = () => {
     const [accounts, setAccounts] = useState<IAccount[]>([]);
     const columnDefs: ColDef[] = [
+        { field: "id", headerName: "ID", flex: 1, sortable: true, editable: true, filter: "agTextColumnFilter" },
         { field: "name", headerName: "Name", flex: 2, sortable: true, editable: true, filter: "agTextColumnFilter" },
         { field: "type", headerName: "Type", flex: 1, sortable: true, editable: true, filter: "agTextColumnFilter" },
         { field: "classification", headerName: "Classification", flex: 1, sortable: true, editable: true, filter: "agTextColumnFilter" },
@@ -56,7 +57,7 @@ const Accounts: React.FC = () => {
     };
 
     return (
-        <div>
+        <div style={{padding: "10px"}}>
             <h1>Accounts</h1>
             <div className="ag-theme-quartz" style={{ height: "90vh" }}>
                 <AgGridReact rowData={accounts}

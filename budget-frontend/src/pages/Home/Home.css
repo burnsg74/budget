@@ -178,3 +178,23 @@ table td {
     flex-grow: 1;
     margin: 10px;
 }
+
+.month-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    border: 1px solid gainsboro;
+}
+
+.month-navigation button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.month-navigation h2 {
+    margin: 0;
+    font-size: 1.25rem;
+}

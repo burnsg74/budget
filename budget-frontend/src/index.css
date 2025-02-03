@@ -29,3 +29,7 @@ h1 {
     font-size: 2em;
     color: var(--header-color);
 }
+
+.month-navigation {
+    padding: 10px;
+}
