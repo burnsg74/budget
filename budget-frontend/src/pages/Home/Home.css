@@ -145,7 +145,7 @@
 .columns {
     display: flex;
     flex-wrap: wrap;
-    margin: 10px;
+    padding: 10px;
     gap: 10px;
 }
 
@@ -161,6 +161,7 @@ table td {
     border-collapse: collapse;
     width: 100%;
     border: 1px solid var(--color-border);
+    margin-bottom: 10px;
 }
 
 .summery-table th {
@@ -172,6 +173,16 @@ table td {
 .summery-table td {
     border: 1px solid var(--color-border);
     padding: 5px;
+}
+
+.leftColumn {
+    height: 800px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.leftColumn::-webkit-scrollbar {
+    display: none;
 }
 
 .rightColumn {
@@ -197,4 +208,17 @@ table td {
 .month-navigation h2 {
     margin: 0;
     font-size: 1.25rem;
+}
+
+.entry-row {
+   cursor: pointer;
+}
+
+.posted {
+    font-weight: bold;
+}
+
+.estimated {
+    color: #676666;
+    font-weight: lighter;
 }

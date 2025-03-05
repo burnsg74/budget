@@ -12,7 +12,18 @@ const Accounts: React.FC = () => {
     const columnDefs: ColDef[] = [
         { field: "id", headerName: "ID", flex: 1, sortable: true, editable: true, filter: "agTextColumnFilter" },
         { field: "name", headerName: "Name", flex: 2, sortable: true, editable: true, filter: "agTextColumnFilter" },
-        { field: "type", headerName: "Type", flex: 1, sortable: true, editable: true, filter: "agTextColumnFilter" },
+        {
+            field: "type",
+            headerName: "Type",
+            flex: 1,
+            sortable: true,
+            editable: true,
+            filter: "agTextColumnFilter",
+            cellEditor: 'agSelectCellEditor',
+            cellEditorParams: {
+                values: ['Bank', 'Bill', 'Household', 'Income', 'Credit Card', 'Loan', 'Other', 'Unknown']
+            }
+        },
         { field: "classification", headerName: "Classification", flex: 1, sortable: true, editable: true, filter: "agTextColumnFilter" },
         { field: "balance", headerName: "Balance", flex: 1, sortable: true, editable: true, filter: "agTextColumnFilter" },
         { field: "match_string", headerName: "Match String", flex: 1 , sortable: true, editable: true, filter: "agTextColumnFilter"},

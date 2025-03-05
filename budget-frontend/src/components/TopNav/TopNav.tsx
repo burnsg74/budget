@@ -20,6 +20,9 @@ const TopNav = () => {
                 <li>
                     <Link to="/upload">Upload</Link>
                 </li>
+                {/*<li>*/}
+                {/*    <Link to="/unknown">Unknown</Link>*/}
+                {/*</li>*/}
             </ul>
         </nav>
     )

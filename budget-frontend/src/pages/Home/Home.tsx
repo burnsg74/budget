@@ -94,41 +94,60 @@ const HomePage: React.FC = () => {
         },
     });
 
-
-
     // ==== useEffect ==== //
     useEffect(() => {
         const date = `${reportDate.getFullYear()}-${(reportDate.getMonth() + 1).toString().padStart(2, '0')}` + '%';
+        const pdate = `${reportDate.getFullYear()}-${(reportDate.getMonth()).toString().padStart(2, '0')}` + '%';
+        console.log(pdate,date);
         Promise.all([
-            fetchData<MonthLedger[]>(`SELECT a.id,
-                                             a.type,
-                                             a.name,
-                                             a.due_day,
-                                             a.budget_amount,
-                                             SUM(l.amount) as cleared_amount
+            fetchData<MonthLedger[]>(`SELECT a.*, SUM(l.amount) as cleared_amount
                                       FROM accounts a
-                                               LEFT JOIN ledger l
-                                                         ON l.from_account_id = a.id AND (l.date LIKE '${date}' OR l.date IS NULL)
+                                               INNER JOIN ledger l
+                                                         ON l.from_account_id = a.id 
+                                                             AND (l.date LIKE '${date}' )
                                       WHERE a.active = 1
                                         AND a.type = 'Income'
                                       GROUP BY a.id
                                       ORDER BY due_day`),
-            fetchData<MonthLedger[]>(`SELECT a.id,
-                                             a.type,
-                                             a.name,
-                                             a.due_day,
-                                             a.budget_amount,
-                                             SUM(l.amount) as cleared_amount
+            fetchData<MonthLedger[]>(`SELECT a.*, SUM(l.amount) as cleared_amount
                                       FROM accounts a
-                                               LEFT JOIN ledger l
-                                                         ON l.to_account_id = a.id AND (l.date LIKE '${date}' OR l.date IS NULL)
+                                               INNER JOIN ledger l
+                                                         ON l.to_account_id = a.id AND (l.date LIKE '${date}')
                                       WHERE a.active = 1
                                         AND a.type != 'Income'
                                       GROUP BY a.id
-                                      ORDER BY due_day`)
+                                      ORDER BY due_day`),
+            fetchData<MonthLedger[]>(`SELECT *
+                                      FROM accounts a
+                                               INNER JOIN ledger l
+                                                         ON l.from_account_id = a.id 
+                                                             AND (l.date LIKE '${pdate}' )
+                                      WHERE a.active = 1
+                                        AND a.type = 'Income'
+                                      GROUP BY a.id
+                                      ORDER BY due_day`),
+            fetchData<MonthLedger[]>(`SELECT a.*
+                                      FROM accounts a
+                                               INNER JOIN ledger l
+                                                         ON l.to_account_id = a.id AND (l.date LIKE '${pdate}')
+                                      WHERE a.active = 1
+                                        AND (a.type != 'Income' AND a.type != 'Household')
+                                      GROUP BY a.id
+                                      ORDER BY due_day`),
         ])
-            .then(([incomeData, otherData]) => {
-                const mergedData = [...incomeData, ...otherData];
+            .then(([incomeData, otherData,pincomeData, potherData]) => {
+                console.log('isCurrentMonth()',isCurrentMonth())
+                console.log('incomeData',incomeData);
+                console.log('otherData',otherData);
+                const mergedData = [
+                    ...incomeData,
+                    ...otherData,
+                    ...pincomeData.filter(
+                        (pItem) => !incomeData.some((item) => item.id === pItem.id)
+                    ),
+                    ...potherData.filter(
+                        (pItem) => !otherData.some((item) => item.id === pItem.id)
+                    )]
                 setMonthLedger(mergedData);
             })
             .catch((error) => {
@@ -215,15 +234,96 @@ const HomePage: React.FC = () => {
     };
 
 
-    // ==== Render ==== //
+    function isCurrentMonth() {
+        return reportDate.getMonth() === new Date().getMonth() && reportDate.getFullYear() === new Date().getFullYear();
+    }
+
+// ==== Render ==== //
     return (<div>
         <div className="month-navigation">
             <button onClick={handleBackClick}> ⬅️</button>
-            <h1>{reportDate.toLocaleString("en-US", {month: "long", year: "numeric"})}</h1>
+            {/*<h1>{reportDate.toLocaleString("en-US", {month: "long", year: "numeric"})}</h1>*/}
+            <h1>
+                {reportDate.toLocaleString("en-US",
+                    isCurrentMonth()
+                        ? { day: "numeric", month: "long", year: "numeric" } // Show day too
+                        : { month: "long", year: "numeric" } // Show only month and year
+                )}
+            </h1>
             <button onClick={handleNextClick}> ➡️</button>
         </div>
         <div className="columns">
             <div className="leftColumn">
+                {/*Summary Box*/}
+                <table className="summery-table">
+                    <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Budget</th>
+                        <th>Cleared</th>
+                        <th>Delta</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {(() => {
+                        const accountTotals: { [type: string]: { budget: number; cleared: number } } = {};
+                        monthLedger.forEach((entry) => {
+                            if (entry.type === "Income") return;
+                            if (entry.type === "Household") {
+                                entry.budget_amount = entry.cleared_amount;
+                            }
+                            if (!accountTotals[entry.type]) {
+                                accountTotals[entry.type] = {budget: 0, cleared: 0};
+                            }
+                            accountTotals[entry.type].budget += entry.budget_amount || 0;
+                            accountTotals[entry.type].cleared += entry.cleared_amount || 0;
+                        });
+
+                        let totalIncome = 0;
+                        let totalExpenses = 0;
+                        let totalBudget = 0;
+                        let totals = {
+                            budget: 0,
+                            cleared: 0,
+                            delta: 0,
+                        };
+
+                        const rows = Object.entries(accountTotals).map(([type, totals]) => {
+                            if (type === "Bank") return null;
+                            if (type === "Other") return null;
+                            if (type === "Unknown") return null;
+                            if (type === "Income") {
+                                totalIncome += totals.cleared;
+                            } else {
+                                totalBudget += totals.budget;
+                                totalExpenses += totals.cleared;
+                            }
+
+                            return (
+                                <tr key={type} className={`${type.toLowerCase().replace(/\s+/g, '-')}`}>
+                                    <td>{type}</td>
+                                    <td>{formatCurrency(totals.budget)}</td>
+                                    <td>{formatCurrency(totals.cleared)}</td>
+                                    <td>{formatCurrency(totals.cleared - totals.budget)}</td>
+                                </tr>
+                            );
+                        });
+
+                        rows.push(
+                            <tr key="summary-total" className="bold">
+                                <td className="total-label">Totals</td>
+                                <td>{formatCurrency(totalBudget)}</td>
+                                <td>{formatCurrency(totalExpenses)}</td>
+                                <td>
+                                    {formatCurrency(totalBudget - totalExpenses)}
+                                </td>
+                            </tr>
+                        );
+
+                        return rows;
+                    })()}
+                    </tbody>
+                </table>
                 <table className="left-table">
                     <tbody>
                     {accounts
@@ -232,6 +332,9 @@ const HomePage: React.FC = () => {
                             const relevantEntries = monthLedger.filter((entry) =>
                                 entry.type === account.type
                             );
+                            if (relevantEntries.length === 0) {
+                                return null;
+                            }
                             const totalAmount = relevantEntries.reduce(
                                 (sum, entry) => sum + entry.budget_amount,
                                 0
@@ -245,7 +348,7 @@ const HomePage: React.FC = () => {
                                 <React.Fragment key={index}>
                                     <tr>
                                         <td className={`title ${account.type.toLowerCase().replace(/\s+/g, '-')}`}
-                                            colSpan={4}>
+                                            colSpan={3}>
                                             {account.type}
                                         </td>
                                     </tr>
@@ -254,25 +357,31 @@ const HomePage: React.FC = () => {
                                         <tr
                                             key={entry.id}
                                             onClick={() => handleAccountClick(entry.id)}
-                                            className={`${account.type.toLowerCase().replace(/\s+/g, '-')}`}>
-                                            <td>{entry.name}</td>
+                                            className={`entry-row ${entry.cleared_amount > 0 ? 'posted' : 'estimated'} ${account.type.toLowerCase().replace(/\s+/g, '-')}`}>
                                             <td>
-
-                                                {entry.due_day}
-
+                                                {entry.name}
+                                                {(account.type === 'Loan' || account.type === 'Credit Card') && (
+                                                    <span> ({formatCurrency(entry.balance)}) </span>
+                                                )}
                                             </td>
-                                            <td>{formatCurrency(entry.budget_amount)}</td>
-                                            <td>{formatCurrency(entry.cleared_amount)}</td>
+                                            <td>
+                                                {entry.due_day}
+                                            </td>
+                                            <td>
+                                                {entry.cleared_amount > 0
+                                                    ? formatCurrency(entry.cleared_amount)
+                                                    : formatCurrency(entry.budget_amount)}
+                                            </td>
                                         </tr>
                                     ))}
 
-                                    {relevantEntries.length > 0 && (
-                                        <tr className={`${account.type.toLowerCase().replace(/\s+/g, '-')}`}>
-                                            <td className="bold bt total-label" colSpan={2}>TOTAL</td>
-                                            <td className="bold bt">{formatCurrency(totalAmount)}</td>
-                                            <td className="bold bt">{formatCurrency(totalCleared)}</td>
-                                        </tr>
-                                    )}
+                                    {/*{relevantEntries.length > 0 && (*/}
+                                    {/*    <tr className={`${account.type.toLowerCase().replace(/\s+/g, '-')}`}>*/}
+                                    {/*        <td className="bold bt total-label" colSpan={2}>TOTAL</td>*/}
+                                    {/*        <td className="bold bt">{formatCurrency(totalAmount)}</td>*/}
+                                    {/*        <td className="bold bt">{formatCurrency(totalCleared)}</td>*/}
+                                    {/*    </tr>*/}
+                                    {/*)}*/}
 
                                 </React.Fragment>
                             );
@@ -326,66 +435,34 @@ const HomePage: React.FC = () => {
                 </table>
             </div>
             <div className="rightColumn">
-                {/*Summary Box*/}
-                <table className="summery-table">
-                    <thead>
-                    <tr>
-                        <th>Category</th>
-                        <th>Budget</th>
-                        <th>Cleared</th>
-                        <th>Delta</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {(() => {
-                        const accountTotals: { [type: string]: { budget: number; cleared: number } } = {};
-                        monthLedger.forEach((entry) => {
-                            if (!accountTotals[entry.type]) {
-                                accountTotals[entry.type] = {budget: 0, cleared: 0};
-                            }
-                            accountTotals[entry.type].budget += entry.budget_amount || 0;
-                            accountTotals[entry.type].cleared += entry.cleared_amount || 0;
-                        });
-
-                        let totalIncome = 0;
-                        let totalExpenses = 0;
-
-                        const rows = Object.entries(accountTotals).map(([type, totals]) => {
-                            if (type === "Bank") return null;
-                            if (type === "Income") {
-                                totalIncome += totals.cleared;
-                            } else {
-                                totalExpenses += totals.cleared;
-                            }
-
-                            return (
-                                <tr key={type} className={`${type.toLowerCase().replace(/\s+/g, '-')}`}>
-                                    <td>{type}</td>
-                                    <td>{formatCurrency(totals.budget)}</td>
-                                    <td>{formatCurrency(totals.cleared)}</td>
-                                    <td>{formatCurrency(totals.cleared - totals.budget)}</td>
-                                </tr>
-                            );
-                        });
-
-                        rows.push(
-                            <tr key="summary-total" className="bold">
-                                <td colSpan={2} className="total-label">Net Difference</td>
-                                <td colSpan={2} className={totalIncome - totalExpenses >= 0 ? "positive" : "negative"}>
-                                    {formatCurrency(totalIncome - totalExpenses)}
-                                </td>
-                            </tr>
-                        );
-
-                        return rows;
-                    })()}
-                    </tbody>
-                </table>
-
                 {selectedAccount ? (
                     <div className="account-details">
                         <h1>Account Details: {selectedAccount.name}</h1>
                         <div style={{display: "flex", justifyContent: "space-between", gap: "1rem"}}>
+                            <div>ID: {selectedAccount.id}</div>
+                            <div>
+                                <EditableField
+                                    label="Name:"
+                                    value={selectedAccount.name || ''}
+                                    type="text"
+                                    onSave={(newValue) => handleFieldSave("name", newValue)}
+                                />
+                            </div>
+                            <div>
+                                <EditableField
+                                    label="Type:"
+                                    value={selectedAccount.type || ''}
+                                    type="select"
+                                    options={["Bill", "Household", "Income", "Credit Card", "Loan", "Other"].sort()}
+                                    onSave={(newValue) => handleFieldSave("type", newValue)}
+                                />
+                            </div>
+                            <EditableField
+                                label="Classification:"
+                                value={selectedAccount.classification || ''}
+                                type="text"
+                                onSave={(newValue) => handleFieldSave("classification", newValue)}
+                            />
                             <div>
                                 <EditableField
                                     label="Due Day:"
@@ -403,24 +480,42 @@ const HomePage: React.FC = () => {
                                     onSave={(newValue) => handleFieldSave("budget_amount", newValue)}
                                 />
                             </div>
+                            <div>
+                                <EditableField
+                                    label="Balance:"
+                                    value={selectedAccount.balance || 0}
+                                    type="number"
+                                    formatter={formatCurrency}
+                                    onSave={(newValue) => handleFieldSave("balance", newValue)}
+                                />
+                            </div>
                         </div>
                         <div>
                             <AgCharts options={chartOptions}/>
                             {accountHistory ? (
-                                <table>
-                                    <thead>
+                                <table style={{ margin: 10 }}>
+                                <thead>
                                     <tr>
                                         <th>Date</th>
                                         <th>Amount</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {accountHistory.map((entry, index) => (
-                                        <tr key={index}>
-                                            <td>{new Date(entry.date).toLocaleDateString()}</td>
-                                            <td>{formatCurrency(entry.amount)}</td>
-                                        </tr>
-                                    ))}
+                                    {accountHistory
+                                        ?.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+                                        .map((entry, index) => (
+                                            <tr key={index}>
+                                                <td>{new Date(entry.date).toLocaleDateString()}</td>
+                                                <td>{formatCurrency(entry.amount)}</td>
+                                            </tr>
+                                        ))}
+
+                                    {/*{accountHistory.map((entry, index) => (*/}
+                                    {/*    <tr key={index}>*/}
+                                    {/*        <td>{new Date(entry.date).toLocaleDateString()}</td>*/}
+                                    {/*        <td>{formatCurrency(entry.amount)}</td>*/}
+                                    {/*    </tr>*/}
+                                    {/*))}*/}
                                     </tbody>
                                 </table>
                             ) : (
@@ -431,8 +526,6 @@ const HomePage: React.FC = () => {
                 ) : (
                     <p>Select an account to view details</p>
                 )}
-
-
             </div>
         </div>
     </div>);

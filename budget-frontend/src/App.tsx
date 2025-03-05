@@ -5,6 +5,7 @@ import HomePage from "./pages/Home/Home";
 import Ledger from "./pages/Ledger/Ledger";
 import TopNav from "./components/TopNav/TopNav";
 import UploadPage from "./pages/Uploader/Upload";
+import Unknown from "./pages/Unknown/Unknown";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/accounts" element={<Accounts/>}/>
                     <Route path="/ledger" element={<Ledger/>}/>
                     <Route path="/upload" element={<UploadPage/>}/>
+                    <Route path="/unknown" element={<Unknown/>}/>
                 </Routes>
             </main>
         </>
