@@ -1,0 +1,11 @@
+.container {
+    display: flex;
+}
+
+.leftCol {
+    width: 100px;
+}
+
+.rightCol {
+    flex: 1;
+}
