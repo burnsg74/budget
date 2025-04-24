@@ -1,16 +1,18 @@
-import sqlite3 from 'sqlite3';
-import {promises as fs} from 'fs';
 import crypto from 'crypto';
-import dotenv from 'dotenv';
 import {parse} from 'csv-parse/sync';
+import dotenv from 'dotenv';
+import {promises as fs} from 'fs';
+import sqlite3 from 'sqlite3';
 
 sqlite3.verbose();
 dotenv.config();
 
-const DB_PATH = process.env.NODE_ENV === 'production'
-    ? process.env.DB_PATH_PROD
-    : process.env.DB_PATH_DEV;
+const DB_PATH = process.env.NODE_ENV === 'production' ? process.env.DB_PATH_PROD : process.env.DB_PATH_DEV;
 const db = new sqlite3.Database(DB_PATH);
+const UMPQUA_ACCOUNT_ID = 1
+const FNBO_ACCOUNT_ID = 17;
+let fileFromAccountID = UMPQUA_ACCOUNT_ID;
+let fileFromAccountName = 'Umpqua';
 
 export const handleUpload = async (req, res) => {
 
@@ -20,7 +22,7 @@ export const handleUpload = async (req, res) => {
         for (const fileRow of fileRows) {
 
             // Skip pending transactions
-            if (fileRow["Status"] === "Pending") {
+            if (fileFromAccountName === 'Umpqua' && fileRow["Status"] === "Pending") {
                 continue;
             }
 
@@ -42,19 +44,37 @@ export const handleUpload = async (req, res) => {
                 accounts.push(matchedAccount);
             }
 
-            if (fileRow["Debit"] !== '') {
-                fromAccountID = 1;
-                toAccountID = matchedAccount.id;
-            } else {
-                fromAccountID = matchedAccount.id;
-                toAccountID = 1;
+            // FNBO {Post Date: "2025-02-11", Amount: "-45.99", Description: "AMAZON MKTPL*RP37H1263 Amzn.com/billWA US "}
+            // Umpqua {Account Number: "******7502", Post Date: "4/9/2025", Check: "", Description: "HILLTOP MARKET 3 WALDPORT OR USA", Debit: "18.60", ...}
+            if (fileFromAccountName === 'Umpqua') {
+                if (fileRow["Debit"] === '') {
+                    fileRow["From Account ID"] = matchedAccount.id;
+                    fileRow["To Account ID"]  = fileFromAccountID;
+                    fileRow["Amount"] = fileRow["Credit"];
+                } else {
+                    fileRow["fromAccountID"]  = fileFromAccountID;
+                    fileRow["toAccountID"] = matchedAccount.id;
+                    fileRow["Amount"] = fileRow["Debit"];
+                }
             }
-            const amount = parseFloat(fileRow["Debit"] !== '' ? fileRow["Debit"] : fileRow["Credit"]);
+
+            if (fileFromAccountName === 'FNBO') {
+                if (parseFloat(fileRow["Amount"]) > 0) {
+                    fileRow["fromAccountID"] = UMPQUA_ACCOUNT_ID;
+                    fileRow["toAccountID"] = fileFromAccountID;
+                } else {
+                    fileRow["fromAccountID"] = fileFromAccountID;
+                    fileRow["toAccountID"] = matchedAccount.id;
+                    fileRow["Amount"] = fileRow["Amount"].replace(/[^0-9.]+/g, '');
+                }
+                fileRow["Amount"] = parseFloat(fileRow["Amount"].replace(/[^0-9.]+/g, ''))
+            }
+
             const ledgerRecord = {
                 date: fileRow["Post Date"],
-                from_account_id: fromAccountID,
-                to_account_id: toAccountID,
-                amount: amount,
+                from_account_id: fileRow["fromAccountID"],
+                to_account_id: fileRow["toAccountID"],
+                amount: parseFloat(fileRow["Amount"]),
                 classification: fileRow["Classification"],
                 memo: fileRow["Description"],
                 hash: fileRow["Hash"]
@@ -70,6 +90,11 @@ export const handleUpload = async (req, res) => {
         return;
     }
     const filePath = file.path;
+
+    if (file.originalname.startsWith('Transactions')) {
+        fileFromAccountID = FNBO_ACCOUNT_ID;
+        fileFromAccountName = 'FNBO';
+    }
 
     try {
         const selectSQL = `SELECT id,
@@ -153,8 +178,12 @@ function formatDate(date) {
 const readCSV = async (filePath) => {
     try {
         const content = await fs.readFile(filePath);
+        let columns = true
+        if (fileFromAccountName === 'FNBO') {
+            columns = ['Post Date', 'Amount', 'Description'];
+        }
         return parse(content, {
-            columns: true, // treat the first row as header
+            columns: columns, // treat the first row as header
             bom: true
         });
     } catch (error) {
@@ -180,15 +209,7 @@ async function insertNewAccount(db, fileRow) {
         VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
     return new Promise((resolve, reject) => {
-        db.run(insertAccountSQL, [
-            newAccount.name,
-            newAccount.type,
-            newAccount.classification,
-            newAccount.balance,
-            newAccount.match_string,
-            newAccount.created_at,
-            newAccount.updated_at
-        ], function (err) {
+        db.run(insertAccountSQL, [newAccount.name, newAccount.type, newAccount.classification, newAccount.balance, newAccount.match_string, newAccount.created_at, newAccount.updated_at], function (err) {
             if (err) {
                 reject(err);
             } else {

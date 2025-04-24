@@ -3,6 +3,7 @@ import express from 'express';
 import multer from 'multer';
 import sqlite3 from 'sqlite3';
 import {handleUpload} from "./controllers/UploadController.js";
+// handleValidation
 
 const app = express();
 const upload = multer({dest: 'uploads/'});
@@ -13,12 +14,19 @@ sqlite3.verbose();
 
 app.use(express.json());
 
-console.log('NODE_ENV x', process.env.NODE_ENV);
+console.log('NODE_ENV:', process.env.NODE_ENV);
 
 const dbPath = process.env.NODE_ENV === 'production' 
   ? process.env.DB_PATH_PROD 
   : process.env.DB_PATH_DEV;
-console.log('DB x', dbPath);
+console.log('DB:', dbPath);
+
+app.get('/api', (req, res) => {
+    res.send({
+        app: 'Budget',
+        dbPath: dbPath
+    });
+});
 
 app.post('/api/db', (req, res) => {
     const { query, id } = req.body;
@@ -38,8 +46,13 @@ app.post('/api/db', (req, res) => {
     if (operation === 'SELECT') {
         db.all(query, [], (err, records) => {
             if (err) {
-                console.error(err);
-                res.status(500).send('Error retrieving records');
+                console.error('Error: ',err);
+                res.status(500).send(err);
+                return;
+            }
+            console.log('Records :', records.length);
+            if (records.length === 0) {
+                res.json([]);
                 return;
             }
             res.json(records);
@@ -61,6 +74,10 @@ app.post('/api/db', (req, res) => {
     }
 
     db.close();
+});
+
+app.post('/api/upload/validate', upload.single('file'), (req, res) => {
+    handleValidation(req, res).then();
 });
 
 app.post('/api/upload', upload.single('file'), (req, res) => {

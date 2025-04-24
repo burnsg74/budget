@@ -4,6 +4,7 @@ export async function dbQuery<T>(query: string): Promise<T> {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query }),
     });
+    console.log(response);
 
     return response.json();
 }

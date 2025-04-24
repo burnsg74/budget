@@ -4,6 +4,7 @@ import {fetchData} from "../../utils/db";
 import {AgCharts} from "ag-charts-react";
 import {AgChartOptions} from 'ag-charts-community';
 import EditableField from "../../components/EditableCell/EditableCell";
+import { Link } from "react-router-dom";
 
 /*
 @TODO
@@ -26,6 +27,7 @@ interface MonthLedger {
     due_day: number;
     budget_amount: number;
     cleared_amount: number;
+    balance: number;
 }
 
 interface AccountDetails {
@@ -349,7 +351,17 @@ const HomePage: React.FC = () => {
                                     <tr>
                                         <td className={`title ${account.type.toLowerCase().replace(/\s+/g, '-')}`}
                                             colSpan={3}>
-                                            {account.type}
+
+                                            {account.type === "Unknown" ? (
+                                                <Link to="/Unknown">
+                                                    {account.type}
+                                                </Link>
+                                            ) : (
+                                                <span>
+                                                {account.type}
+                                                </span>
+                                            )}
+
                                         </td>
                                     </tr>
                                     {/*onClick={() => handleAccountClick(bill)}*/}
