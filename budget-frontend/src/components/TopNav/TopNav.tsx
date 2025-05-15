@@ -1,5 +1,5 @@
 import {Link} from 'react-router-dom';
-import styles from "./TopNav.module.css";
+import styles from "./styles.module.css";
 
 const TopNav = () => {
     return (
@@ -7,6 +7,9 @@ const TopNav = () => {
             <ul>
                 <li>
                     <Link to="/">Budget</Link>
+                </li>
+                <li>
+                    <Link to="/trends">Trends</Link>
                 </li>
                 <li>
                     <Link to="/calendar">Calendar</Link>
@@ -20,13 +23,9 @@ const TopNav = () => {
                 <li>
                     <Link to="/upload">Upload</Link>
                 </li>
-                {/*<li>*/}
-                {/*    <Link to="/unknown">Unknown</Link>*/}
-                {/*</li>*/}
             </ul>
         </nav>
-    )
-        ;
+    );
 };
 
 export default TopNav;

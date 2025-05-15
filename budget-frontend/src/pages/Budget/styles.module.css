@@ -1,5 +1,4 @@
 
-
 :root {
     --color-bill: #f4cccc;
     --color-loan: #cfe2f3;
@@ -21,7 +20,7 @@
     --color-border: #b1b1b1;
 }
 
-.left-table {
+.leftTable {
     border-collapse: collapse;
     border-left: 2px solid #000 !important;
     border-bottom: 2px solid #000 !important;
@@ -35,12 +34,12 @@
     border-top: 2px solid #000 !important;
 }
 
-.left-table th, .left-table td {
+.leftTable th, .leftTable td {
     border: 1px solid var(--color-border);
     padding: 3px;
 }
 
-.left-table td:last-child {
+.leftTable td:last-child {
     border-right: 2px solid #000 !important;
 }
 
@@ -107,7 +106,7 @@
     border: unset !important;
 }
 
-.left-table th {
+.leftTable th {
     background-color: var(--color-header);
 }
 
@@ -174,6 +173,16 @@ table td {
 .summery-table td {
     border: 1px solid var(--color-border);
     padding: 5px;
+}
+
+.leftColumn {
+    height: 800px;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.leftColumn::-webkit-scrollbar {
+    display: none;
 }
 
 .rightColumn {

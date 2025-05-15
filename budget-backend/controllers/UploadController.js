@@ -10,16 +10,19 @@ dotenv.config();
 const DB_PATH = process.env.NODE_ENV === 'production' ? process.env.DB_PATH_PROD : process.env.DB_PATH_DEV;
 const db = new sqlite3.Database(DB_PATH);
 const UMPQUA_ACCOUNT_ID = 1
-const FNBO_ACCOUNT_ID = 17;
+const FNBO_ACCOUNT_ID = 2;
 let fileFromAccountID = UMPQUA_ACCOUNT_ID;
 let fileFromAccountName = 'Umpqua';
 
 export const handleUpload = async (req, res) => {
 
     const processAccountHistory = async (filePath, accounts) => {
+        console.log('Processing account history', filePath);
         const fileRows = await readCSV(filePath);
         const ledger = [];
-        for (const fileRow of fileRows) {
+
+        for (const [index, fileRow] of fileRows.entries()) {
+            console.log(fileFromAccountName, index, fileRow);
 
             // Skip pending transactions
             if (fileFromAccountName === 'Umpqua' && fileRow["Status"] === "Pending") {
@@ -33,23 +36,34 @@ export const handleUpload = async (req, res) => {
             let toAccountID = null;
             let matchedAccount = null;
             for (const account of accounts) {
+                console.log(`Checking account for ${fileRow["Description"]}`, account.id);
                 if (fileRow["Description"].includes(account.match_string)) {
+                    console.log(`Matched account for ${fileRow["Description"]}`, account.id);
                     matchedAccount = account;
                     break;
                 }
             }
 
             if (!matchedAccount) {
+                console.log(`Account not found for ${fileRow["Description"]}`);
                 matchedAccount = await insertNewAccount(db, fileRow);
+                console.log(`New account created for ${fileRow["Description"]}`,'\n', matchedAccount);
                 accounts.push(matchedAccount);
             }
+
+            if (matchedAccount) {
+                console.log(`2 Matched account for ${fileRow["Description"]}`, matchedAccount.id);
+            } else {
+                console.log(`2 No account matched for ${fileRow["Description"]}`);
+            }
+
 
             // FNBO {Post Date: "2025-02-11", Amount: "-45.99", Description: "AMAZON MKTPL*RP37H1263 Amzn.com/billWA US "}
             // Umpqua {Account Number: "******7502", Post Date: "4/9/2025", Check: "", Description: "HILLTOP MARKET 3 WALDPORT OR USA", Debit: "18.60", ...}
             if (fileFromAccountName === 'Umpqua') {
                 if (fileRow["Debit"] === '') {
-                    fileRow["From Account ID"] = matchedAccount.id;
-                    fileRow["To Account ID"]  = fileFromAccountID;
+                    fileRow["fromAccountID"] = matchedAccount.id;
+                    fileRow["toAccountID"]  = fileFromAccountID;
                     fileRow["Amount"] = fileRow["Credit"];
                 } else {
                     fileRow["fromAccountID"]  = fileFromAccountID;
@@ -91,12 +105,22 @@ export const handleUpload = async (req, res) => {
     }
     const filePath = file.path;
 
-    if (file.originalname.startsWith('Transactions')) {
-        fileFromAccountID = FNBO_ACCOUNT_ID;
-        fileFromAccountName = 'FNBO';
-    }
-
     try {
+
+        const fileContent = await fs.readFile(filePath, 'utf8');
+        const firstRow = fileContent.split('\n')[0].trim();
+
+        // Check if the first row starts with 'Account Number'
+        if (firstRow.startsWith('Account Number')) {
+            fileFromAccountID = UMPQUA_ACCOUNT_ID;
+            fileFromAccountName = 'Umpqua';
+        } else {
+            fileFromAccountID = FNBO_ACCOUNT_ID;
+            fileFromAccountName = 'FNBO';
+        }
+
+        console.log(`File from account ${fileFromAccountName} :: ${fileFromAccountID}`);
+
         const selectSQL = `SELECT id,
                                   name,
                                   classification,
@@ -116,7 +140,9 @@ export const handleUpload = async (req, res) => {
             });
         });
 
+        console.log('Accounts', accounts);
         const ledger = await processAccountHistory(filePath, accounts);
+        console.log('Ledger ',ledger);
         const insertSQL = `INSERT INTO ledger (date, from_account_id, to_account_id, amount, classification, memo, hash)
                            VALUES (?, ?, ?, ?, ?, ?, ?)`;
         for (const record of ledger) {
@@ -127,6 +153,7 @@ export const handleUpload = async (req, res) => {
                     if (err) {
                         reject(err);
                     } else {
+                        console.log(this.lastID)
                         resolve(this.lastID);
                     }
                 });
@@ -203,6 +230,8 @@ async function insertNewAccount(db, fileRow) {
         updated_at: formatDate(new Date()),
         last_transaction_at: null
     };
+
+    console.log('New Account:F', newAccount);
 
     const insertAccountSQL = `
         INSERT INTO accounts (name, type, classification, balance, match_string, created_at, updated_at)

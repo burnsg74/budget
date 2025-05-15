@@ -50,7 +50,6 @@ app.post('/api/db', (req, res) => {
                 res.status(500).send(err);
                 return;
             }
-            console.log('Records :', records.length);
             if (records.length === 0) {
                 res.json([]);
                 return;

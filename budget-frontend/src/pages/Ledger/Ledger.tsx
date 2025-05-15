@@ -11,8 +11,8 @@ const Ledgers: React.FC = () => {
     const [ledger, setLedger] = useState<ILedger[]>([]);
     const columnDefs: ColDef[] = [
         {field: "date", headerName: "Date", flex: 1, sortable: true, filter: true},
-        {field: "from_account_name", headerName: "From", flex: 2, sortable: true, editable: true, filter: true},
-        {field: "to_account_name", headerName: "To", flex: 2, sortable: true, editable: true, filter: true},
+        {field: "from_account_name", headerName: "From", flex: 2, sortable: true,  filter: true},
+        {field: "to_account_name", headerName: "To", flex: 2, sortable: true,  filter: true},
         {
             field: "amount",
             headerName: "Amount",
@@ -24,8 +24,8 @@ const Ledgers: React.FC = () => {
                 return new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(params.value);
             }
         },
-        {field: "classification", headerName: "Classification", flex: 1, sortable: true, editable: true, filter: true},
-        {field: "memo", headerName: "Memo", flex: 1, sortable: true, editable: true, filter: true},
+        {field: "classification", headerName: "Classification", flex: 1, sortable: true,  filter: true},
+        {field: "memo", headerName: "Memo", flex: 1, sortable: true,  filter: true},
     ];
 
     useEffect(() => {

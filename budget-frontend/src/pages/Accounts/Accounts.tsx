@@ -41,22 +41,21 @@ const Accounts: React.FC = () => {
         const field = colDef.field;
         console.log(`Row ID: ${data.id}, Field: ${field}, New Value: ${newValue}`);
 
-        // const query = `UPDATE Accounts SET ${field} = '${newValue}' WHERE id = ${data.id};`;
-        // try {
-        //     fetch("/api/db", {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //         },
-        //         body: JSON.stringify({ query }),
-        //     });
-        // } catch (error) {
-        //     console.error(error);
-        // }
+        const query = `UPDATE Accounts SET ${field} = '${newValue}' WHERE id = ${data.id};`;
+        console.log(query);
+        try {
+            fetch("/api/db", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ query }),
+            });
+        } catch (error) {
+            console.error(error);
+        }
 
         if (field === 'match_string') {
-            const query = `UPDATE Accounts SET ${field} = '${newValue}' WHERE id = ${data.id};`;
-            console.log(query);
 
             for (const account of accounts) {
                 if ((account.id !== data.id) && account.name.includes(newValue)) {
