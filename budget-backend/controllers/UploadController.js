@@ -29,15 +29,20 @@ export const handleUpload = async (req, res) => {
                 continue;
             }
 
+            // Skip FNBO PAYMENT records
+            if (fileFromAccountName === 'FNBO' && fileRow.Description.startsWith('PAYMENT')) {
+                console.log('Skipping FNBO PAYMENT record:', fileRow);
+                continue;
+            }
+
             // Add hash to row
             fileRow['Hash'] = crypto.createHash('md5').update(Object.values(fileRow).join()).digest('hex');
 
-            let fromAccountID = null;
-            let toAccountID = null;
+            let accountID = null;
             let matchedAccount = null;
             for (const account of accounts) {
                 console.log(`Checking account for ${fileRow["Description"]}`, account.id);
-                if (fileRow["Description"].includes(account.match_string)) {
+                if (fileRow["Description"].toLowerCase().includes(account.match_string.toLowerCase())) {
                     console.log(`Matched account for ${fileRow["Description"]}`, account.id);
                     matchedAccount = account;
                     break;
@@ -61,35 +66,21 @@ export const handleUpload = async (req, res) => {
             // FNBO {Post Date: "2025-02-11", Amount: "-45.99", Description: "AMAZON MKTPL*RP37H1263 Amzn.com/billWA US "}
             // Umpqua {Account Number: "******7502", Post Date: "4/9/2025", Check: "", Description: "HILLTOP MARKET 3 WALDPORT OR USA", Debit: "18.60", ...}
             if (fileFromAccountName === 'Umpqua') {
-                if (fileRow["Debit"] === '') {
-                    fileRow["fromAccountID"] = matchedAccount.id;
-                    fileRow["toAccountID"]  = fileFromAccountID;
+                if (fileRow["Credit"] !== '') {
                     fileRow["Amount"] = fileRow["Credit"];
                 } else {
-                    fileRow["fromAccountID"]  = fileFromAccountID;
-                    fileRow["toAccountID"] = matchedAccount.id;
                     fileRow["Amount"] = fileRow["Debit"];
                 }
             }
 
             if (fileFromAccountName === 'FNBO') {
-                if (parseFloat(fileRow["Amount"]) > 0) {
-                    fileRow["fromAccountID"] = UMPQUA_ACCOUNT_ID;
-                    fileRow["toAccountID"] = fileFromAccountID;
-                } else {
-                    fileRow["fromAccountID"] = fileFromAccountID;
-                    fileRow["toAccountID"] = matchedAccount.id;
-                    fileRow["Amount"] = fileRow["Amount"].replace(/[^0-9.]+/g, '');
-                }
                 fileRow["Amount"] = parseFloat(fileRow["Amount"].replace(/[^0-9.]+/g, ''))
             }
 
             const ledgerRecord = {
                 date: fileRow["Post Date"],
-                from_account_id: fileRow["fromAccountID"],
-                to_account_id: fileRow["toAccountID"],
+                account_id: matchedAccount.id,
                 amount: parseFloat(fileRow["Amount"]),
-                classification: fileRow["Classification"],
                 memo: fileRow["Description"],
                 hash: fileRow["Hash"]
             };
@@ -112,23 +103,16 @@ export const handleUpload = async (req, res) => {
 
         // Check if the first row starts with 'Account Number'
         if (firstRow.startsWith('Account Number')) {
-            fileFromAccountID = UMPQUA_ACCOUNT_ID;
             fileFromAccountName = 'Umpqua';
         } else {
-            fileFromAccountID = FNBO_ACCOUNT_ID;
             fileFromAccountName = 'FNBO';
         }
 
-        console.log(`File from account ${fileFromAccountName} :: ${fileFromAccountID}`);
+        console.log(`File from account ${fileFromAccountName}`);
 
         const selectSQL = `SELECT id,
                                   name,
-                                  classification,
-                                  balance,
-                                  match_string,
-                                  created_at,
-                                  updated_at,
-                                  last_transaction_at
+                                  match_string
                            FROM accounts`;
         const accounts = await new Promise((resolve, reject) => {
             db.all(selectSQL, [], (err, rows) => {
@@ -143,13 +127,13 @@ export const handleUpload = async (req, res) => {
         console.log('Accounts', accounts);
         const ledger = await processAccountHistory(filePath, accounts);
         console.log('Ledger ',ledger);
-        const insertSQL = `INSERT INTO ledger (date, from_account_id, to_account_id, amount, classification, memo, hash)
-                           VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const insertSQL = `INSERT INTO ledger (date, account_id, amount,  memo, hash)
+                           VALUES (?, ?, ?, ?, ?)`;
         for (const record of ledger) {
             const formattedDate = formatDate(record.date);
 
             await new Promise((resolve, reject) => {
-                db.run(insertSQL, [formattedDate, record.from_account_id, record.to_account_id, record.amount, record.classification, record.memo, record.hash], function (err) {
+                db.run(insertSQL, [formattedDate, record.account_id, record.amount, record.memo, record.hash], function (err) {
                     if (err) {
                         reject(err);
                     } else {
@@ -223,22 +207,18 @@ async function insertNewAccount(db, fileRow) {
     const newAccount = {
         name: fileRow["Description"],
         type: 'Unknown',
-        classification: fileRow["Classification"],
-        balance: 0.0,
         match_string: fileRow["Description"],
         created_at: formatDate(new Date()),
-        updated_at: formatDate(new Date()),
-        last_transaction_at: null
     };
 
     console.log('New Account:F', newAccount);
 
     const insertAccountSQL = `
-        INSERT INTO accounts (name, type, classification, balance, match_string, created_at, updated_at)
+        INSERT INTO accounts (name, type, match_string, created_at, updated_at, last_transaction_at, active)
         VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
     return new Promise((resolve, reject) => {
-        db.run(insertAccountSQL, [newAccount.name, newAccount.type, newAccount.classification, newAccount.balance, newAccount.match_string, newAccount.created_at, newAccount.updated_at], function (err) {
+        db.run(insertAccountSQL, [newAccount.name, newAccount.type, newAccount.match_string, newAccount.created_at, newAccount.created_at, newAccount.created_at, 1], function (err) {
             if (err) {
                 reject(err);
             } else {

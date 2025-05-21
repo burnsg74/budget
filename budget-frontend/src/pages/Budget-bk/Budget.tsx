@@ -6,7 +6,7 @@ import { fetchData } from '../../utils/db';
 import EditableField from '../../components/EditableCell/EditableCell';
 import styles from "./styles.module.css";
 
-type AccountType = "Income" | "Bill" | "Household" | "Credit Card" | "Mortgage" | "Loan" | "Other" | "Unknown";
+type AccountType = "Income" | "Bill" | "Household" | "Credit Card" | "Loan" | "Other" | "Unknown";
 
 interface Account {
     type: AccountType;

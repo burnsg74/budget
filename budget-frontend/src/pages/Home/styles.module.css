@@ -1,0 +1,153 @@
+:root {
+    --color-bill: #f4cccc;
+    --color-loan: #cfe2f3;
+    --color-credit-card: #fff2cc;
+    --color-income: #d9ead3;
+    --color-other: #fff9e6;
+    --color-unknown: #e0e0e0;
+    --color-household: #f7e6b5;
+    --color-footer: #e3e3e3;
+    --color-footer-shadow: #bebebe;
+    --color-table-header-bg: #f2f2f2;
+    --color-header: #f2f2f2;
+    --color-table-hover-bg: #f1f1f1;
+    --color-nav-button: #6c757d;
+    --color-nav-button-hover: #5a6268;
+    --color-nav-bg: #e6e2e2;
+    --color-navbar-shadow: gray;
+    --color-text: rgba(69, 69, 69, 0.82);
+    --color-border: #b1b1b1;
+}
+
+/* Table Layout */
+.ledger-table {
+    overflow-x: auto;
+}
+
+.ledger-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+.ledger-table th {
+    background: #f5f5f5;
+    padding: 5px;
+    text-align: left;
+    border: 1px solid #ddd;
+    white-space: nowrap;
+    font-weight: 200;
+    font-size: 14px;
+}
+
+.ledger-table td {
+    padding: 5px;
+    border: 1px solid #eee;
+    white-space: nowrap;
+    font-weight: 100;
+    font-size: 12px;
+}
+
+/* Table Headers */
+.type-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.type-name {
+    text-align: left;
+}
+
+.type-total {
+    text-align: right;
+}
+
+/* Table Content */
+.amount {
+    font-family: monospace;
+    color: #2c5282;
+    text-align: right;
+}
+
+.total {
+    background: #f8f9fa;
+    font-weight: 600;
+}
+
+.total td {
+    border-top: 2px solid #ddd;
+}
+
+.financial-summary {
+    background-color: #f8f9fa;
+    padding: 5px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.summary-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.income-value,
+.expenses-value,
+.difference-value {
+    font-weight: 500;
+    font-family: monospace;
+}
+
+.math-operator {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.positive {
+    color: #2e7d32;
+}
+
+.negative {
+    color: #c62828;
+}
+
+.summary-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 5px 15px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.month-navigation {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-family: monospace;
+}
+
+.month-navigation button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.25rem 0.5rem;
+    color: #666;
+}
+
+.month-navigation button:hover {
+    color: var(--primary-color);
+}
+
+.month-display {
+    font-size: 1rem;
+    font-weight: 500;
+    min-width: 120px;
+    text-align: center;
+}

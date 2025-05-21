@@ -11,8 +11,7 @@ const Ledgers: React.FC = () => {
     const [ledger, setLedger] = useState<ILedger[]>([]);
     const columnDefs: ColDef[] = [
         {field: "date", headerName: "Date", flex: 1, sortable: true, filter: true},
-        {field: "from_account_name", headerName: "From", flex: 2, sortable: true,  filter: true},
-        {field: "to_account_name", headerName: "To", flex: 2, sortable: true,  filter: true},
+        {field: "account_name", headerName: "Account", flex: 2, sortable: true, filter: true},
         {
             field: "amount",
             headerName: "Amount",
@@ -24,20 +23,15 @@ const Ledgers: React.FC = () => {
                 return new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'}).format(params.value);
             }
         },
-        {field: "classification", headerName: "Classification", flex: 1, sortable: true,  filter: true},
-        {field: "memo", headerName: "Memo", flex: 1, sortable: true,  filter: true},
+        {field: "memo", headerName: "Memo", flex: 2, sortable: true, filter: true},
     ];
 
     useEffect(() => {
         fetchData<ILedger[]>(
             `SELECT l.*,
-                    a1.name AS from_account_name,
-                    a2.name AS to_account_name
+                    a.name AS account_name
              FROM main.ledger l
-                      LEFT JOIN
-                  main.accounts a1 ON l.from_account_id = a1.id
-                      LEFT JOIN
-                  main.accounts a2 ON l.to_account_id = a2.id`
+                      LEFT JOIN main.accounts a ON l.account_id = a.id`
         ).then(setLedger);
     }, []);
 

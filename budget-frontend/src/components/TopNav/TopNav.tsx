@@ -6,11 +6,11 @@ const TopNav = () => {
         <nav className={`${styles.topNav}`}>
             <ul>
                 <li>
-                    <Link to="/">Budget</Link>
+                    <Link to="/">Home</Link>
                 </li>
-                <li>
-                    <Link to="/trends">Trends</Link>
-                </li>
+                {/*<li>*/}
+                {/*    <Link to="/trends">Trends</Link>*/}
+                {/*</li>*/}
                 <li>
                     <Link to="/calendar">Calendar</Link>
                 </li>
