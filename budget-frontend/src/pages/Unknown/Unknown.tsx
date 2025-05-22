@@ -21,6 +21,70 @@ const Unknown: React.FC = () => {
     const [editingMatchString, setEditingMatchString] = useState<number | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const tableRef = useRef<HTMLDivElement>(null);
+    const [sortField, setSortField] = useState<keyof Account | null>(null);
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+    const [filters, setFilters] = useState<Partial<Record<keyof Account, string>>>({});
+
+
+    const handleFilterChange = (field: keyof Account, value: string) => {
+        setFilters(prev => ({
+            ...prev,
+            [field]: value
+        }));
+    };
+
+    const getFilteredAccounts = () => {
+        return accounts.filter(account => {
+            return Object.entries(filters).every(([field, filterValue]) => {
+                if (!filterValue) return true;
+
+                const value = account[field as keyof Account];
+                if (value === null || value === undefined) return false;
+
+                return String(value)
+                    .toLowerCase()
+                    .includes(filterValue.toLowerCase());
+            });
+        });
+    };
+
+
+    const handleSort = (field: keyof Account) => {
+        const newDirection = field === sortField && sortDirection === 'asc' ? 'desc' : 'asc';
+        setSortField(field);
+        setSortDirection(newDirection);
+
+        const sortedAccounts = [...accounts].sort((a, b) => {
+            const aValue = a[field];
+            const bValue = b[field];
+
+            if (aValue === null) return 1;
+            if (bValue === null) return -1;
+
+            if (typeof aValue === 'string' && typeof bValue === 'string') {
+                return newDirection === 'asc'
+                    ? aValue.localeCompare(bValue)
+                    : bValue.localeCompare(aValue);
+            }
+
+            if (typeof aValue === 'number' && typeof bValue === 'number') {
+                return newDirection === 'asc'
+                    ? aValue - bValue
+                    : bValue - aValue;
+            }
+
+            if (typeof aValue === 'boolean' && typeof bValue === 'boolean') {
+                return newDirection === 'asc'
+                    ? (aValue === bValue ? 0 : aValue ? 1 : -1)
+                    : (aValue === bValue ? 0 : aValue ? -1 : 1);
+            }
+
+            return 0;
+        });
+
+        setAccounts(sortedAccounts);
+    };
+
 
     const fetchAccounts = async () => {
         const query = `
@@ -139,7 +203,7 @@ const Unknown: React.FC = () => {
             // Update local state
             setAccounts(prev => {
                 const filtered = prev.filter(account =>
-                    !matchedAccounts.some(matched => matched.id === account.id)
+                    !matchedAccounts.some((matched: { id: number }) => matched.id === account.id)
                 );
                 return filtered.map(account =>
                     account.id === accountId
@@ -182,16 +246,20 @@ const Unknown: React.FC = () => {
     };
 
     const handleTypeChange = useCallback((newType: string) => {
-        if (selectedIndex === -1 || !accounts[selectedIndex]) return;
+        if (selectedIndex === -1) return;
+        
+        const filteredAccounts = getFilteredAccounts();
+        const account = filteredAccounts[selectedIndex];
+        if (!account) return;
 
-        const account = accounts[selectedIndex];
         updateAccountType(account.id, newType);
-    }, [selectedIndex, accounts]);
+    }, [selectedIndex, accounts, getFilteredAccounts]);
 
     const handleKeyDown = useCallback((event: KeyboardEvent) => {
         if (!accounts.length || isUpdating) return;
 
         const key = event.key.toLowerCase();
+        const filteredAccounts = getFilteredAccounts(); // Get the filtered accounts
 
         // If we're editing, don't handle other shortcuts
         if (editingName !== null || editingMatchString !== null) {
@@ -201,7 +269,7 @@ const Unknown: React.FC = () => {
         // Navigation keys
         if (key === 'j' || key === 'arrowdown') {
             event.preventDefault();
-            setSelectedIndex(prev => Math.min(prev + 1, accounts.length - 1));
+            setSelectedIndex(prev => Math.min(prev + 1, filteredAccounts.length - 1));
         } else if (key === 'k' || key === 'arrowup') {
             event.preventDefault();
             setSelectedIndex(prev => Math.max(prev - 1, 0));
@@ -210,13 +278,19 @@ const Unknown: React.FC = () => {
         // Name editing triggers
         if ((key === 'e' || key === 'n') && selectedIndex !== -1) {
             event.preventDefault();
-            setEditingName(accounts[selectedIndex].id);
+            const account = filteredAccounts[selectedIndex]; // Use filtered accounts
+            if (account) {
+                setEditingName(account.id);
+            }
         }
 
         // Match string editing trigger
         if (key === 'm' && selectedIndex !== -1) {
             event.preventDefault();
-            setEditingMatchString(accounts[selectedIndex].id);
+            const account = filteredAccounts[selectedIndex]; // Use filtered accounts
+            if (account) {
+                setEditingMatchString(account.id);
+            }
         }
 
         // Type change shortcuts
@@ -229,11 +303,14 @@ const Unknown: React.FC = () => {
             'o': 'Other'
         };
 
-        if (typeMap[key]) {
+        if (typeMap[key] && selectedIndex !== -1) {
             event.preventDefault();
-            handleTypeChange(typeMap[key]);
+            const account = filteredAccounts[selectedIndex]; // Use filtered accounts
+            if (account) {
+                handleTypeChange(typeMap[key]);
+            }
         }
-    }, [accounts.length, isUpdating, handleTypeChange, selectedIndex, editingName, editingMatchString]);
+    }, [accounts.length, isUpdating, handleTypeChange, selectedIndex, editingName, editingMatchString, getFilteredAccounts]);
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown);
@@ -252,17 +329,63 @@ const Unknown: React.FC = () => {
     return (
         <div className={styles["unknown-table"]} ref={tableRef}>
             {isUpdating && <div className={styles["loading-indicator"]}>Updating...</div>}
+            Number of Accounts: {accounts.length}
             <table>
                 <thead>
-                    <tr className={styles["type-name"]}>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>Match String</th>
-                    </tr>
+                <tr className={styles["type-name"]}>
+                    <th>
+                        <div onClick={() => handleSort('id')} style={{ cursor: 'pointer' }}>
+                            ID {sortField === 'id' && (sortDirection === 'asc' ? '↑' : '↓')}
+                        </div>
+                        <input
+                            type="text"
+                            value={filters.id || ''}
+                            onChange={(e) => handleFilterChange('id', e.target.value)}
+                            placeholder="Filter ID..."
+                            className={styles["filter-input"]}
+                        />
+                    </th>
+                    <th>
+                        <div onClick={() => handleSort('type')} style={{ cursor: 'pointer' }}>
+                            Type {sortField === 'type' && (sortDirection === 'asc' ? '↑' : '↓')}
+                        </div>
+                        <input
+                            type="text"
+                            value={filters.type || ''}
+                            onChange={(e) => handleFilterChange('type', e.target.value)}
+                            placeholder="Filter type..."
+                            className={styles["filter-input"]}
+                        />
+                    </th>
+                    <th>
+                        <div onClick={() => handleSort('name')} style={{ cursor: 'pointer' }}>
+                            Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
+                        </div>
+                        <input
+                            type="text"
+                            value={filters.name || ''}
+                            onChange={(e) => handleFilterChange('name', e.target.value)}
+                            placeholder="Filter name..."
+                            className={styles["filter-input"]}
+                        />
+                    </th>
+                    <th>
+                        <div onClick={() => handleSort('match_string')} style={{ cursor: 'pointer' }}>
+                            Match String {sortField === 'match_string' && (sortDirection === 'asc' ? '↑' : '↓')}
+                        </div>
+                        <input
+                            type="text"
+                            value={filters.match_string || ''}
+                            onChange={(e) => handleFilterChange('match_string', e.target.value)}
+                            placeholder="Filter match string..."
+                            className={styles["filter-input"]}
+                        />
+                    </th>
+                </tr>
                 </thead>
                 <tbody>
-                    {accounts.map((account, index) => (
+                {getFilteredAccounts().map((account, index) => (
+                    // {accounts.map((account, index) => (
                         <tr
                             key={account.id}
                             data-index={index}
@@ -272,6 +395,7 @@ const Unknown: React.FC = () => {
                                       ${styles[account.type.toLowerCase().replace(' ', '-')]}`}
                         >
                             <td>{account.id}</td>
+                            <td>{account.type}</td>
                             <td>
                                 {editingName === account.id ? (
                                     <input
@@ -293,7 +417,6 @@ const Unknown: React.FC = () => {
                                     account.name
                                 )}
                             </td>
-                            <td>{account.type}</td>
                             <td>
                                 {editingMatchString === account.id ? (
                                     <input

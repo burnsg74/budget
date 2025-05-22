@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {fetchData} from '../../utils/db';
 import styles from "./styles.module.css";
-import {Link} from "react-router-dom";
 import {format, addMonths, startOfMonth} from 'date-fns';
 
 type AccountType = "Income" | "Bill" | "Household" | "Credit Card" | "Mortgage" | "Loan" | "Other" | "Unknown";
@@ -30,14 +29,14 @@ const Home: React.FC = () => {
         const fetchLedgerData = async () => {
             const formattedDate = format(selectedDate, 'yyyy-MM');
             const query = `
-                SELECT l.date,
-                       a.name,
-                       l.amount,
+                SELECT a.name,
+                       SUM(l.amount) as amount,
                        a.type
                 FROM ledger l
                          JOIN accounts a ON l.account_id = a.id
                 WHERE strftime('%Y-%m', l.date) = '${formattedDate}'
-                ORDER BY l.date, a.type
+                GROUP BY a.id
+                ORDER BY amount DESC
             `;
 
             const data: LedgerEntry[] = await fetchData(query);
@@ -128,14 +127,15 @@ const Home: React.FC = () => {
                     <tr>
                         {types.map(type => (
                             ledgerData[type]?.length ? (
-                                <th key={type} colSpan={3}>
+                                <th key={type} colSpan={2}>
                                     <div className={styles["type-header"]}>
                                         <span className={styles["type-name"]}>
-                                            {type === "Unknown" ? (
-                                                <Link to="/unknown">{type} ({ledgerData[type].length})</Link>
-                                            ) : (
-                                                `${type} (${ledgerData[type].length})`
-                                            )}
+                                            {/*{type === "Unknown" ? (*/}
+                                            {/*    <Link to="/unknown">{type} ({ledgerData[type].length})</Link>*/}
+                                            {/*) : (*/}
+                                            {/*    `${type} (${ledgerData[type].length})`*/}
+                                            {/*)}*/}
+                                            {type} ({ledgerData[type].length})
                                         </span>
                                         <span className={styles["type-total"]}>
                                             ${calculateTotal(ledgerData[type]).toFixed(2)}
@@ -149,7 +149,6 @@ const Home: React.FC = () => {
                         {types.map(type => (
                             ledgerData[type]?.length ? (
                                 <React.Fragment key={type}>
-                                    <th>Date</th>
                                     <th>Name</th>
                                     <th>Amount</th>
                                 </React.Fragment>
@@ -165,7 +164,6 @@ const Home: React.FC = () => {
                                     <React.Fragment key={type}>
                                         {ledgerData[type]?.[rowIndex] ? (
                                             <>
-                                                <td>{ledgerData[type][rowIndex].date}</td>
                                                 <td>{ledgerData[type][rowIndex].name}</td>
                                                 <td className={styles.amount}>
                                                     ${ledgerData[type][rowIndex].amount.toFixed(2)}
@@ -173,7 +171,6 @@ const Home: React.FC = () => {
                                             </>
                                         ) : (
                                             <>
-                                                <td></td>
                                                 <td></td>
                                                 <td></td>
                                             </>
