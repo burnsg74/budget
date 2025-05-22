@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {fetchData} from '../../utils/db';
 import styles from "./styles.module.css";
 import {format, addMonths, startOfMonth} from 'date-fns';
+import {formatUSD} from '../../utils/formatters';
 
 type AccountType = "Income" | "Bill" | "Household" | "Credit Card" | "Mortgage" | "Loan" | "Other" | "Unknown";
 
@@ -108,15 +109,15 @@ const Home: React.FC = () => {
                 <div className={styles["financial-summary"]}>
                     <div className={styles["summary-content"]}>
                         <span className={styles["income-value"]}>
-                            Income: ${totalIncome.toFixed(2)}
+                            Income: {formatUSD(totalIncome)}
                         </span>
                         <span className={styles["math-operator"]}>-</span>
                         <span className={styles["expenses-value"]}>
-                            Expenses: ${totalExpenses.toFixed(2)}
+                            Expenses: {formatUSD(totalExpenses)}
                         </span>
                         <span className={styles["math-operator"]}>=</span>
                         <span className={`${styles["difference-value"]} ${difference >= 0 ? styles.positive : styles.negative}`}>
-                            ${difference.toFixed(2)}
+                            {formatUSD(difference)}
                         </span>
                     </div>
                 </div>
@@ -130,15 +131,10 @@ const Home: React.FC = () => {
                                 <th key={type} colSpan={2}>
                                     <div className={styles["type-header"]}>
                                         <span className={styles["type-name"]}>
-                                            {/*{type === "Unknown" ? (*/}
-                                            {/*    <Link to="/unknown">{type} ({ledgerData[type].length})</Link>*/}
-                                            {/*) : (*/}
-                                            {/*    `${type} (${ledgerData[type].length})`*/}
-                                            {/*)}*/}
                                             {type} ({ledgerData[type].length})
                                         </span>
                                         <span className={styles["type-total"]}>
-                                            ${calculateTotal(ledgerData[type]).toFixed(2)}
+                                            {formatUSD(calculateTotal(ledgerData[type]))}
                                         </span>
                                     </div>
                                 </th>
@@ -166,7 +162,7 @@ const Home: React.FC = () => {
                                             <>
                                                 <td>{ledgerData[type][rowIndex].name}</td>
                                                 <td className={styles.amount}>
-                                                    ${ledgerData[type][rowIndex].amount.toFixed(2)}
+                                                    {formatUSD(ledgerData[type][rowIndex].amount)}
                                                 </td>
                                             </>
                                         ) : (
@@ -184,9 +180,9 @@ const Home: React.FC = () => {
                         {types.map(type => (
                             ledgerData[type]?.length ? (
                                 <React.Fragment key={type}>
-                                    <td colSpan={2}>Total</td>
+                                    <td>Total</td>
                                     <td className={styles.amount}>
-                                        ${calculateTotal(ledgerData[type]).toFixed(2)}
+                                        {formatUSD(calculateTotal(ledgerData[type]))}
                                     </td>
                                 </React.Fragment>
                             ) : null

@@ -91,7 +91,7 @@ const Accounts: React.FC = () => {
             SELECT *
             FROM accounts a
             WHERE a.type = 'Unknown'
-            ORDER BY a.name
+            ORDER BY a.id
         `;
 
         const fetchedAccounts = await fetchData<Account[]>(query);
