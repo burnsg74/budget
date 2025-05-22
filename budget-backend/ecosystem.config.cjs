@@ -10,7 +10,12 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: 3002
-      }
+      },
+      node_args: "--max-http-header-size=20480", // 20KB for headers
+      max_restarts: 10,
+      kill_timeout: 4000, // Give time for uploads to complete when restarting
+      wait_ready: true
+
     },
   ],
 }

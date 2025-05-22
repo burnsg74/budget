@@ -17,13 +17,10 @@ let fileFromAccountName = 'Umpqua';
 export const handleUpload = async (req, res) => {
 
     const processAccountHistory = async (filePath, accounts) => {
-        console.log('Processing account history', filePath);
         const fileRows = await readCSV(filePath);
         const ledger = [];
 
         for (const [index, fileRow] of fileRows.entries()) {
-            console.log(fileFromAccountName, index, fileRow);
-
             // Skip pending transactions
             if (fileFromAccountName === 'Umpqua' && fileRow["Status"] === "Pending") {
                 continue;
@@ -31,7 +28,6 @@ export const handleUpload = async (req, res) => {
 
             // Skip FNBO PAYMENT records
             if (fileFromAccountName === 'FNBO' && fileRow.Description.startsWith('PAYMENT')) {
-                console.log('Skipping FNBO PAYMENT record:', fileRow);
                 continue;
             }
 
@@ -41,26 +37,20 @@ export const handleUpload = async (req, res) => {
             let accountID = null;
             let matchedAccount = null;
             for (const account of accounts) {
-                console.log(`Checking account for ${fileRow["Description"]}`, account.id);
                 if (fileRow["Description"].toLowerCase().includes(account.match_string.toLowerCase())) {
-                    console.log(`Matched account for ${fileRow["Description"]}`, account.id);
                     matchedAccount = account;
                     break;
                 }
             }
 
             if (!matchedAccount) {
-                console.log(`Account not found for ${fileRow["Description"]}`);
                 matchedAccount = await insertNewAccount(db, fileRow);
-                console.log(`New account created for ${fileRow["Description"]}`,'\n', matchedAccount);
                 accounts.push(matchedAccount);
             }
 
             if (matchedAccount) {
-                console.log(`2 Matched account for ${fileRow["Description"]}`, matchedAccount.id);
-            } else {
-                console.log(`2 No account matched for ${fileRow["Description"]}`);
-            }
+                } else {
+                }
 
 
             // FNBO {Post Date: "2025-02-11", Amount: "-45.99", Description: "AMAZON MKTPL*RP37H1263 Amzn.com/billWA US "}
@@ -108,8 +98,6 @@ export const handleUpload = async (req, res) => {
             fileFromAccountName = 'FNBO';
         }
 
-        console.log(`File from account ${fileFromAccountName}`);
-
         const selectSQL = `SELECT id,
                                   name,
                                   match_string
@@ -124,9 +112,7 @@ export const handleUpload = async (req, res) => {
             });
         });
 
-        console.log('Accounts', accounts);
         const ledger = await processAccountHistory(filePath, accounts);
-        console.log('Ledger ',ledger);
         const insertSQL = `INSERT INTO ledger (date, account_id, amount,  memo, hash)
                            VALUES (?, ?, ?, ?, ?)`;
         for (const record of ledger) {
@@ -210,8 +196,6 @@ async function insertNewAccount(db, fileRow) {
         match_string: fileRow["Description"],
         created_at: formatDate(new Date()),
     };
-
-    console.log('New Account:F', newAccount);
 
     const insertAccountSQL = `
         INSERT INTO accounts (name, type, match_string, created_at, updated_at, last_transaction_at, active)

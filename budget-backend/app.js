@@ -14,12 +14,9 @@ sqlite3.verbose();
 
 app.use(express.json());
 
-console.log('NODE_ENV:', process.env.NODE_ENV);
-
-const dbPath = process.env.NODE_ENV === 'production' 
+const dbPath = process.env.NODE_ENV === 'production'
   ? process.env.DB_PATH_PROD 
   : process.env.DB_PATH_DEV;
-console.log('DB:', dbPath);
 
 app.get('/api', (req, res) => {
     res.send({
@@ -29,7 +26,7 @@ app.get('/api', (req, res) => {
 });
 
 app.post('/api/db', (req, res) => {
-    const { query, id } = req.body;
+    const { query, params } = req.body;
     if (!query || typeof query !== 'string') {
         res.status(400).send('Invalid query');
         return;
@@ -43,10 +40,13 @@ app.post('/api/db', (req, res) => {
     sqlite3.verbose();
     const db = new sqlite3.Database(dbPath);
 
+    // Convert params to an array if it exists, or use empty array as default
+    const sqlParams = Array.isArray(params) ? params : [];
+
     if (operation === 'SELECT') {
-        db.all(query, [], (err, records) => {
+        db.all(query, sqlParams, (err, records) => {
             if (err) {
-                console.error('Error: ',err);
+                console.error('Error: ', err);
                 res.status(500).send(err);
                 return;
             }
@@ -57,18 +57,20 @@ app.post('/api/db', (req, res) => {
             res.json(records);
         });
     } else {
-        db.run(query, [], function (err) {
+        db.run(query, sqlParams, function (err) {
             if (err) {
                 console.error(err);
                 res.status(500).send(`Error executing ${operation} operation`);
                 return;
             }
 
+            console.log('Query:', query);
+            console.log('Params:', sqlParams);
+
             res.json({
                 id: this.lastID,
                 changes: this.changes
             });
-
         });
     }
 

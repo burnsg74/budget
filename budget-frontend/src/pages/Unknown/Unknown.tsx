@@ -18,6 +18,7 @@ const Unknown: React.FC = () => {
     const [selectedIndex, setSelectedIndex] = useState<number>(-1);
     const [isUpdating, setIsUpdating] = useState(false);
     const [editingName, setEditingName] = useState<number | null>(null);
+    const [editingMatchString, setEditingMatchString] = useState<number | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const tableRef = useRef<HTMLDivElement>(null);
 
@@ -70,6 +71,90 @@ const Unknown: React.FC = () => {
         }
     };
 
+    const updateMatchString = async (accountId: number, newMatchString: string) => {
+        setIsUpdating(true);
+        try {
+
+            // First, find accounts with matching strings
+            const matchQuery = `
+                SELECT id FROM accounts 
+                WHERE id != ? 
+                AND LOWER(match_string) LIKE LOWER(?)
+            `;
+            const matchResponse = await fetch("/api/db", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    query: matchQuery,
+                    params: [accountId, `%${newMatchString}%`]
+                }),
+            });
+            const matchedAccounts = await matchResponse.json();
+            console.log('Matched accounts:', matchedAccounts);
+
+            if (matchedAccounts.length > 0) {
+                // Update ledger entries for matched accounts
+                const updateLedgerQuery = `
+                    UPDATE ledger 
+                    SET account_id = ? 
+                    WHERE account_id IN (${matchedAccounts.map((a: { id: number }) => a.id).join(',')})
+                `;
+                await fetch("/api/db", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({
+                        query: updateLedgerQuery,
+                        params: [accountId]
+                    }),
+                });
+
+                // Delete matched accounts
+                const deleteAccountsQuery = `
+                    DELETE FROM accounts 
+                    WHERE id IN (${matchedAccounts.map((a: { id: number }) => a.id).join(',')})
+                `;
+                await fetch("/api/db", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({query: deleteAccountsQuery}),
+                });
+            }
+
+            // Update the match string for the current account
+            const updateQuery = `
+                UPDATE accounts 
+                SET match_string = ?, 
+                    updated_at = CURRENT_TIMESTAMP 
+                WHERE id = ?
+            `;
+            await fetch("/api/db", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    query: updateQuery,
+                    params: [newMatchString, accountId]
+                }),
+            });
+
+            // Update local state
+            setAccounts(prev => {
+                const filtered = prev.filter(account =>
+                    !matchedAccounts.some(matched => matched.id === account.id)
+                );
+                return filtered.map(account =>
+                    account.id === accountId
+                        ? {...account, match_string: newMatchString, updated_at: new Date().toISOString()}
+                        : account
+                );
+            });
+        } catch (error) {
+            console.error('Failed to update match string:', error);
+        } finally {
+            setIsUpdating(false);
+            setEditingMatchString(null);
+        }
+    };
+
     const updateAccountType = async (accountId: number, newType: string) => {
         setIsUpdating(true);
         try {
@@ -109,7 +194,7 @@ const Unknown: React.FC = () => {
         const key = event.key.toLowerCase();
 
         // If we're editing, don't handle other shortcuts
-        if (editingName !== null) {
+        if (editingName !== null || editingMatchString !== null) {
             return;
         }
 
@@ -128,13 +213,18 @@ const Unknown: React.FC = () => {
             setEditingName(accounts[selectedIndex].id);
         }
 
+        // Match string editing trigger
+        if (key === 'm' && selectedIndex !== -1) {
+            event.preventDefault();
+            setEditingMatchString(accounts[selectedIndex].id);
+        }
+
         // Type change shortcuts
         const typeMap: Record<string, string> = {
             'i': 'Income',
             'b': 'Bill',
             'h': 'Household',
             'c': 'Credit Card',
-            'm': 'Mortgage',
             'l': 'Loan',
             'o': 'Other'
         };
@@ -143,7 +233,7 @@ const Unknown: React.FC = () => {
             event.preventDefault();
             handleTypeChange(typeMap[key]);
         }
-    }, [accounts.length, isUpdating, handleTypeChange, selectedIndex, editingName]);
+    }, [accounts.length, isUpdating, handleTypeChange, selectedIndex, editingName, editingMatchString]);
 
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown);
@@ -154,10 +244,10 @@ const Unknown: React.FC = () => {
 
     // Focus input when editing starts
     useEffect(() => {
-        if (editingName !== null && inputRef.current) {
+        if ((editingName !== null || editingMatchString !== null) && inputRef.current) {
             inputRef.current.focus();
         }
-    }, [editingName]);
+    }, [editingName, editingMatchString]);
 
     return (
         <div className={styles["unknown-table"]} ref={tableRef}>
@@ -169,10 +259,6 @@ const Unknown: React.FC = () => {
                         <th>Name</th>
                         <th>Type</th>
                         <th>Match String</th>
-                        <th>Created At</th>
-                        <th>Updated At</th>
-                        <th>Last Transaction</th>
-                        <th>Active</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -208,11 +294,27 @@ const Unknown: React.FC = () => {
                                 )}
                             </td>
                             <td>{account.type}</td>
-                            <td>{account.match_string}</td>
-                            <td>{account.created_at}</td>
-                            <td>{account.updated_at}</td>
-                            <td>{account.last_transaction_at}</td>
-                            <td>{account.active.toString()}</td>
+                            <td>
+                                {editingMatchString === account.id ? (
+                                    <input
+                                        ref={inputRef}
+                                        type="text"
+                                        defaultValue={account.match_string}
+                                        className={styles["name-input"]}
+                                        onBlur={(e) => updateMatchString(account.id, e.target.value)}
+                                        onKeyDown={e => {
+                                            if (e.key === 'Enter') {
+                                                updateMatchString(account.id, e.currentTarget.value);
+                                            } else if (e.key === 'Escape') {
+                                                setEditingMatchString(null);
+                                            }
+                                            e.stopPropagation();
+                                        }}
+                                    />
+                                ) : (
+                                    account.match_string
+                                )}
+                            </td>
                         </tr>
                     ))}
                 </tbody>
