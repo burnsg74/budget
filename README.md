@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 3000 Budget
 
-## Getting Started
+A personal budget tracker. The app will record income and spending and show how a month compares with the plan.
 
-First, run the development server:
+This repository is a cleaned Next.js starting point. Routes, data access, and the budget model are not built yet.
+
+## Stack
+
+- [Next.js](https://nextjs.org) 16 (App Router) and React 19
+- TypeScript
+- PostgreSQL through the `pg` driver
+- Cache Components and Partial Prefetching (`next.config.ts`)
+
+## Getting started
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3100](http://localhost:3100). The dev server uses port 3100 so it can run next to other local apps.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script | What it does |
+| --- | --- |
+| `npm run dev` | Development server on port 3100 |
+| `npm run build` | Production build |
+| `npm start` | Serve the production build |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Layout
 
-## Learn More
+```text
+app/             Routes, the root layout, and global styles
+public/          Static files served as-is
+next.config.ts   Next.js configuration
+.env.example     Environment variable names (no secrets)
+```
 
-To learn more about Next.js, take a look at the following resources:
+Add routes as folders under `app/`. A folder is not a public URL until it contains a `page.tsx` or `route.ts`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Database
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`pg` is installed and unused. When data access is added, put the connection string in `.env.local`:
 
-## Deploy on Vercel
+```bash
+DATABASE_URL=postgres://user:password@localhost:5432/budget
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`.env.local` is gitignored. `.env.example` lists the variable name only.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## For agents
+
+Project conventions live in `AGENTS.md`. Before using Next.js APIs, read the matching guide in `node_modules/next/dist/docs/`. That copy matches the installed version.

@@ -1,3 +1,17 @@
+# 3000 Budget
+
+Personal budget tracker: Next.js 16 App Router, React 19, TypeScript, and PostgreSQL via `pg`. The product surface is not built yet. The home page is a placeholder.
+
+## Working in this repo
+
+- Read the relevant guide in `node_modules/next/dist/docs/` before writing Next.js code. The installed version is the source of truth.
+- `cacheComponents` and `partialPrefetching` are on. Budget data is private and per user. Do not wrap it in `"use cache"`. Keep it dynamic, and stream it inside `<Suspense>` when a route also has a static shell.
+- Server Components are the default. Add `"use client"` only for browser state or event handlers.
+- Database access goes through `pg` and `DATABASE_URL`. Do not commit secrets. Document new variables in `.env.example`.
+- The dev server is `npm run dev` on port 3100.
+- Keep `app/` for routes and shared UI. Add feature folders when a feature is being built, not ahead of it.
+- Preserve the managed block below. `next dev` rewrites only the text between its markers.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
