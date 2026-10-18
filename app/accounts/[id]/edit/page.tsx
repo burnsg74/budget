@@ -5,10 +5,8 @@ import { Suspense } from "react";
 import { AccountForm } from "@/features/accounts/account-form";
 import { saveAccount } from "@/features/accounts/actions";
 import { getAccount } from "@/lib/accounts";
+import { parseId } from "@/lib/ids";
 import { DatabaseError, PageIntro, logDatabaseError } from "../../../ui";
-
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default function EditAccountPage({
   params,
@@ -26,9 +24,10 @@ export default function EditAccountPage({
 
 async function Editor({ params }: { params: Promise<{ id: string }> }) {
   await connection();
-  const { id } = await params;
+  const { id: rawId } = await params;
+  const id = parseId(rawId);
 
-  if (!UUID_PATTERN.test(id)) {
+  if (id === null) {
     notFound();
   }
 

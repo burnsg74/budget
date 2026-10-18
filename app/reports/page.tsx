@@ -16,6 +16,7 @@ import {
   spendingSeries,
   spendingSeriesApplies,
 } from "@/lib/reports";
+import { parseId } from "@/lib/ids";
 import { DatabaseError, PageIntro, logDatabaseError } from "../ui";
 
 export default function ReportsPage({
@@ -53,8 +54,9 @@ async function Reports({
       return <p className="muted">Create an account before looking at reports.</p>;
     }
 
+    const requested = parseId(query.account);
     const selected =
-      accounts.find((account) => account.id === query.account) ??
+      accounts.find((account) => account.id === requested) ??
       accounts.find((account) => account.type === "checking" && !account.archived) ??
       accounts[0];
     const [spending, balances, months] = await Promise.all([

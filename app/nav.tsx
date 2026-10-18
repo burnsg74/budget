@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 
 const LINKS = [
   { href: "/", label: "Home" },
+  { href: "/transactions", label: "Transactions" },
   { href: "/accounts", label: "Accounts" },
   { href: "/import", label: "Import" },
   { href: "/reports", label: "Reports" },
@@ -16,7 +17,7 @@ export function Nav() {
   return (
     <header className="nav">
       <Link href="/" className="brand">
-        3000 Budget
+        Budget
       </Link>
       <nav>
         {LINKS.map((link) => {

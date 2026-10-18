@@ -1,6 +1,6 @@
 import { query } from "../../lib/db";
 import { fingerprint } from "./fingerprint";
-import { suggestMatch, type MatchableAccount } from "./match";
+import { proposeAccount, suggestMatch, type MatchableAccount } from "./match";
 import { parseBankCsv, type SkippedRow } from "./parse-csv";
 
 export type PlannedRow = {
@@ -12,13 +12,16 @@ export type PlannedRow = {
   checkNumber: string | null;
   status: string;
   classification: string | null;
-  matchedAccountId: string | null;
+  matchedAccountId: number | null;
+  createKey: string | null;
+  createName: string | null;
+  createMatchText: string | null;
   duplicate: boolean;
 };
 
 export async function planImport(input: {
   csvText: string;
-  accountId: string;
+  accountId: number;
   accounts: MatchableAccount[];
   matches?: Record<string, string | null>;
 }): Promise<{ rows: PlannedRow[]; skipped: SkippedRow[]; errors: string[] }> {
@@ -52,13 +55,36 @@ export async function planImport(input: {
       occurrence,
     ]);
     const suggested = suggestMatch(row.description, input.accounts, input.accountId);
+    const proposal = suggested === null ? proposeAccount(row.description, row.amountCents) : null;
     const override = input.matches?.[rowFingerprint];
-    const matchedAccountId =
-      override === undefined
-        ? suggested
-        : override && allowed.has(override)
-          ? override
-          : null;
+    let matchedAccountId = suggested;
+    let createKey = proposal?.key ?? null;
+    let createName = proposal?.name ?? null;
+    let createMatchText = proposal?.matchText ?? null;
+
+    if (override !== undefined) {
+      if (override === null) {
+        matchedAccountId = null;
+        createKey = null;
+        createName = null;
+        createMatchText = null;
+      } else if (override.startsWith("new:")) {
+        matchedAccountId = null;
+        const requested = override.slice(4);
+
+        if (!proposal || requested !== proposal.key) {
+          createKey = null;
+          createName = null;
+          createMatchText = null;
+        }
+      } else {
+        const id = Number(override);
+        matchedAccountId = Number.isInteger(id) && allowed.has(id) ? id : null;
+        createKey = null;
+        createName = null;
+        createMatchText = null;
+      }
+    }
 
     return {
       line: row.line,
@@ -70,6 +96,9 @@ export async function planImport(input: {
       status: row.status,
       classification: row.classification,
       matchedAccountId,
+      createKey,
+      createName,
+      createMatchText,
       duplicate: false,
     };
   });

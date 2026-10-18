@@ -1,8 +1,6 @@
-# 3000 Budget
+# Budget
 
-A personal budget tracker. The app will record income and spending and show how a month compares with the plan.
-
-This repository is a cleaned Next.js starting point. Routes, data access, and the budget model are not built yet.
+A personal budget tracker. It records income and spending, imports a bank CSV, and shows how a month is going.
 
 ## Stack
 
@@ -39,7 +37,7 @@ Add routes as folders under `app/`. A folder is not a public URL until it contai
 
 ## Database
 
-`pg` is installed and unused. When data access is added, put the connection string in `.env.local`:
+Put the connection string in `.env.local`, then apply migrations with `npm run db:setup`:
 
 ```bash
 DATABASE_URL=postgres://user:password@localhost:5432/budget

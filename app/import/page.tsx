@@ -10,7 +10,7 @@ export default function ImportPage() {
     <main className="page">
       <PageIntro
         title="Import"
-        lede="Posted rows are kept. Duplicates and anything that is not Posted are left out. Descriptions are matched to account names."
+        lede="Posted rows are kept. A description is linked when it contains an account’s match text. If nothing matches, a new account is created."
       />
       <Suspense fallback={<p className="muted">Loading accounts…</p>}>
         <Importer />

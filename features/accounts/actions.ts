@@ -8,7 +8,7 @@ import {
   isLiabilityType,
   isScheduleType,
 } from "../../lib/account-types";
-import { getAccount, insertAccount, updateAccount, type AccountInput } from "../../lib/accounts";
+import { getAccount, insertAccount, saveAccountRecord, type AccountInput } from "../../lib/accounts";
 import { isIsoDate } from "../../lib/dates";
 import { dollarsToCents } from "../../lib/money";
 
@@ -31,7 +31,7 @@ export async function createAccount(
 }
 
 export async function saveAccount(
-  id: string,
+  id: number,
   _previous: FormState,
   formData: FormData,
 ): Promise<FormState> {
@@ -47,11 +47,17 @@ export async function saveAccount(
     return { error: parsed.error };
   }
 
-  await updateAccount(id, parsed.value);
+  const saved = await saveAccountRecord(id, parsed.value, existing.matchText);
   revalidatePath("/accounts");
-  revalidatePath(`/accounts/${id}`);
   revalidatePath("/");
   revalidatePath("/reports");
+  revalidatePath("/transactions");
+
+  if (saved.deleted) {
+    redirect("/accounts");
+  }
+
+  revalidatePath(`/accounts/${id}`);
   redirect(`/accounts/${id}`);
 }
 
@@ -60,12 +66,17 @@ function parseAccountForm(
   editing: boolean,
 ): { ok: false; error: string } | { ok: true; value: AccountInput } {
   const name = String(formData.get("name") ?? "").trim();
+  const matchText = String(formData.get("matchText") ?? "").trim();
   const typeValue = String(formData.get("type") ?? "");
   const institution = String(formData.get("institution") ?? "").trim() || null;
   const mask = String(formData.get("mask") ?? "").trim() || null;
 
   if (!name || name.length > 80) {
     return { ok: false, error: "Enter a name up to 80 characters." };
+  }
+
+  if (matchText.length > 500) {
+    return { ok: false, error: "Match text must be 500 characters or fewer." };
   }
 
   if (!isAccountType(typeValue)) {
@@ -137,6 +148,7 @@ function parseAccountForm(
     ok: true,
     value: {
       name,
+      matchText,
       type: typeValue,
       institution,
       mask,

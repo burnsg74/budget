@@ -1,6 +1,8 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import type { ColDef, ICellRendererParams } from "ag-grid-community";
+import dynamic from "next/dynamic";
+import { useActionState, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TYPE_LABELS, type AccountType } from "../../lib/account-types";
 import { formatDate } from "../../lib/dates";
 import { formatCents } from "../../lib/money";
@@ -11,10 +13,25 @@ import {
   type PreviewState,
 } from "./actions";
 
+const AgTable = dynamic(() => import("../grid/ag-table").then((mod) => mod.AgTable), {
+  ssr: false,
+  loading: () => <p className="muted">Loading table…</p>,
+});
+
 type AccountOption = {
-  id: string;
+  id: number;
   name: string;
   type: AccountType;
+};
+
+type ImportGridRow = {
+  id: string;
+  date: string;
+  description: string;
+  amountCents: number;
+  linkValue: string;
+  createKey: string | null;
+  createName: string | null;
 };
 
 export function ImportWizard({ accounts }: { accounts: AccountOption[] }) {
@@ -38,7 +55,7 @@ export function ImportWizard({ accounts }: { accounts: AccountOption[] }) {
       }
 
       formData.set("file", currentFile);
-      formData.set("accountId", currentPreview.accountId);
+      formData.set("accountId", String(currentPreview.accountId));
       formData.set("matches", JSON.stringify(matchesRef.current));
       return confirmImport(previous, formData);
     },
@@ -53,16 +70,27 @@ export function ImportWizard({ accounts }: { accounts: AccountOption[] }) {
     const next: Record<string, string> = {};
 
     for (const row of preview.rows) {
-      if (!row.duplicate) {
-        next[row.fingerprint] = row.matchedAccountId ?? "";
+      if (row.duplicate) {
+        continue;
       }
+
+      next[row.fingerprint] =
+        row.matchedAccountId != null
+          ? String(row.matchedAccountId)
+          : row.createKey
+            ? `new:${row.createKey}`
+            : "";
     }
 
     setMatches(next);
   }, [preview]);
 
-  const defaultAccount =
-    accounts.find((account) => account.type === "checking")?.id ?? accounts[0]?.id ?? "";
+  const defaultAccount = String(
+    accounts.find((account) => account.type === "checking")?.id ?? accounts[0]?.id ?? "",
+  );
+  const onLink = useCallback((id: string, value: string) => {
+    setMatches((current) => ({ ...current, [id]: value }));
+  }, []);
   const freshRows = preview?.ok ? preview.rows.filter((row) => !row.duplicate) : [];
   const duplicateRows = preview?.ok ? preview.rows.filter((row) => row.duplicate) : [];
   const options = preview?.ok
@@ -74,9 +102,9 @@ export function ImportWizard({ accounts }: { accounts: AccountOption[] }) {
       <form action={previewAction} className="form">
         <label className="field">
           Account
-          <select name="accountId" defaultValue={defaultAccount} required>
+            <select name="accountId" defaultValue={defaultAccount} required>
             {accounts.map((account) => (
-              <option key={account.id} value={account.id}>
+              <option key={account.id} value={String(account.id)}>
                 {account.name} · {TYPE_LABELS[account.type]}
               </option>
             ))}
@@ -124,57 +152,7 @@ export function ImportWizard({ accounts }: { accounts: AccountOption[] }) {
 
           {freshRows.length > 0 ? (
             <form action={commitAction} className="stack">
-              <div className="table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>Description</th>
-                      <th className="num">Amount</th>
-                      <th>Link to account</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {freshRows.map((row) => (
-                      <tr key={row.fingerprint}>
-                        <td>{formatDate(row.postedOn)}</td>
-                        <td>
-                          {row.description}
-                          {row.classification ? (
-                            <span className="sub">{row.classification}</span>
-                          ) : null}
-                        </td>
-                        <td className={row.amountCents < 0 ? "num negative" : "num positive"}>
-                          {formatCents(row.amountCents)}
-                        </td>
-                        <td>
-                          <select
-                            aria-label={`Link ${row.description}`}
-                            value={
-                              row.fingerprint in matches
-                                ? matches[row.fingerprint]
-                                : (row.matchedAccountId ?? "")
-                            }
-                            onChange={(event) =>
-                              setMatches((current) => ({
-                                ...current,
-                                [row.fingerprint]: event.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">No match</option>
-                            {options.map((account) => (
-                              <option key={account.id} value={account.id}>
-                                {account.name} · {TYPE_LABELS[account.type]}
-                              </option>
-                            ))}
-                          </select>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <ImportGrid rows={freshRows} matches={matches} options={options} onLink={onLink} />
               <button className="button" type="submit" disabled={commitPending}>
                 {commitPending ? "Importing…" : `Import ${freshRows.length} transactions`}
               </button>
@@ -200,6 +178,93 @@ export function ImportWizard({ accounts }: { accounts: AccountOption[] }) {
       ) : null}
     </div>
   );
+}
+
+function ImportGrid({
+  rows,
+  matches,
+  options,
+  onLink,
+}: {
+  rows: Extract<PreviewState, { ok: true }>["rows"];
+  matches: Record<string, string>;
+  options: AccountOption[];
+  onLink: (id: string, value: string) => void;
+}) {
+  const gridRows = useMemo<ImportGridRow[]>(
+    () =>
+      rows.map((row) => ({
+        id: row.fingerprint,
+        date: formatDate(row.postedOn),
+        description: row.classification
+          ? `${row.description} · ${row.classification}`
+          : row.description,
+        amountCents: row.amountCents,
+        linkValue:
+          row.fingerprint in matches
+            ? matches[row.fingerprint]
+            : row.matchedAccountId != null
+              ? String(row.matchedAccountId)
+              : row.createKey
+                ? `new:${row.createKey}`
+                : "",
+        createKey: row.createKey,
+        createName: row.createName,
+      })),
+    [matches, rows],
+  );
+  const columns = useMemo<ColDef[]>(
+    () => [
+      { field: "date", headerName: "Date", width: 130, sortable: true },
+      { field: "description", headerName: "Description", flex: 1.4, minWidth: 180 },
+      {
+        field: "amountCents",
+        headerName: "Amount",
+        width: 120,
+        type: "rightAligned",
+        cellClass: "num",
+        cellClassRules: {
+          positive: (params) => Number(params.value) > 0,
+          negative: (params) => Number(params.value) < 0,
+        },
+        valueFormatter: (params) => formatCents(Number(params.value ?? 0)),
+      },
+      {
+        field: "linkValue",
+        headerName: "Link to account",
+        width: 260,
+        sortable: false,
+        cellRenderer: (params: ICellRendererParams<ImportGridRow>) => {
+          const row = params.data;
+
+          if (!row) {
+            return null;
+          }
+
+          return (
+            <select
+              aria-label={`Link ${row.description}`}
+              value={row.linkValue}
+              onChange={(event) => onLink(row.id, event.target.value)}
+            >
+              {row.createKey ? (
+                <option value={`new:${row.createKey}`}>New: {row.createName}</option>
+              ) : null}
+              <option value="">No match</option>
+              {options.map((account) => (
+                <option key={account.id} value={String(account.id)}>
+                  {account.name} · {TYPE_LABELS[account.type]}
+                </option>
+              ))}
+            </select>
+          );
+        },
+      },
+    ],
+    [onLink, options],
+  );
+
+  return <AgTable rows={gridRows} columns={columns} />;
 }
 
 function RowDetails({

@@ -2,11 +2,13 @@ import {
   isBalanceType,
   type AccountType,
 } from "./account-types";
-import { query } from "./db";
+import { getPool, query } from "./db";
+import { deleteEmptyMatchAccounts, relinkTransactions } from "./relink";
 
 export type AccountRecord = {
-  id: string;
+  id: number;
   name: string;
+  matchText: string;
   type: AccountType;
   institution: string | null;
   mask: string | null;
@@ -21,6 +23,7 @@ export type AccountRecord = {
 
 export type AccountInput = {
   name: string;
+  matchText: string;
   type: AccountType;
   institution: string | null;
   mask: string | null;
@@ -33,9 +36,9 @@ export type AccountInput = {
 };
 
 export type TransactionRecord = {
-  id: string;
-  accountId: string;
-  matchedAccountId: string | null;
+  id: number;
+  accountId: number;
+  matchedAccountId: number | null;
   postedOn: string;
   description: string;
   amountCents: number;
@@ -49,6 +52,7 @@ export type TransactionRecord = {
 const ACCOUNT_COLUMNS = `
   a.id,
   a.name,
+  a.match_text AS "matchText",
   a.type,
   a.institution,
   a.mask,
@@ -86,6 +90,7 @@ const ACCOUNT_COLUMNS = `
 function mapAccount(row: AccountRecord): AccountRecord {
   return {
     ...row,
+    id: Number(row.id),
     type: row.type,
     openingBalanceCents: Number(row.openingBalanceCents),
     expectedAmountCents:
@@ -102,7 +107,7 @@ export async function listAccounts(): Promise<AccountRecord[]> {
   return rows.map(mapAccount);
 }
 
-export async function getAccount(id: string): Promise<AccountRecord | null> {
+export async function getAccount(id: number): Promise<AccountRecord | null> {
   const rows = await query<AccountRecord>(
     `SELECT ${ACCOUNT_COLUMNS} FROM accounts a WHERE a.id = $1`,
     [id],
@@ -110,15 +115,16 @@ export async function getAccount(id: string): Promise<AccountRecord | null> {
   return rows[0] ? mapAccount(rows[0]) : null;
 }
 
-export async function insertAccount(input: AccountInput): Promise<string> {
-  const rows = await query<{ id: string }>(
+export async function insertAccount(input: AccountInput): Promise<number> {
+  const rows = await query<{ id: number }>(
     `INSERT INTO accounts (
-      name, type, institution, mask, opening_balance_cents, opening_on,
+      name, match_text, type, institution, mask, opening_balance_cents, opening_on,
       expected_amount_cents, due_day, schedule_active, archived
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING id`,
     [
       input.name,
+      input.matchText,
       input.type,
       input.institution,
       input.mask,
@@ -130,46 +136,75 @@ export async function insertAccount(input: AccountInput): Promise<string> {
       input.archived,
     ],
   );
-  return rows[0].id;
+  return Number(rows[0].id);
 }
 
-export async function updateAccount(
-  id: string,
+export async function saveAccountRecord(
+  id: number,
   input: AccountInput,
-): Promise<void> {
-  await query(
-    `UPDATE accounts SET
-      name = $2,
-      type = $3,
-      institution = $4,
-      mask = $5,
-      opening_balance_cents = $6,
-      opening_on = $7,
-      expected_amount_cents = $8,
-      due_day = $9,
-      schedule_active = $10,
-      archived = $11
-    WHERE id = $1`,
-    [
-      id,
-      input.name,
-      input.type,
-      input.institution,
-      input.mask,
-      input.openingBalanceCents,
-      input.openingOn,
-      input.expectedAmountCents,
-      input.dueDay,
-      input.scheduleActive,
-      input.archived,
-    ],
-  );
+  previousMatchText: string,
+): Promise<{ deleted: boolean }> {
+  const client = await getPool().connect();
+
+  try {
+    await client.query("BEGIN");
+    const updated = await client.query(
+      `UPDATE accounts SET
+        name = $2,
+        match_text = $3,
+        type = $4,
+        institution = $5,
+        mask = $6,
+        opening_balance_cents = $7,
+        opening_on = $8,
+        expected_amount_cents = $9,
+        due_day = $10,
+        schedule_active = $11,
+        archived = $12
+      WHERE id = $1`,
+      [
+        id,
+        input.name,
+        input.matchText,
+        input.type,
+        input.institution,
+        input.mask,
+        input.openingBalanceCents,
+        input.openingOn,
+        input.expectedAmountCents,
+        input.dueDay,
+        input.scheduleActive,
+        input.archived,
+      ],
+    );
+
+    if ((updated.rowCount ?? 0) === 0) {
+      throw new Error("That account no longer exists.");
+    }
+
+    let deleted = false;
+
+    if (previousMatchText.trim() !== input.matchText.trim()) {
+      await relinkTransactions(client);
+      await deleteEmptyMatchAccounts(client);
+      const still = await client.query(`SELECT 1 FROM accounts WHERE id = $1`, [id]);
+      deleted = (still.rowCount ?? 0) === 0;
+    }
+
+    await client.query("COMMIT");
+    return { deleted };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 }
 
 export async function listTransactionsForAccount(
-  accountId: string,
+  accountId: number,
 ): Promise<TransactionRecord[]> {
-  return query<TransactionRecord>(
+  const rows = await query<TransactionRecord>(
     `SELECT
       t.id,
       t.account_id AS "accountId",
@@ -189,11 +224,22 @@ export async function listTransactionsForAccount(
     ORDER BY t.posted_on DESC, t.created_at DESC`,
     [accountId],
   );
+  return rows.map(mapTransaction);
+}
+
+function mapTransaction(row: TransactionRecord): TransactionRecord {
+  return {
+    ...row,
+    id: Number(row.id),
+    accountId: Number(row.accountId),
+    matchedAccountId: row.matchedAccountId === null ? null : Number(row.matchedAccountId),
+    amountCents: Number(row.amountCents),
+  };
 }
 
 export async function updateTransactionMatch(
-  transactionId: string,
-  matchedAccountId: string | null,
+  transactionId: number,
+  matchedAccountId: number | null,
 ): Promise<void> {
   await query(
     `UPDATE transactions
@@ -204,14 +250,23 @@ export async function updateTransactionMatch(
 }
 
 export async function getTransactionAccountId(
-  transactionId: string,
-): Promise<{ accountId: string; matchedAccountId: string | null } | null> {
-  const rows = await query<{ accountId: string; matchedAccountId: string | null }>(
+  transactionId: number,
+): Promise<{ accountId: number; matchedAccountId: number | null } | null> {
+  const rows = await query<{ accountId: number; matchedAccountId: number | null }>(
     `SELECT account_id AS "accountId", matched_account_id AS "matchedAccountId"
      FROM transactions WHERE id = $1`,
     [transactionId],
   );
-  return rows[0] ?? null;
+  const row = rows[0];
+
+  if (!row) {
+    return null;
+  }
+
+  return {
+    accountId: Number(row.accountId),
+    matchedAccountId: row.matchedAccountId === null ? null : Number(row.matchedAccountId),
+  };
 }
 
 export function showsBalance(account: AccountRecord): boolean {

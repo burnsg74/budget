@@ -1,9 +1,9 @@
 import { getPool } from "../../lib/db";
-import { planImport } from "./plan";
 import type { MatchableAccount } from "./match";
+import { planImport } from "./plan";
 
 export async function commitImport(input: {
-  accountId: string;
+  accountId: number;
   fileName: string;
   csvText: string;
   accounts: MatchableAccount[];
@@ -21,8 +21,36 @@ export async function commitImport(input: {
 
   try {
     await client.query("BEGIN");
+    const created = new Map<string, number>();
+    const groups = new Map<string, { name: string; matchText: string; income: boolean }>();
 
     for (const row of fresh) {
+      if (!row.createKey || !row.createName || !row.createMatchText) {
+        continue;
+      }
+
+      const group = groups.get(row.createKey) ?? {
+        name: row.createName,
+        matchText: row.createMatchText,
+        income: true,
+      };
+      group.income = group.income && row.amountCents > 0;
+      groups.set(row.createKey, group);
+    }
+
+    for (const [key, group] of groups) {
+      const result = await client.query<{ id: number }>(
+        `INSERT INTO accounts (name, match_text, type)
+         VALUES ($1, $2, $3)
+         RETURNING id`,
+        [group.name, group.matchText, group.income ? "income" : "other"],
+      );
+      created.set(key, Number(result.rows[0].id));
+    }
+
+    for (const row of fresh) {
+      const matchedAccountId =
+        row.matchedAccountId ?? (row.createKey ? created.get(row.createKey) ?? null : null);
       const result = await client.query(
         `INSERT INTO transactions (
           account_id, matched_account_id, posted_on, description, amount_cents,
@@ -31,7 +59,7 @@ export async function commitImport(input: {
         ON CONFLICT (fingerprint) DO NOTHING`,
         [
           input.accountId,
-          row.matchedAccountId,
+          matchedAccountId,
           row.postedOn,
           row.description,
           row.amountCents,

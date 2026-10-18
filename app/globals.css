@@ -32,6 +32,7 @@
 
 html {
   height: 100%;
+  color-scheme: light;
 }
 
 body {
@@ -58,7 +59,7 @@ p {
 }
 
 h1 {
-  font-size: 1.8rem;
+  font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.03em;
 }
@@ -71,10 +72,10 @@ h2 {
 .nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
+  gap: 0.5rem 1rem;
   align-items: center;
   justify-content: space-between;
-  padding: 0.9rem 1.25rem;
+  padding: 0.45rem 0.85rem;
   border-bottom: 1px solid var(--line);
 }
 
@@ -104,9 +105,9 @@ h2 {
 }
 
 .page {
-  max-width: 68rem;
+  max-width: 80rem;
   margin: 0 auto;
-  padding: 2rem 1.25rem 4rem;
+  padding: 0.75rem 0.9rem 2rem;
 }
 
 .intro {
@@ -115,7 +116,7 @@ h2 {
   gap: 1rem;
   align-items: end;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .lede,
@@ -145,16 +146,16 @@ h2 {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+  gap: 0.5rem;
 }
 
 .stat,
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 0.9rem;
-  padding: 0.95rem 1rem;
+  border-radius: 0.55rem;
+  padding: 0.55rem 0.7rem;
 }
 
 .stat span {
@@ -166,8 +167,8 @@ h2 {
 
 .stat strong {
   display: block;
-  margin-top: 0.35rem;
-  font-size: 1.35rem;
+  margin-top: 0.2rem;
+  font-size: 1.05rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   font-family: var(--font-geist-mono), ui-monospace, monospace;
@@ -176,8 +177,8 @@ h2 {
 .section {
   display: flex;
   flex-direction: column;
-  gap: 0.7rem;
-  margin-top: 1.75rem;
+  gap: 0.45rem;
+  margin-top: 1rem;
 }
 
 .account-list,
@@ -228,7 +229,7 @@ h2 {
   flex-wrap: wrap;
   gap: 0.75rem;
   align-items: end;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.85rem;
 }
 
 .filters .field {
@@ -238,8 +239,8 @@ h2 {
 .field {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  margin-bottom: 0.85rem;
+  gap: 0.25rem;
+  margin-bottom: 0.55rem;
   font-size: 0.92rem;
 }
 
@@ -266,8 +267,8 @@ select {
   color: inherit;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 0.65rem;
-  padding: 0.55rem 0.7rem;
+  border-radius: 0.45rem;
+  padding: 0.35rem 0.5rem;
 }
 
 .check {
@@ -285,7 +286,7 @@ a.button {
   background: var(--foreground);
   color: var(--background);
   border-radius: 999px;
-  padding: 0.55rem 0.95rem;
+  padding: 0.4rem 0.75rem;
   text-decoration: none;
   cursor: pointer;
 }
@@ -359,4 +360,140 @@ td {
 details summary {
   cursor: pointer;
   color: var(--muted);
+}
+
+.register {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 26rem;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.month-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.month-bar a {
+  display: grid;
+  width: 1.6rem;
+  height: 1.6rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: var(--surface);
+  text-decoration: none;
+}
+
+.month-bar + .summary {
+  margin: 0.35rem 0 0.55rem;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.side-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.side-head strong {
+  font-size: 1.05rem;
+}
+
+.donuts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.donut h2 {
+  font-size: 0.92rem;
+}
+
+.donut-chart {
+  position: relative;
+  height: 9rem;
+}
+
+.donut-center {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  transform: translateY(-50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.donut-center strong {
+  display: block;
+  font-size: 0.78rem;
+}
+
+.donut-center span {
+  color: var(--muted);
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.legend {
+  list-style: none;
+  margin: 0.2rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.72rem;
+}
+
+.legend li {
+  display: grid;
+  grid-template-columns: 0.5rem minmax(0, 1fr) auto;
+  gap: 0.3rem;
+  align-items: center;
+}
+
+.legend i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+}
+
+.grid-host {
+  width: 100%;
+}
+
+.grid-host .ag-cell select {
+  width: 100%;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.3rem;
+}
+
+.ag-cell.num {
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+.ag-cell.positive {
+  color: var(--positive);
+}
+
+.ag-cell.negative {
+  color: var(--negative);
+}
+
+@media (max-width: 960px) {
+  .register,
+  .donuts {
+    grid-template-columns: 1fr;
+  }
 }

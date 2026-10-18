@@ -2,19 +2,13 @@ import Link from "next/link";
 import { connection } from "next/server";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { DataGrid } from "@/features/grid/data-grid";
 import { TYPE_LABELS, isLiabilityType } from "@/lib/account-types";
-import {
-  getAccount,
-  listAccounts,
-  listTransactionsForAccount,
-} from "@/lib/accounts";
+import { getAccount, listTransactionsForAccount } from "@/lib/accounts";
 import { formatDate } from "@/lib/dates";
-import { formatCents, formatHeldBalance } from "@/lib/money";
-import { saveTransactionMatch } from "@/features/transactions/actions";
+import { parseId } from "@/lib/ids";
+import { formatHeldBalance } from "@/lib/money";
 import { DatabaseError, PageIntro, logDatabaseError } from "../../ui";
-
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export default function AccountPage({
   params,
@@ -40,10 +34,11 @@ async function AccountDetail({
   searchParams: Promise<{ imported?: string }>;
 }) {
   await connection();
-  const { id } = await params;
+  const { id: rawId } = await params;
   const query = await searchParams;
+  const id = parseId(rawId);
 
-  if (!UUID_PATTERN.test(id)) {
+  if (id === null) {
     notFound();
   }
 
@@ -54,13 +49,9 @@ async function AccountDetail({
       notFound();
     }
 
-    const [transactions, accounts] = await Promise.all([
-      listTransactionsForAccount(id),
-      listAccounts(),
-    ]);
+    const transactions = await listTransactionsForAccount(id);
     const imported = Number(query.imported);
     const showImported = Number.isInteger(imported) && imported >= 0 && query.imported !== undefined;
-    const matchOptions = accounts;
 
     return (
       <>
@@ -68,7 +59,7 @@ async function AccountDetail({
           title={account.name}
           lede={`${TYPE_LABELS[account.type]}${account.archived ? " · Archived" : ""}${
             account.institution ? ` · ${account.institution}` : ""
-          }`}
+          }${account.matchText ? ` · Match ${account.matchText}` : ""}`}
           action={
             <Link className="button secondary" href={`/accounts/${account.id}/edit`}>
               Edit
@@ -92,77 +83,30 @@ async function AccountDetail({
           <h2>Transactions</h2>
           {transactions.length === 0 ? (
             <p className="muted">
-              No transactions yet.{" "}
-              <Link href="/import">Import a bank CSV</Link> to add some.
+              No transactions yet. <Link href="/import">Import a bank CSV</Link> to add some.
             </p>
           ) : (
-            <div className="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Description</th>
-                    <th className="num">Amount</th>
-                    <th>Linked account</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {transactions.map((transaction) => (
-                    <tr key={transaction.id}>
-                      <td>{formatDate(transaction.postedOn)}</td>
-                      <td>
-                        {transaction.description}
-                        {transaction.classification ? (
-                          <span className="sub">{transaction.classification}</span>
-                        ) : null}
-                        {transaction.accountId !== account.id ? (
-                          <span className="sub">On {transaction.sourceName}</span>
-                        ) : null}
-                      </td>
-                      <td
-                        className={
-                          transaction.amountCents < 0 ? "num negative" : "num positive"
-                        }
-                      >
-                        {formatCents(transaction.amountCents)}
-                      </td>
-                      <td>
-                        <form action={saveTransactionMatch} className="match-form">
-                          <input type="hidden" name="transactionId" value={transaction.id} />
-                          <input
-                            type="hidden"
-                            name="returnTo"
-                            value={`/accounts/${account.id}`}
-                          />
-                          <select
-                            name="matchedAccountId"
-                            defaultValue={transaction.matchedAccountId ?? ""}
-                            aria-label={`Link ${transaction.description}`}
-                          >
-                            <option value="">No match</option>
-                            {matchOptions
-                              .filter(
-                                (item) =>
-                                  item.id !== transaction.accountId &&
-                                  (!item.archived || item.id === transaction.matchedAccountId),
-                              )
-                              .map((item) => (
-                                <option key={item.id} value={item.id}>
-                                  {item.name}
-                                  {item.archived ? " (archived)" : ""}
-                                </option>
-                              ))}
-                          </select>
-                          <button className="button secondary small" type="submit">
-                            Save
-                          </button>
-                        </form>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <DataGrid
+              rows={transactions.map((transaction, index) => ({
+                id: transaction.id,
+                href: `/transactions/${transaction.id}`,
+                sortKey: String(index).padStart(6, "0"),
+                date: formatDate(transaction.postedOn),
+                description:
+                  transaction.accountId === account.id
+                    ? transaction.description
+                    : `${transaction.description} · On ${transaction.sourceName}`,
+                amountCents: transaction.amountCents,
+                account: transaction.matchedName ?? "",
+              }))}
+              columns={[
+                { field: "sortKey", header: "Order", hide: true, sort: "asc" },
+                { field: "date", header: "Date", width: 130 },
+                { field: "description", header: "Description", flex: 1.4, minWidth: 180 },
+                { field: "amountCents", header: "Amount", kind: "moneySigned", width: 120 },
+                { field: "account", header: "Linked account", flex: 1, minWidth: 140 },
+              ]}
+            />
           )}
         </section>
       </>

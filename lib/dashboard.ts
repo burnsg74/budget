@@ -4,14 +4,14 @@ import { lastDayOfMonth, monthEnd, monthStart, toIsoDate } from "./dates";
 import { query } from "./db";
 
 export type CashItem = {
-  id: string;
+  id: number;
   name: string;
   type: AccountType;
   balanceCents: number;
 };
 
 export type UpcomingItem = {
-  id: string;
+  id: number;
   name: string;
   type: AccountType;
   dueOn: string;
@@ -36,7 +36,7 @@ export type DashboardData = {
   hasTransactions: boolean;
 };
 
-type PaidRow = { accountId: string };
+type PaidRow = { accountId: number };
 type SumRow = { cents: number };
 
 export async function getDashboard(today: Date): Promise<DashboardData> {
@@ -95,7 +95,7 @@ export async function getDashboard(today: Date): Promise<DashboardData> {
       ),
     ]);
 
-  const paid = new Set(paidRows.map((row) => row.accountId));
+  const paid = new Set(paidRows.map((row) => Number(row.accountId)));
   const active = accounts.filter((account) => !account.archived);
   const checking = active
     .filter((account) => account.type === "checking" && account.balanceCents !== null)
@@ -113,9 +113,43 @@ export async function getDashboard(today: Date): Promise<DashboardData> {
     0,
   );
 
-  const upcoming = active
+  const upcoming = listUpcoming(active, paid, start, lastDay, todayIso);
+
+  const projectedCents = upcoming.reduce((sum, item) => {
+    return item.direction === "in" ? sum + item.amountCents : sum - item.amountCents;
+  }, cashCents);
+
+  return {
+    monthLabel: new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      year: "numeric",
+    }).format(today),
+    cashCents,
+    checking,
+    owedCents,
+    cards,
+    loans,
+    incomeCents: Number(incomeRows[0]?.cents ?? 0),
+    spendingCents: Number(spendingRows[0]?.cents ?? 0),
+    unlinkedCents: Number(unlinkedRows[0]?.cents ?? 0),
+    projectedCents,
+    upcoming,
+    hasAccounts: accounts.length > 0,
+    hasTransactions: Number(transactionCount[0]?.count ?? 0) > 0,
+  };
+}
+
+export function listUpcoming(
+  accounts: AccountRecord[],
+  paid: Set<number>,
+  start: string,
+  lastDay: number,
+  todayIso: string,
+): UpcomingItem[] {
+  return accounts
     .filter(
       (account) =>
+        !account.archived &&
         account.scheduleActive &&
         account.expectedAmountCents !== null &&
         account.dueDay !== null &&
@@ -140,29 +174,6 @@ export async function getDashboard(today: Date): Promise<DashboardData> {
       } satisfies UpcomingItem;
     })
     .sort((a, b) => a.dueOn.localeCompare(b.dueOn) || a.name.localeCompare(b.name));
-
-  const projectedCents = upcoming.reduce((sum, item) => {
-    return item.direction === "in" ? sum + item.amountCents : sum - item.amountCents;
-  }, cashCents);
-
-  return {
-    monthLabel: new Intl.DateTimeFormat("en-US", {
-      month: "long",
-      year: "numeric",
-    }).format(today),
-    cashCents,
-    checking,
-    owedCents,
-    cards,
-    loans,
-    incomeCents: Number(incomeRows[0]?.cents ?? 0),
-    spendingCents: Number(spendingRows[0]?.cents ?? 0),
-    unlinkedCents: Number(unlinkedRows[0]?.cents ?? 0),
-    projectedCents,
-    upcoming,
-    hasAccounts: accounts.length > 0,
-    hasTransactions: Number(transactionCount[0]?.count ?? 0) > 0,
-  };
 }
 
 function toCashItem(account: AccountRecord): CashItem {

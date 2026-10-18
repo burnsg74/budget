@@ -47,7 +47,7 @@ export function resolveRange(
 }
 
 export async function spendingSeries(
-  accountId: string,
+  accountId: number,
   type: AccountType,
   from: string,
   to: string,
@@ -91,7 +91,7 @@ export function spendingSeriesApplies(type: AccountType): boolean {
 }
 
 export async function balanceSeries(
-  accountId: string,
+  accountId: number,
   type: AccountType,
   openingBalanceCents: number,
   openingOn: string | null,

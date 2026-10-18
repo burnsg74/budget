@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "3000 Budget",
+  title: "Budget",
   description: "Track income, spending, and how the month is going.",
 };
 

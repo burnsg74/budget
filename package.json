@@ -9,6 +9,8 @@
     "db:setup": "node --env-file=.env.local db/migrate.mjs"
   },
   "dependencies": {
+    "ag-grid-community": "^36.2.0",
+    "ag-grid-react": "^36.2.0",
     "csv-parse": "^7.0.3",
     "next": "16.4.2",
     "pg": "^8.23.1",

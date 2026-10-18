@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { ACCOUNT_TYPES, TYPE_LABELS, isLiabilityType } from "@/lib/account-types";
+import { DataGrid } from "@/features/grid/data-grid";
+import { TYPE_LABELS, isLiabilityType } from "@/lib/account-types";
 import { listAccounts, type AccountRecord } from "@/lib/accounts";
 import { formatHeldBalance } from "@/lib/money";
 import { DatabaseError, PageIntro, logDatabaseError } from "../ui";
@@ -11,7 +12,7 @@ export default function AccountsPage() {
     <main className="page">
       <PageIntro
         title="Accounts"
-        lede="Checking, cards, and loans keep a balance. Other accounts are names an import can match."
+        lede="Checking, cards, and loans keep a balance. Match text is what an import looks for."
         action={
           <Link className="button" href="/accounts/new">
             New account
@@ -43,24 +44,11 @@ async function AccountList() {
 
     return (
       <>
-        {ACCOUNT_TYPES.map((type) => {
-          const group = active.filter((account) => account.type === type);
-
-          if (group.length === 0) {
-            return null;
-          }
-
-          return (
-            <section className="section" key={type}>
-              <h2>{TYPE_LABELS[type]}</h2>
-              <AccountRows accounts={group} />
-            </section>
-          );
-        })}
+        <AccountGrid accounts={active} />
         {archived.length > 0 ? (
           <section className="section">
             <h2>Archived</h2>
-            <AccountRows accounts={archived} />
+            <AccountGrid accounts={archived} />
           </section>
         ) : null}
       </>
@@ -71,24 +59,26 @@ async function AccountList() {
   }
 }
 
-function AccountRows({ accounts }: { accounts: AccountRecord[] }) {
+function AccountGrid({ accounts }: { accounts: AccountRecord[] }) {
   return (
-    <ul className="account-list">
-      {accounts.map((account) => (
-        <li key={account.id}>
-          <Link href={`/accounts/${account.id}`}>
-            <span>
-              {account.name}
-              {account.mask ? <span className="sub">•••• {account.mask}</span> : null}
-            </span>
-            <span className="money">
-              {account.balanceCents === null
-                ? TYPE_LABELS[account.type]
-                : formatHeldBalance(account.balanceCents, isLiabilityType(account.type))}
-            </span>
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <DataGrid
+      rows={accounts.map((account) => ({
+        id: account.id,
+        href: `/accounts/${account.id}`,
+        name: account.mask ? `${account.name} · ${account.mask}` : account.name,
+        type: TYPE_LABELS[account.type],
+        match: account.matchText,
+        balance:
+          account.balanceCents === null
+            ? ""
+            : formatHeldBalance(account.balanceCents, isLiabilityType(account.type)),
+      }))}
+      columns={[
+        { field: "name", header: "Name", flex: 1.2, minWidth: 160 },
+        { field: "type", header: "Type", width: 130 },
+        { field: "match", header: "Match", flex: 1, minWidth: 140 },
+        { field: "balance", header: "Balance", align: "right", minWidth: 140 },
+      ]}
+    />
   );
 }

@@ -8,7 +8,7 @@ export default function NewAccountPage() {
     <main className="page">
       <PageIntro
         title="New account"
-        lede="Use the bank’s wording for bills and income so imports can match them."
+        lede="Match text is the part of a bank description that should link to this account."
         action={
           <Link className="button secondary" href="/accounts">
             Back

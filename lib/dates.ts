@@ -45,6 +45,44 @@ export function eachDate(from: string, to: string): string[] {
   return dates;
 }
 
+export function formatMonthLong(yearMonth: string): string {
+  const [year, month] = yearMonth.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    year: "numeric",
+  }).format(new Date(year, month - 1, 1));
+}
+
+export function parseMonth(value: string | undefined, today: Date): string {
+  if (value && /^\d{4}-(0[1-9]|1[0-2])$/.test(value)) {
+    const year = Number(value.slice(0, 4));
+
+    if (year >= 1970 && year <= 2200) {
+      return value;
+    }
+  }
+
+  return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export function shiftMonth(yearMonth: string, delta: number): string {
+  const year = Number(yearMonth.slice(0, 4));
+  const month = Number(yearMonth.slice(5, 7));
+  const date = new Date(year, month - 1 + delta, 1);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export function monthBounds(yearMonth: string): { start: string; end: string; lastDay: number } {
+  const year = Number(yearMonth.slice(0, 4));
+  const month = Number(yearMonth.slice(5, 7));
+  const lastDay = new Date(year, month, 0).getDate();
+  return {
+    start: `${yearMonth}-01`,
+    end: `${yearMonth}-${String(lastDay).padStart(2, "0")}`,
+    lastDay,
+  };
+}
+
 export function monthStart(date: Date): string {
   return toIsoDate(new Date(date.getFullYear(), date.getMonth(), 1));
 }

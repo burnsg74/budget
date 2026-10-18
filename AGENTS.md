@@ -1,6 +1,6 @@
-# 3000 Budget
+# Budget
 
-Personal budget tracker: Next.js 16 App Router, React 19, TypeScript, and PostgreSQL via `pg`. The product surface is not built yet. The home page is a placeholder.
+Personal budget tracker: Next.js 16 App Router, React 19, TypeScript, and PostgreSQL via `pg`.
 
 ## Working in this repo
 

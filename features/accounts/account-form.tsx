@@ -14,6 +14,7 @@ import type { FormState } from "./actions";
 
 type AccountFormValues = {
   name: string;
+  matchText: string;
   type: AccountType;
   institution: string | null;
   mask: string | null;
@@ -34,6 +35,9 @@ export function AccountForm({
 }) {
   const [state, formAction, pending] = useActionState(action, null);
   const [type, setType] = useState<AccountType>(account?.type ?? "checking");
+  const [name, setName] = useState(account?.name ?? "");
+  const [matchText, setMatchText] = useState(account?.matchText ?? "");
+  const [matchEdited, setMatchEdited] = useState(Boolean(account));
   const baseId = useId();
   const balanceDefault = account
     ? centsToInput(
@@ -62,12 +66,34 @@ export function AccountForm({
           name="name"
           required
           maxLength={80}
-          defaultValue={account?.name ?? ""}
+          value={name}
+          onChange={(event) => {
+            const next = event.target.value;
+            setName(next);
+
+            if (!matchEdited) {
+              setMatchText(next);
+            }
+          }}
+        />
+      </label>
+
+      <label className="field" htmlFor={`${baseId}-match`}>
+        Match text
+        <input
+          id={`${baseId}-match`}
+          name="matchText"
+          maxLength={500}
+          value={matchText}
+          onChange={(event) => {
+            setMatchEdited(true);
+            setMatchText(event.target.value);
+          }}
         />
       </label>
       <p className="help">
-        Name bills and income after the bank text, such as Netflix or PennyMac, so an
-        import can link them.
+        An import links a transaction when its description contains this text. Amazon matches
+        Amazon Web Services.
       </p>
 
       <label className="field" htmlFor={`${baseId}-type`}>

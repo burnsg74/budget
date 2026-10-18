@@ -3,18 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { listAccounts, type AccountRecord } from "../../lib/accounts";
+import { parseId } from "../../lib/ids";
 import { commitImport } from "./commit";
 import { planImport } from "./plan";
 import type { PlannedRow } from "./plan";
 import type { SkippedRow } from "./parse-csv";
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export type PreviewState =
   | {
       ok: true;
-      accountId: string;
+      accountId: number;
       fileName: string;
       rows: PlannedRow[];
       skipped: SkippedRow[];
@@ -86,6 +84,7 @@ export async function confirmImport(
   revalidatePath("/accounts");
   revalidatePath(`/accounts/${loaded.accountId}`);
   revalidatePath("/reports");
+  revalidatePath("/transactions");
   redirect(`/accounts/${loaded.accountId}?imported=${result.inserted}`);
 }
 
@@ -93,16 +92,16 @@ async function loadCsv(formData: FormData): Promise<
   | { ok: false; error: string }
   | {
       ok: true;
-      accountId: string;
+      accountId: number;
       fileName: string;
       csvText: string;
       accounts: AccountRecord[];
     }
 > {
-  const accountId = String(formData.get("accountId") ?? "");
+  const accountId = parseId(String(formData.get("accountId") ?? ""));
   const file = formData.get("file");
 
-  if (!UUID_PATTERN.test(accountId)) {
+  if (accountId === null) {
     return { ok: false, error: "Choose the account this file belongs to." };
   }
 
@@ -142,7 +141,13 @@ function sanitizeMatches(value: unknown): Record<string, string | null> {
       continue;
     }
 
-    matches[key] = typeof entry === "string" && entry ? entry : null;
+    if (typeof entry === "string" && /^[1-9]\d{0,8}$/.test(entry)) {
+      matches[key] = entry;
+    } else if (typeof entry === "string" && entry.startsWith("new:") && entry.length <= 600) {
+      matches[key] = entry;
+    } else {
+      matches[key] = null;
+    }
   }
 
   return matches;
