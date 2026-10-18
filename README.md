@@ -18,13 +18,13 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3100](http://localhost:3100). The dev server uses port 3100 so it can run next to other local apps.
+Open [http://localhost:31000](http://localhost:31000). The dev server uses port 31000 so it can run next to the production server on port 3000.
 
 | Script | What it does |
 | --- | --- |
-| `npm run dev` | Development server on port 3100 |
+| `npm run dev` | Development server on port 31000 |
 | `npm run build` | Production build |
-| `npm start` | Serve the production build |
+| `npm start` | Serve the production build on port 3000 |
 
 ## Layout
 

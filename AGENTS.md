@@ -8,7 +8,7 @@ Personal budget tracker: Next.js 16 App Router, React 19, TypeScript, and Postgr
 - `cacheComponents` and `partialPrefetching` are on. Budget data is private and per user. Do not wrap it in `"use cache"`. Keep it dynamic, and stream it inside `<Suspense>` when a route also has a static shell.
 - Server Components are the default. Add `"use client"` only for browser state or event handlers.
 - Database access goes through `pg` and `DATABASE_URL`. Do not commit secrets. Document new variables in `.env.example`.
-- The dev server is `npm run dev` on port 3100.
+- The dev server is `npm run dev` on port 31000. Production is `npm start` on port 3000.
 - Keep `app/` for routes and shared UI. Add feature folders when a feature is being built, not ahead of it.
 - Preserve the managed block below. `next dev` rewrites only the text between its markers.
 
