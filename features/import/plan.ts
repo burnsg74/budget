@@ -117,5 +117,45 @@ export async function planImport(input: {
     row.duplicate = existingSet.has(row.fingerprint);
   }
 
+  const stored = await query<{
+    postedOn: string;
+    description: string;
+    amountCents: number;
+    checkNumber: string;
+    count: number;
+  }>(
+    `SELECT posted_on AS "postedOn",
+            description,
+            amount_cents AS "amountCents",
+            COALESCE(check_number, '') AS "checkNumber",
+            COUNT(*)::int AS count
+     FROM transactions
+     WHERE account_id = $1
+     GROUP BY posted_on, description, amount_cents, COALESCE(check_number, '')`,
+    [input.accountId],
+  );
+  const storedCounts = new Map(
+    stored.map((row) => [
+      JSON.stringify([row.postedOn, row.description, Number(row.amountCents), row.checkNumber]),
+      Number(row.count),
+    ]),
+  );
+  const seen = new Map<string, number>();
+
+  for (const row of planned) {
+    const key = JSON.stringify([
+      row.postedOn,
+      row.description,
+      row.amountCents,
+      row.checkNumber ?? "",
+    ]);
+    const occurrence = seen.get(key) ?? 0;
+    seen.set(key, occurrence + 1);
+
+    if (occurrence < (storedCounts.get(key) ?? 0)) {
+      row.duplicate = true;
+    }
+  }
+
   return { rows: planned, skipped: parsed.skipped, errors: parsed.errors };
 }
