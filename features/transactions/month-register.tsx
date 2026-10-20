@@ -1,50 +1,51 @@
 import Link from "next/link";
 import { connection } from "next/server";
-import { DataGrid } from "@/features/grid/data-grid";
 import { MonthSummary } from "@/features/transactions/month-summary";
-import { parseMonth } from "@/lib/dates";
-import { adjacentMonths, getRegister } from "@/lib/register";
 import { DatabaseError, logDatabaseError } from "@/app/ui";
-
-const COLUMNS = [
-  { field: "sortKey", header: "Order", hide: true, sort: "asc" as const },
-  { field: "date", header: "Date", width: 130 },
-  { field: "account", header: "Account", flex: 1, minWidth: 120 },
-  { field: "description", header: "Description", flex: 1.4, minWidth: 160 },
-  { field: "type", header: "Type", width: 130 },
-  { field: "amountCents", header: "Amount", kind: "moneySigned" as const, width: 120 },
-  { field: "balanceCents", header: "Balance", kind: "money" as const, width: 130 },
-];
+import { getAccount } from "@/lib/accounts";
+import { parseMonth } from "@/lib/dates";
+import { parseId } from "@/lib/ids";
+import { formatCents } from "@/lib/money";
+import { adjacentMonths, getRegister } from "@/lib/register";
+import { accountMonthlyTotals } from "@/lib/reports";
 
 export async function MonthRegister({
   searchParams,
   path,
 }: {
-  searchParams: Promise<{ month?: string }>;
+  searchParams: Promise<{ month?: string; account?: string }>;
   path: string;
 }) {
   await connection();
   const query = await searchParams;
   const today = new Date();
   const month = parseMonth(query.month, today);
+  const selectedId = parseId(query.account);
   const { previous, next } = adjacentMonths(month);
 
   try {
-    const data = await getRegister(month, today);
+    const [data, account, points] = await Promise.all([
+      getRegister(month, today),
+      selectedId === null ? Promise.resolve(null) : getAccount(selectedId),
+      selectedId === null ? Promise.resolve([]) : accountMonthlyTotals(selectedId, month),
+    ]);
     const estimated =
       data.estimatedCount === 1 ? "1 estimated" : `${data.estimatedCount} estimated`;
     const transactions =
       data.transactionCount === 1 ? "1 transaction" : `${data.transactionCount} transactions`;
+    const accountChart = account
+      ? { name: account.name, points, clearHref: registerHref(path, month, null) }
+      : null;
 
     return (
       <div className="register">
         <div>
           <div className="month-bar">
-            <Link href={`${path}?month=${previous}`} aria-label="Previous month">
+            <Link href={registerHref(path, previous, selectedId)} aria-label="Previous month">
               ‹
             </Link>
             <h1>{data.label}</h1>
-            <Link href={`${path}?month=${next}`} aria-label="Next month">
+            <Link href={registerHref(path, next, selectedId)} aria-label="Next month">
               ›
             </Link>
           </div>
@@ -55,14 +56,55 @@ export async function MonthRegister({
           {data.rows.length === 0 ? (
             <p className="muted">No transactions this month.</p>
           ) : (
-            <DataGrid rows={data.rows} columns={COLUMNS} />
+            <div className="table-wrap">
+              <table className="register-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Account</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th className="num">Amount</th>
+                    <th className="num">Balance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.rows.map((row) => (
+                    <tr key={row.id} className={row.estimated ? "estimated" : undefined}>
+                      <td className="nowrap">{row.date}</td>
+                      <td>
+                        {row.accountId !== null && row.account ? (
+                          <Link
+                            className="account-link"
+                            href={registerHref(path, month, row.accountId)}
+                            aria-current={row.accountId === account?.id ? "true" : undefined}
+                          >
+                            {row.account}
+                          </Link>
+                        ) : (
+                          row.account
+                        )}
+                      </td>
+                      <td>
+                        <Link className="row-link" href={row.href}>
+                          {row.description}
+                        </Link>
+                      </td>
+                      <td>{row.type}</td>
+                      <td className={amountClass(row.amountCents)}>{formatCents(row.amountCents)}</td>
+                      <td className={balanceClass(row.balanceCents)}>{formatCents(row.balanceCents)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
         <MonthSummary
-          owedCents={data.owedCents}
           liabilities={data.liabilities}
           incomeCents={data.incomeCents}
           expenses={data.expenses}
+          accountChart={accountChart}
         />
       </div>
     );
@@ -70,4 +112,22 @@ export async function MonthRegister({
     logDatabaseError(error);
     return <DatabaseError />;
   }
+}
+
+function registerHref(path: string, month: string, accountId: number | null): string {
+  const params = new URLSearchParams({ month });
+  if (accountId !== null) {
+    params.set("account", String(accountId));
+  }
+  return `${path}?${params.toString()}`;
+}
+
+function amountClass(cents: number): string {
+  if (cents > 0) return "num positive";
+  if (cents < 0) return "num negative";
+  return "num";
+}
+
+function balanceClass(cents: number): string {
+  return cents < 0 ? "num negative" : "num";
 }

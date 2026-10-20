@@ -1,4 +1,4 @@
-import { TYPE_LABELS, type AccountType } from "./account-types";
+import type { AccountType } from "./account-types";
 import { listAccounts } from "./accounts";
 import { listUpcoming } from "./dashboard";
 import { formatDate, formatMonthLong, monthBounds, shiftMonth, toIsoDate } from "./dates";
@@ -9,6 +9,7 @@ export type RegisterRow = {
   href: string;
   sortKey: string;
   date: string;
+  accountId: number | null;
   account: string;
   description: string;
   type: string;
@@ -34,7 +35,6 @@ export type RegisterData = {
   transactionCount: number;
   estimatedCount: number;
   rows: RegisterRow[];
-  owedCents: number;
   liabilities: LiabilityItem[];
   incomeCents: number;
   expenses: ExpenseSlice[];
@@ -48,8 +48,19 @@ type MonthTransaction = {
   accountId: number;
   createdAt: string;
   sourceType: AccountType;
+  matchedAccountId: number | null;
   matchedName: string | null;
   matchedType: AccountType | null;
+};
+
+const REGISTER_TYPES: Record<AccountType, string> = {
+  checking: "Checking",
+  income: "Income",
+  credit_card: "Credit Cards",
+  loan: "Loans",
+  bill: "Bills",
+  household: "Household",
+  other: "Other",
 };
 
 const EXPENSE_LABELS: Record<string, string> = {
@@ -59,6 +70,10 @@ const EXPENSE_LABELS: Record<string, string> = {
   loan: "Loans",
   other: "Unspecified",
 };
+
+function registerType(type: AccountType | null): string {
+  return type ? REGISTER_TYPES[type] : "—";
+}
 
 export async function getRegister(month: string, today: Date): Promise<RegisterData> {
   const { start, end, lastDay } = monthBounds(month);
@@ -74,6 +89,7 @@ export async function getRegister(month: string, today: Date): Promise<RegisterD
         t.account_id AS "accountId",
         to_char(t.created_at, 'YYYY-MM-DD HH24:MI:SS.US') AS "createdAt",
         src.type AS "sourceType",
+        m.id AS "matchedAccountId",
         m.name AS "matchedName",
         m.type AS "matchedType"
       FROM transactions t
@@ -134,6 +150,8 @@ export async function getRegister(month: string, today: Date): Promise<RegisterD
     id: Number(transaction.id),
     amountCents: Number(transaction.amountCents),
     accountId: Number(transaction.accountId),
+    matchedAccountId:
+      transaction.matchedAccountId === null ? null : Number(transaction.matchedAccountId),
   }));
 
   let cash = Number(cashRows[0]?.cents ?? 0);
@@ -143,11 +161,12 @@ export async function getRegister(month: string, today: Date): Promise<RegisterD
       affectsCash: checkingIds.has(transaction.accountId) ? transaction.amountCents : 0,
       row: {
         id: String(transaction.id),
-        href: `/transactions/${transaction.id}`,
+        href: `/transactions/${transaction.id}/edit`,
         date: formatDate(transaction.postedOn),
+        accountId: transaction.matchedAccountId,
         account: transaction.matchedName ?? "",
         description: transaction.description,
-        type: transaction.matchedType ? TYPE_LABELS[transaction.matchedType] : "",
+        type: registerType(transaction.matchedType),
         amountCents: transaction.amountCents,
         estimated: false,
       },
@@ -159,9 +178,10 @@ export async function getRegister(month: string, today: Date): Promise<RegisterD
         id: `e-${item.id}`,
         href: `/accounts/${item.id}`,
         date: formatDate(item.dueOn),
+        accountId: item.id,
         account: item.name,
         description: "Expected",
-        type: TYPE_LABELS[item.type],
+        type: registerType(item.type),
         amountCents: item.direction === "in" ? item.amountCents : -item.amountCents,
         estimated: true,
       },
@@ -172,6 +192,22 @@ export async function getRegister(month: string, today: Date): Promise<RegisterD
     cash += event.affectsCash;
     return { ...event.row, sortKey: event.sortKey, balanceCents: cash };
   });
+  rows.reverse();
+
+  const liabilities = accounts
+    .filter(
+      (account) =>
+        !account.archived &&
+        (account.type === "credit_card" || account.type === "loan") &&
+        account.balanceCents !== null,
+    )
+    .map((account) => ({
+      id: account.id,
+      name: account.name,
+      owedCents: -(account.balanceCents ?? 0),
+    }))
+    .filter((item) => item.owedCents > 0)
+    .sort((a, b) => b.owedCents - a.owedCents || a.name.localeCompare(b.name));
 
   const incomeCents = mapped.reduce((sum, transaction) => {
     return transaction.matchedType === "income" ? sum + transaction.amountCents : sum;
@@ -201,26 +237,12 @@ export async function getRegister(month: string, today: Date): Promise<RegisterD
     .map((label) => ({ label, cents: expenseTotals.get(label) ?? 0 }))
     .filter((slice) => slice.cents > 0);
 
-  const liabilities = accounts
-    .filter(
-      (account) =>
-        !account.archived &&
-        (account.type === "credit_card" || account.type === "loan") &&
-        account.balanceCents !== null,
-    )
-    .map((account) => ({
-      id: account.id,
-      name: account.name,
-      owedCents: -(account.balanceCents ?? 0),
-    }));
-
   return {
     month,
     label: formatMonthLong(month),
     transactionCount: mapped.length,
     estimatedCount: upcoming.length,
     rows,
-    owedCents: liabilities.reduce((sum, item) => sum + item.owedCents, 0),
     liabilities,
     incomeCents,
     expenses,

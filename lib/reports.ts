@@ -1,8 +1,18 @@
 import { isBalanceType, isSpendingType, type AccountType } from "./account-types";
-import { addDays, eachDate, formatDate, formatMonth, isIsoDate, toIsoDate } from "./dates";
+import {
+  addDays,
+  eachDate,
+  formatDate,
+  formatMonth,
+  isIsoDate,
+  monthBounds,
+  shiftMonth,
+  toIsoDate,
+} from "./dates";
 import { query } from "./db";
 
 export type ChartPoint = { label: string; cents: number };
+export type AccountMonthPoint = { label: string; title: string; cents: number };
 export type MonthChartPoint = { label: string; income: number; expenses: number };
 
 export function datePoints(rows: { date: string; cents: number }[]): ChartPoint[] {
@@ -148,6 +158,42 @@ export async function balanceSeries(
   }
 
   return series;
+}
+
+export async function accountMonthlyTotals(
+  accountId: number,
+  endMonth: string,
+): Promise<AccountMonthPoint[]> {
+  const startMonth = shiftMonth(endMonth, -11);
+  const rows = await query<{ month: string; cents: number }>(
+    `SELECT to_char(posted_on, 'YYYY-MM') AS month,
+            COALESCE(SUM(ABS(amount_cents)), 0)::bigint AS cents
+     FROM transactions
+     WHERE matched_account_id = $1
+       AND status = 'Posted'
+       AND posted_on BETWEEN $2 AND $3
+     GROUP BY 1
+     ORDER BY 1`,
+    [accountId, monthBounds(startMonth).start, monthBounds(endMonth).end],
+  );
+  const byMonth = new Map(rows.map((row) => [row.month, Number(row.cents)]));
+  const points: AccountMonthPoint[] = [];
+  let cursor = startMonth;
+
+  while (cursor <= endMonth && points.length < 12) {
+    const [year, month] = cursor.split("-").map(Number);
+    const short = new Intl.DateTimeFormat("en-US", { month: "short" }).format(
+      new Date(year, month - 1, 1),
+    );
+    points.push({
+      label: `${short} ${String(year).slice(2)}`,
+      title: formatMonth(cursor),
+      cents: byMonth.get(cursor) ?? 0,
+    });
+    cursor = shiftMonth(cursor, 1);
+  }
+
+  return points;
 }
 
 export async function incomeExpenseByMonth(

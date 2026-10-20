@@ -1,8 +1,10 @@
 "use client";
 
-import type { ColDef } from "ag-grid-community";
+import type { ColDef, ICellRendererParams } from "ag-grid-community";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { formatDate } from "../../lib/dates";
 import { formatCents } from "../../lib/money";
 import type { GridColumn, GridRow } from "./types";
 
@@ -45,7 +47,7 @@ function toColDef(column: GridColumn): ColDef<GridRow> {
     minWidth: column.minWidth,
     hide: column.hide,
     sort: column.sort,
-    sortable: !column.hide,
+    sortable: column.kind === "link" ? false : !column.hide,
     type: column.align === "right" ? "rightAligned" : undefined,
   };
 
@@ -64,7 +66,30 @@ function toColDef(column: GridColumn): ColDef<GridRow> {
     };
   }
 
+  if (column.kind === "date") {
+    col.valueFormatter = (params) => (params.value ? formatDate(String(params.value)) : "");
+  }
+
+  if (column.kind === "link") {
+    col.cellRenderer = LinkCell;
+    col.cellRendererParams = { label: column.linkLabel ?? "Edit" };
+  }
+
   return col;
+}
+
+function LinkCell(params: ICellRendererParams<GridRow> & { label?: string }) {
+  const href = params.data?.href;
+
+  if (!href) {
+    return null;
+  }
+
+  return (
+    <Link href={href} className="grid-link">
+      {params.label ?? "Edit"}
+    </Link>
+  );
 }
 
 export type { GridColumn, GridRow };

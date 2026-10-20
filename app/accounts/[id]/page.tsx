@@ -89,7 +89,7 @@ async function AccountDetail({
             <DataGrid
               rows={transactions.map((transaction, index) => ({
                 id: transaction.id,
-                href: `/transactions/${transaction.id}`,
+                href: `/transactions/${transaction.id}/edit`,
                 sortKey: String(index).padStart(6, "0"),
                 date: formatDate(transaction.postedOn),
                 description:

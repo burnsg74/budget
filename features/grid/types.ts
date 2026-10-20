@@ -12,7 +12,8 @@ export type GridColumn = {
   minWidth?: number;
   flex?: number;
   align?: "left" | "right";
-  kind?: "text" | "money" | "moneySigned";
+  kind?: "text" | "money" | "moneySigned" | "date" | "link";
+  linkLabel?: string;
   sort?: "asc" | "desc";
   hide?: boolean;
 };

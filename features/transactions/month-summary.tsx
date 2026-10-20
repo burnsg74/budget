@@ -1,8 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
+import {
+  CartesianGrid,
+  Cell,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { formatCents } from "../../lib/money";
+import type { AccountMonthPoint } from "../../lib/reports";
+import type { LiabilityItem } from "../../lib/register";
 
 type Slice = { label: string; cents: number };
 
@@ -15,29 +28,26 @@ const COLORS: Record<string, string> = {
   Unspecified: "#9a918a",
 };
 
+const axisTick = { fill: "var(--muted)", fontSize: 11 };
+
 export function MonthSummary({
-  owedCents,
   liabilities,
   incomeCents,
   expenses,
+  accountChart,
 }: {
-  owedCents: number;
-  liabilities: { id: number; name: string; owedCents: number }[];
+  liabilities: LiabilityItem[];
   incomeCents: number;
   expenses: Slice[];
+  accountChart: { name: string; points: AccountMonthPoint[]; clearHref: string } | null;
 }) {
   const income = incomeCents > 0 ? [{ label: "Income", cents: incomeCents }] : [];
 
   return (
     <aside className="side">
-      <section className="panel">
-        <div className="side-head">
+      {liabilities.length > 0 ? (
+        <section className="panel borrowed">
           <h2>Borrowed</h2>
-          <strong className="money">{formatCents(owedCents)}</strong>
-        </div>
-        {liabilities.length === 0 ? (
-          <p className="muted">No cards or loans.</p>
-        ) : (
           <ul className="plain-list">
             {liabilities.map((item) => (
               <li key={item.id} className="line">
@@ -46,12 +56,53 @@ export function MonthSummary({
               </li>
             ))}
           </ul>
-        )}
-      </section>
+        </section>
+      ) : null}
       <section className="panel donuts">
         <Donut title="Income" slices={income} empty="No income this month." />
         <Donut title="Expenses" slices={expenses} empty="No expenses this month." />
       </section>
+      {accountChart ? (
+        <section className="panel account-year">
+          <div className="side-head">
+            <div>
+              <h2>{accountChart.name}</h2>
+              <p>Monthly total, past year</p>
+            </div>
+            <Link href={accountChart.clearHref}>Clear</Link>
+          </div>
+          <div className="chart-compact">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={accountChart.points}>
+                <CartesianGrid stroke="var(--line)" vertical={false} />
+                <XAxis dataKey="label" tick={axisTick} stroke="var(--line)" minTickGap={16} />
+                <YAxis
+                  tick={axisTick}
+                  stroke="var(--line)"
+                  width={48}
+                  tickFormatter={(value: number) => formatAxis(value)}
+                />
+                <Tooltip
+                  formatter={(value) => formatCents(Number(value ?? 0))}
+                  labelFormatter={(_, payload) => {
+                    const point = payload?.[0]?.payload as AccountMonthPoint | undefined;
+                    return point?.title ?? "";
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="cents"
+                  name="Total"
+                  stroke="#3b6fd8"
+                  strokeWidth={2}
+                  dot={false}
+                  isAnimationActive={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+      ) : null}
     </aside>
   );
 }
@@ -111,4 +162,12 @@ function formatPercent(part: number, total: number): string {
   const pct = (part / total) * 100;
   const rounded = pct >= 10 || Number.isInteger(pct) ? Math.round(pct) : Math.round(pct * 10) / 10;
   return `${rounded}%`;
+}
+
+function formatAxis(cents: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(cents / 100);
 }

@@ -4,7 +4,7 @@ import { MonthRegister } from "@/features/transactions/month-register";
 export default function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ month?: string }>;
+  searchParams: Promise<{ month?: string; account?: string }>;
 }) {
   return (
     <main className="page">

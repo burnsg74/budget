@@ -45,6 +45,7 @@ export async function saveTransactionMatch(formData: FormData) {
   revalidatePath("/reports");
   revalidatePath("/transactions");
   revalidatePath(`/transactions/${transactionId}`);
+  revalidatePath(`/transactions/${transactionId}/edit`);
   revalidatePath(`/accounts/${transaction.accountId}`);
 
   if (transaction.matchedAccountId) {

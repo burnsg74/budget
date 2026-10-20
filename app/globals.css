@@ -7,6 +7,7 @@
   --positive: #1f6b45;
   --negative: #9f3a2f;
   --accent: #1f4d3a;
+  --link: #1d4ed8;
   --alert: #9f3a2f;
   --alert-bg: #f8ece8;
 }
@@ -21,6 +22,7 @@
     --positive: #86efac;
     --negative: #fca5a5;
     --accent: #d6d3d1;
+    --link: #93c5fd;
     --alert: #fecaca;
     --alert-bg: #3f2420;
   }
@@ -387,25 +389,89 @@ details summary {
 }
 
 .month-bar + .summary {
-  margin: 0.35rem 0 0.55rem;
+  margin: 0.2rem 0 0.35rem;
+  font-size: 0.8rem;
+}
+
+.register-table {
+  font-size: 0.78rem;
+}
+
+.register-table th,
+.register-table td {
+  padding: 0.16rem 0.35rem;
+  vertical-align: middle;
+}
+
+.register-table th {
+  font-size: 0.68rem;
+}
+
+.register-table .nowrap {
+  white-space: nowrap;
+}
+
+.register-table a.account-link,
+.borrowed a,
+.account-year .side-head a {
+  color: var(--link);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-table a.account-link[aria-current="true"] {
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
+}
+
+.register-table a.row-link {
+  color: inherit;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.register-table a.row-link:hover {
+  text-decoration: underline;
+}
+
+.register-table tr.estimated td:nth-child(3) {
+  font-style: italic;
+}
+
+.borrowed h2 {
+  font-size: 0.92rem;
+}
+
+.borrowed .line {
+  padding: 0.22rem 0;
+  font-size: 0.82rem;
+}
+
+.side-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.side-head h2 {
+  font-size: 0.95rem;
+}
+
+.side-head p {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.chart-compact {
+  width: 100%;
+  height: 150px;
 }
 
 .side {
   display: flex;
   flex-direction: column;
   gap: 0.55rem;
-}
-
-.side-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.35rem;
-}
-
-.side-head strong {
-  font-size: 1.05rem;
 }
 
 .donuts {
@@ -470,6 +536,11 @@ details summary {
 
 .grid-host {
   width: 100%;
+}
+
+.ag-cell .grid-link {
+  font-weight: 600;
+  text-underline-offset: 0.15em;
 }
 
 .grid-host .ag-cell select {

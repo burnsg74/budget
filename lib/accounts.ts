@@ -201,27 +201,39 @@ export async function saveAccountRecord(
   }
 }
 
+const TRANSACTION_FROM = `FROM transactions t
+JOIN accounts src ON src.id = t.account_id
+LEFT JOIN accounts m ON m.id = t.matched_account_id`;
+
+const TRANSACTION_COLUMNS = `SELECT
+  t.id,
+  t.account_id AS "accountId",
+  t.matched_account_id AS "matchedAccountId",
+  t.posted_on AS "postedOn",
+  t.description,
+  t.amount_cents AS "amountCents",
+  t.check_number AS "checkNumber",
+  t.status,
+  t.classification,
+  src.name AS "sourceName",
+  m.name AS "matchedName"`;
+
+const TRANSACTION_ORDER = `ORDER BY t.posted_on DESC, t.created_at DESC, t.id DESC`;
+
+export async function listTransactions(): Promise<TransactionRecord[]> {
+  const rows = await query<TransactionRecord>(
+    `${TRANSACTION_COLUMNS} ${TRANSACTION_FROM} ${TRANSACTION_ORDER}`,
+  );
+  return rows.map(mapTransaction);
+}
+
 export async function listTransactionsForAccount(
   accountId: number,
 ): Promise<TransactionRecord[]> {
   const rows = await query<TransactionRecord>(
-    `SELECT
-      t.id,
-      t.account_id AS "accountId",
-      t.matched_account_id AS "matchedAccountId",
-      t.posted_on AS "postedOn",
-      t.description,
-      t.amount_cents AS "amountCents",
-      t.check_number AS "checkNumber",
-      t.status,
-      t.classification,
-      src.name AS "sourceName",
-      m.name AS "matchedName"
-    FROM transactions t
-    JOIN accounts src ON src.id = t.account_id
-    LEFT JOIN accounts m ON m.id = t.matched_account_id
+    `${TRANSACTION_COLUMNS} ${TRANSACTION_FROM}
     WHERE t.account_id = $1 OR t.matched_account_id = $1
-    ORDER BY t.posted_on DESC, t.created_at DESC`,
+    ${TRANSACTION_ORDER}`,
     [accountId],
   );
   return rows.map(mapTransaction);
