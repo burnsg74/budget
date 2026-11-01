@@ -26,4 +26,5 @@ export const api = {
   createTransaction: (input) => request("POST", "/api/transactions", input),
   updateTransaction: (hash, patch) => request("PATCH", `/api/transactions/${enc(hash)}`, patch),
   deleteTransaction: (hash) => request("DELETE", `/api/transactions/${enc(hash)}`),
+  importCsv: (csv) => request("POST", "/api/import", { csv }),
 };

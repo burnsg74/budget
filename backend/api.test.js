@@ -135,3 +135,68 @@ test("uniqueHash skips taken hashes", () => {
   const taken = new Set([makeHash(parts, 0), makeHash(parts, 1)]);
   assert.equal(uniqueHash(parts, taken), makeHash(parts, 2));
 });
+
+const SAMPLE_CSV = `Account Number,Post Date,Check,Description,Debit,Credit,Status,Balance,Classification
+x,10/26/2026,,Service Charge,.96,,Posted,,Fees
+x,10/15/2026,,Barrelhead Supply Payroll,,1275.35,Posted,,Paycheck
+x,10/20/2026,,Amazon Web Services,4.51,,Posted,,Hosting
+x,10/5/2026,,Taco Bell,10.95,,Posted,,Fast Food
+x,10/5/2026,,Taco Bell,10.95,,Posted,,Fast Food
+x,10/1/2026,,Brand New Merchant,18.00,,Posted,,Uncategorized
+`;
+
+test("POST /api/import maps rows, matches accounts, and is idempotent", async () => {
+  await call("POST", "/api/accounts", { name: "Amazon", match_text: "Amazon", type: "other" });
+  await call("POST", "/api/accounts", { name: "AWS", match_text: "Amazon Web Services", type: "other" });
+
+  const first = await call("POST", "/api/import", { csv: SAMPLE_CSV });
+  assert.equal(first.status, 200);
+  assert.equal(first.body.totalRows, 6);
+  assert.equal(first.body.added, 6);
+  assert.equal(first.body.skipped, 0);
+  assert.deepEqual(first.body.accountsCreated, ["Service Charge", "Taco Bell", "Brand New Merchant"]);
+
+  const txs = (await call("GET", "/api/transactions")).body;
+  const fee = txs.find((t) => t.description === "Service Charge" && t.posted_on === "2026-10-26");
+  assert.equal(fee.account, "Household Checking");
+  assert.equal(fee.amount_cents, -96);
+  assert.equal(fee.status, "Posted");
+  assert.equal(fee.classification, null);
+
+  const pay = txs.find((t) => t.description === "Barrelhead Supply Payroll" && t.amount_cents === 127535);
+  assert.equal(pay.matched_account, "Barrelhead");
+
+  const aws = txs.find((t) => t.description === "Amazon Web Services" && t.posted_on === "2026-10-20");
+  assert.equal(aws.matched_account, "AWS");
+
+  const tacos = txs.filter((t) => t.description === "Taco Bell" && t.posted_on === "2026-10-05" && t.amount_cents === -1095);
+  assert.equal(tacos.length, 2);
+  assert.notEqual(tacos[0].hash, tacos[1].hash);
+
+  const created = (await call("GET", "/api/accounts")).body.find((a) => a.name === "Brand New Merchant");
+  assert.equal(created.type, "other");
+  assert.equal(created.match_text, "Brand New Merchant");
+
+  const second = await call("POST", "/api/import", { csv: SAMPLE_CSV });
+  assert.equal(second.status, 200);
+  assert.equal(second.body.added, 0);
+  assert.equal(second.body.skipped, 6);
+  assert.deepEqual(second.body.accountsCreated, []);
+});
+
+test("POST /api/import rejects bad files without writing", async () => {
+  const before = (await call("GET", "/api/data")).body;
+  const missing = await call("POST", "/api/import", { csv: "Date,Memo\n1,x\n" });
+  assert.equal(missing.status, 400);
+  assert.match(missing.body.error, /Missing CSV column/);
+
+  const badRow = await call("POST", "/api/import", {
+    csv: "Post Date,Description,Debit,Credit\n10/1/2026,,5.00,\n",
+  });
+  assert.equal(badRow.status, 400);
+  assert.match(badRow.body.error, /nothing was saved/);
+
+  const after = (await call("GET", "/api/data")).body;
+  assert.equal(after.accounts.length, before.accounts.length);
+  assert.equal(after.transactions.length, before.transactions.length);
+});

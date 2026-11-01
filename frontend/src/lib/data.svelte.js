@@ -40,6 +40,7 @@ class AppData {
   createTransaction = (input) => this.#write(() => api.createTransaction(input));
   updateTransaction = (hash, patch) => this.#write(() => api.updateTransaction(hash, patch));
   deleteTransaction = (hash) => this.#write(() => api.deleteTransaction(hash));
+  importCsv = (csv) => this.#write(() => api.importCsv(csv));
 }
 
 export const data = new AppData();

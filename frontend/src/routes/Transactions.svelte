@@ -7,6 +7,8 @@
   let gridApi = $state(null);
   let quickFilter = $state("");
   let selected = $state(null);
+  let importing = $state(false);
+  let importSummary = $state(null);
 
   const names = $derived(data.accounts.map((a) => a.name).sort((a, b) => a.localeCompare(b)));
 
@@ -76,6 +78,21 @@
     }
   }
 
+  async function onImportFile(event) {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = "";
+    if (!file) return;
+    importing = true;
+    importSummary = null;
+    try {
+      importSummary = await data.importCsv(await file.text());
+    } catch {
+      // surfaced by the app banner
+    } finally {
+      importing = false;
+    }
+  }
+
   async function removeSelected() {
     if (!selected) return;
     if (!confirm(`Delete "${selected.description}" (${selected.posted_on})?`)) return;
@@ -93,9 +110,23 @@
   <span class="muted">{data.transactions.length} rows</span>
   <span class="spacer"></span>
   <input type="search" placeholder="Filter all columns…" bind:value={quickFilter} />
+  <label class="file">
+    {importing ? "Importing…" : "Import CSV"}
+    <input type="file" accept=".csv,text/csv" hidden disabled={importing} onchange={onImportFile} />
+  </label>
   <button onclick={addRow}>Add row</button>
   <button class="danger" onclick={removeSelected} disabled={!selected}>Delete row</button>
 </div>
+
+{#if importSummary}
+  <p class="summary">
+    Added {importSummary.added}, skipped {importSummary.skipped} duplicate{importSummary.skipped === 1 ? "" : "s"}
+    {#if importSummary.accountsCreated.length}
+      , created {importSummary.accountsCreated.length} account{importSummary.accountsCreated.length === 1 ? "" : "s"}: {importSummary.accountsCreated.join(", ")}
+    {/if}.
+    <button class="link" onclick={() => (importSummary = null)}>Dismiss</button>
+  </p>
+{/if}
 
 <Grid
   {columnDefs}
@@ -123,7 +154,32 @@
     flex: 1;
   }
 
-  .hint {
+  label.file {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    border-radius: 6px;
+    padding: 5px 12px;
+    cursor: pointer;
+  }
+
+  label.file:hover {
+    border-color: var(--accent);
+  }
+
+  .hint,
+  .summary {
     font-size: 12px;
+  }
+
+  .summary {
+    margin: 0 0 10px;
+  }
+
+  button.link {
+    border: 0;
+    background: none;
+    padding: 0;
+    color: var(--accent);
+    text-decoration: underline;
   }
 </style>

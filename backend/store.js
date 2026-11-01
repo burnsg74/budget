@@ -16,6 +16,7 @@ import {
   validateAccount,
   validateTransaction,
 } from "./schema.js";
+import { IMPORT_ACCOUNT, findAccountMatch } from "./importer.js";
 
 export class NotFoundError extends Error {}
 export class ConflictError extends Error {}
@@ -264,6 +265,85 @@ export function createStore(dir) {
         validateTransaction(tx, names);
         state.transactions.push(tx);
         return { result: tx, transactions: true };
+      });
+    },
+
+    /**
+     * Import parsed bank rows (see parseBankCsv) into IMPORT_ACCOUNT. Rows whose hash already
+     * exists are skipped. Each row is linked to the account whose match_text is in its
+     * description; when none matches, an account named after the description is created.
+     */
+    importTransactions(rows) {
+      return mutate((state) => {
+        const now = nowIso();
+        const newAccount = (fields) => {
+          const account = {
+            name: "",
+            match_text: "",
+            type: "other",
+            institution: null,
+            mask: null,
+            opening_balance_cents: 0,
+            opening_on: null,
+            expected_amount_cents: null,
+            due_day: null,
+            schedule_active: false,
+            archived: false,
+            ...fields,
+            created_at: now,
+          };
+          validateAccount(account);
+          state.accounts.push(account);
+          return account;
+        };
+
+        const accountsCreated = [];
+        let target = state.accounts.find((a) => a.name === IMPORT_ACCOUNT);
+        if (!target) {
+          target = newAccount({ name: IMPORT_ACCOUNT, match_text: IMPORT_ACCOUNT, type: "checking" });
+          accountsCreated.push(target.name);
+        }
+
+        const hashes = new Set(state.transactions.map((t) => t.hash));
+        let added = 0;
+        let skipped = 0;
+        for (const row of rows) {
+          if (hashes.has(row.hash)) {
+            skipped++;
+            continue;
+          }
+          let matched = findAccountMatch(row.description, state.accounts, target.name);
+          if (!matched) {
+            const lower = row.description.toLowerCase();
+            matched = state.accounts.find((a) => a.name.toLowerCase() === lower && a.name !== target.name);
+          }
+          if (!matched) {
+            matched = newAccount({ name: row.description, match_text: row.description });
+            accountsCreated.push(matched.name);
+          }
+          const tx = {
+            hash: row.hash,
+            account: target.name,
+            matched_account: matched.name,
+            posted_on: row.posted_on,
+            description: row.description,
+            amount_cents: row.amount_cents,
+            check_number: null,
+            status: "Posted",
+            classification: null,
+            created_at: now,
+          };
+          validateTransaction(tx, new Set(state.accounts.map((a) => a.name)));
+          state.transactions.push(tx);
+          hashes.add(row.hash);
+          added++;
+        }
+
+        return {
+          result: { totalRows: rows.length, added, skipped, accountsCreated },
+          accounts: accountsCreated.length > 0,
+          transactions: added > 0,
+        };
       });
     },
 

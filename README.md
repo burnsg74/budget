@@ -24,14 +24,14 @@ Override with `DATA_PATH` (absolute directory). See `.env.example`. Real data ne
 
 Money is integer cents. Balances for checking, loan and credit_card are derived: `opening_balance_cents` plus Posted transactions after `opening_on` (loans and cards also subtract amounts matched to them). There is no stored running balance.
 
-`hash` is `sha256([account, posted_on, description, amount_cents, check_number, occurrence])`; `occurrence` increments only to keep identical same-day rows distinct. The production export seeded it from the old `fingerprint` values.
+`hash` is `sha256([account, posted_on, description, amount_cents, check_number, occurrence])`; `occurrence` increments only to keep identical same-day rows distinct. The production export seeded it from the old `fingerprint` values. Bank CSV imports use a different hash: `sha256([posted_on, description, amount_cents, occurrence])`, so re-importing the same statement rows is skipped.
 
 Renaming an account (grid or detail page) rewrites `account` / `matched_account` in every transaction in the same write. An account that transactions reference cannot be deleted; archive it.
 
 ## Pages
 
 - `/` Home: this month only. Sections by account type, tracked balances, month gap, projected checking low point, upcoming items, and suggested loan to checking transfers (smallest amount, as late as possible, to stay above a buffer).
-- `/accounts` and `/transactions`: Excel-like grids (sort, filter, inline edit, add, delete).
+- `/accounts` and `/transactions`: Excel-like grids (sort, filter, inline edit, add, delete). Transactions also has **Import CSV** for a bank AccountHistory file (Post Date, Description, Debit, Credit). Rows land on Household Checking; `match_text` is used to set Matched account, and unmatched descriptions become new `other` accounts.
 - `/accounts/:name`: graph, transaction list, params (double-click a value to edit; Enter saves, Esc cancels).
 - `/reports`: income vs expenses by month, loan and card balances by month-end, spending for one account, and the job-search income floor (which income accounts count as "mine" is remembered in the browser; default matches `barrelhead`).
 
@@ -73,4 +73,4 @@ Leave Postgres and `3001-budget` alone until this app matches day-to-day use, th
 
 ## Out of scope for v1
 
-Bank CSV import wizard, Alfred integration, Postgres as a live source, a separate account edit page, reports on Home.
+Alfred integration, Postgres as a live source, a separate account edit page, reports on Home.

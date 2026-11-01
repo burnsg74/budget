@@ -174,6 +174,17 @@ export function makeHash(parts, occurrence = 0) {
     .digest("hex");
 }
 
+/**
+ * Identity for bank-CSV imports: only post date, description and amount, plus `occurrence`
+ * (index among identical rows in the same file) so repeated same-day rows stay distinct
+ * while re-importing the same rows is detected.
+ */
+export function importHash(postedOn, description, amountCents, occurrence = 0) {
+  return createHash("sha256")
+    .update(JSON.stringify([postedOn, description, amountCents, occurrence]))
+    .digest("hex");
+}
+
 /** First hash for these parts that is not already in `existing` (a Set). */
 export function uniqueHash(parts, existing) {
   let occurrence = 0;

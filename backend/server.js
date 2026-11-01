@@ -13,6 +13,7 @@ import {
   probeReadable,
 } from "./store.js";
 import { ValidationError } from "./schema.js";
+import { parseBankCsv } from "./importer.js";
 
 const MAX_BODY = 5 * 1024 * 1024;
 const FILE_EXTENSIONS = new Set([".md", ".csv"]);
@@ -142,6 +143,12 @@ export function createApp(config, store = createStore(config.dir)) {
       if (!id && method === "POST") return send(res, 201, await store.createTransaction(await readJson(req)));
       if (id && method === "PATCH") return send(res, 200, await store.updateTransaction(id, await readJson(req)));
       if (id && method === "DELETE") return send(res, 200, await store.deleteTransaction(id));
+    }
+
+    if (resource === "import" && !id && method === "POST") {
+      const body = await readJson(req);
+      if (typeof body.csv !== "string") throw new HttpError(400, "Body needs csv: string");
+      return send(res, 200, await store.importTransactions(parseBankCsv(body.csv)));
     }
 
     if (resource === "files") {
