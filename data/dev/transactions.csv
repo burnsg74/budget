@@ -1,0 +1,262 @@
+hash,account,matched_account,posted_on,description,amount_cents,check_number,status,classification,created_at
+0e91b7901a5e393779ade8db2a0a29c7501e88de77b9b8b2260028086a868916,Household Checking,Merchant 20,2026-05-01,Merchant 20 #001,-10460,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+aa481b9550abdb8a7384b31272180faf21f54c8f81383c31b5fe766e208d2324,Household Checking,Merchant 01,2026-05-01,Merchant 01 #002,-5284,,Posted,Utilities,2026-10-20T01:01:48.778Z
+ddaaf3ca6c6f738de654394ea82290d06cc41ba2685d35d20f70378b2eee2683,Household Checking,Merchant 28,2026-05-04,Merchant 28 #003,-1309,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+4a6e91a423d232fce3dd20173de26f1927c946591495dc133ce2abf9e1cab51f,Household Checking,Online Store,2026-05-04,Online Store #004,-2169,,Posted,Shopping,2026-10-20T01:01:48.778Z
+ee225a97e74a2a82cb881b027db063ca8c5b3f01bcbc95326a4e244decae4bf2,Household Checking,Online Store,2026-05-04,Online Store #005,-420,,Posted,Hosting,2026-10-20T01:01:48.778Z
+9aea0cff3129962a03f45942e0427325398415528e1c5a9e3c686e8775088271,Household Checking,Phone Carrier,2026-05-07,Phone Carrier #006,-21641,,Posted,Mobile Phone,2026-10-20T01:01:48.778Z
+3ae765c6b0254f0a92d997aa59aa579b81e8d7a1f486b3ec4d495c658980b9f3,Household Checking,Funds Transfer,2026-05-07,Funds Transfer #007,220293,,Posted,Transfer,2026-10-20T01:01:48.778Z
+c1ec946643628e631c2be8fa6be375b20a0e39b77a7a3015aaafc496e1c60787,Household Checking,Home Loan,2026-05-08,Home Loan #008,-153027,,Posted,Mortgage & Rent,2026-10-20T01:01:48.778Z
+161ea8d8685d464c55c9fb07a5dcb814a084ab065fe454a4e4d60f461258a4c1,Household Checking,Credit Card,2026-05-08,Credit Card #009,-72134,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+273ed9bcf0853d52f935c9d24255230f34d82d8c838fe35943df980a4d739dbf,Household Checking,Water District,2026-05-08,Water District #010,-13646,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+06c62db97c3f89d9742c1ee8acee57e426dadf0cfdf02cbe87e196751a2ae09a,Household Checking,Merchant 05,2026-05-11,Merchant 05 #011,-3882,,Posted,Food & Dining,2026-10-20T01:01:48.778Z
+b7859abb5538b81506d21c49772b66b04f17e9738206986e637c223370033164,Household Checking,Online Store,2026-05-11,Online Store #012,-1478,,Posted,Shopping,2026-10-20T01:01:48.778Z
+291d8a2e852200408d93a4366daa30302accf27ac93d3e13bb8daf14446fe499,Household Checking,Streaming Service,2026-05-11,Streaming Service #013,-2548,,Posted,Television,2026-10-20T01:01:48.778Z
+7c975efc39ae7ee998e13cc43cf89a30a7e44d293fc35944e06681053fdccb84,Household Checking,Online Store,2026-05-11,Online Store #014,-1443,,Posted,Shopping,2026-10-20T01:01:48.778Z
+68a883698f121b01409f4fd7a5dfcf2cb8777a9b843283bd93d83fd558065634,Household Checking,Merchant 27,2026-05-13,Merchant 27 #015,-66506,,Posted,Financial,2026-10-20T01:01:48.778Z
+35f4972e5c1fa1456bff2772afc92740fc441b738d64add95fdca5345394597b,Household Checking,Electric Co,2026-05-13,Electric Co #016,-21596,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+1cbd19675cdf18dba6c13e3a91e5dd2e54b4e958824016922b725a215ac972b1,Household Checking,Funds Transfer,2026-05-13,Funds Transfer #017,98094,,Posted,Transfer,2026-10-20T01:01:48.778Z
+d73a5823413721277677c484dc03258b6f7ab28b193984a7f4b4f6d6a3d694dc,Household Checking,Barrelhead,2026-05-14,Barrelhead #018,113313,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+a11c7cdda75458383e3779f28af6d5afbcea722580911b9bf95bec82bd3b2138,Household Checking,Card Payment,2026-05-18,Card Payment #019,-3005,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+7cd844c622953c17feba24b94f08b62e6485feb5c1490095cc7e4f9512ea251d,Household Checking,Transfer to Loan,2026-05-18,Transfer to Loan #020,-131477,,Posted,Transfer,2026-10-20T01:01:48.778Z
+4c6a3ea533ab0695e419316f690082f457643e5dd36a5161535409dd8beaa019,Household Checking,Merchant 16,2026-05-18,Merchant 16 #021,-3578,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+6ac5e8ca98d4cc78486a53035ef1940673934ea384b6255bba348061c48851bc,Household Checking,Merchant 22,2026-05-18,Merchant 22 #022,-1767,,Posted,Television,2026-10-20T01:01:48.778Z
+dafd7fa14a252c0d7b413b1eb754085758c18a032c828eb6814b7ee892f12f79,Household Checking,Merchant 18,2026-05-18,Merchant 18 #023,-1909,,Posted,Service & Parts,2026-10-20T01:01:48.778Z
+430e02eeed7a643d8433e2c92eee505165be66ceaddd21e0259e357682f24e9a,Household Checking,Credit Card,2026-05-19,Credit Card #024,-42453,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+ed13af5af0c90432100f91b7e5562d3177f0ab1561d03acad1ab512d48d84974,Household Checking,Merchant 08,2026-05-19,Merchant 08 #025,-12554,,Posted,Utilities,2026-10-20T01:01:48.778Z
+8b18dd8b0d8c2b7d9b055290bd917fe4e06d66275b08ef6f339921477edb29ab,Household Checking,Alex Transfer,2026-05-19,Alex Transfer #026,121046,,Posted,Transfer,2026-10-20T01:01:48.778Z
+377294f18221ec83e57c865cb15a14a74a3f183399108678d5734f50ca184c20,Household Checking,Merchant 21,2026-05-20,Merchant 21 #027,-15269,,Posted,Bills & Utilities,2026-10-20T01:01:48.778Z
+db5e1b3d480bfea0f6f1e9f07824a6ae87257bc7c01779f3979b45a75fdd44d2,Household Checking,Spouse Payroll,2026-05-22,Spouse Payroll #028,74120,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+5dc7b6747a3fc3f5c2310f6d24ee147245eba7aea2a28ad2ca6551b9c6d8ddad,Household Checking,Merchant 30,2026-05-26,Merchant 30 #029,-15611,,Posted,Loan,2026-10-20T01:01:48.778Z
+e6ee82a1c8bd7794a94e86fa86606d77a2bfd9a6822a087a94eb8a5f8eb1cd7d,Household Checking,Transfer to Loan,2026-05-26,Transfer to Loan #030,-2360,,Posted,Transfer,2026-10-20T01:01:48.778Z
+d1f4feb90aefe1f8c0f1b84c1ba63b122a77b8ffe1b27aaf71e1003160a4d3d6,Household Checking,Transfer to Loan,2026-05-26,Transfer to Loan #031,-1564,,Posted,Transfer,2026-10-20T01:01:48.778Z
+edfac18c18fced7324d11b4c0293b4adc8992849d7b058472899c41edf776d64,Household Checking,Transfer to Loan,2026-05-26,Transfer to Loan #032,-132394,,Posted,Transfer,2026-10-20T01:01:48.778Z
+285cbf54ea3549a1a545d79d4af713fbcda1b0396e9109bbd3e400167c24ae7b,Household Checking,Merchant 28,2026-05-26,Merchant 28 #033,-1485,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+0b76a7cc8c5f6734c4ebf9e3fa0a420876474efd6d8e4ee22f065885cc9c0341,Household Checking,Merchant 13,2026-05-26,Merchant 13 #034,-1121,,Posted,Groceries,2026-10-20T01:01:48.778Z
+9708ad128d0940a9565670d779dc25331808ae34d2b8aaa22b456d3fd1cf67e9,Household Checking,Merchant 15,2026-05-26,Merchant 15 #035,-4406,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+8d9d8e22bcce66b9fd3721648853558afa87d952777c92c4d258efc5160174b5,Household Checking,Merchant 31,2026-05-26,Merchant 31 #036,-1425,,Posted,Groceries,2026-10-20T01:01:48.778Z
+6fad97d4fdbaa8b1e790248bda717d492638b3f79f59cd8ebc1ef02ecf35f4eb,Household Checking,Barrelhead,2026-05-26,Barrelhead #037,-12474,,Posted,Health & Fitness,2026-10-20T01:01:48.778Z
+3236338825ccbdc0000056fe9176e0ec0b4a0eb6fe8a792734010362d0144c0c,Household Checking,Funds Transfer,2026-05-26,Funds Transfer #038,89076,,Posted,Transfer,2026-10-20T01:01:48.778Z
+de58710acdc151f57dea7e7be2561eadbbac6f263647d8d7ea227eb21036bcd0,Household Checking,Barrelhead,2026-05-28,Barrelhead #039,159770,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+8df4e79bc428431151d796218366c9dd6f75b14faffd5d2b1fa7159d5200e3cd,Household Checking,Merchant 19,2026-05-29,Merchant 19 #040,-740,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+6bb3fa437b94f429f31727a30e816ef9e76cd2b821e3dec3145530898a3c7eb0,Household Checking,Transfer to Loan,2026-05-29,Transfer to Loan #041,-106133,,Posted,Transfer,2026-10-20T01:01:48.778Z
+bbf2f1d38896e8336b6a3243209560c63c76a2ad6b8c5d1259dd2d21ef23d8e2,Household Checking,Merchant 20,2026-06-01,Merchant 20 #042,-10278,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+963e50a7f08b20dbcb06555ffa7f61a07ea412050d5bdde07f8b77261ae5717f,Household Checking,Merchant 01,2026-06-01,Merchant 01 #043,-6320,,Posted,Utilities,2026-10-20T01:01:48.778Z
+d296e5ded0944e99a3dfb99f6e7b10948668206b71022561963fd3784d06b8c6,Household Checking,Merchant 17,2026-06-01,Merchant 17 #044,-3885,,Posted,Restaurants,2026-10-20T01:01:48.778Z
+e199681d6e0a13ccf639e034f9b01f6b00836192404baa95efdd6de60caa385c,Household Checking,Merchant 28,2026-06-01,Merchant 28 #045,-2447,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+65c235f68a230d52003d1b5ae2713743c870ab1bba278026e3a7145b2ab3f783,Household Checking,Online Store,2026-06-02,Online Store #046,-610,,Posted,Hosting,2026-10-20T01:01:48.778Z
+4bfe446727f0ffb692fe45e18b242968c856ab825683cee6666de47942102b68,Household Checking,Online Store,2026-06-05,Online Store #047,-1387,,Posted,Shopping,2026-10-20T01:01:48.778Z
+dfc6dd78aaf77f9047936bec65f21601eecd3a8a05b4f3a28edfecab3e7bb114,Household Checking,Home Loan,2026-06-08,Home Loan #048,-270055,,Posted,Mortgage & Rent,2026-10-20T01:01:48.778Z
+bd2f0305231379bcd32cf4decaaabe1eeea42c2ab898291b256dfe6e09616390,Household Checking,Credit Card,2026-06-08,Credit Card #049,-27213,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+7de6460a55253690568dc29053c3bcffce53a84ac83b2143391cc0d6c07c18b6,Household Checking,Merchant 16,2026-06-08,Merchant 16 #050,-1911,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+26ab91585c06bfd9795d1970cd576120b7a351e24f90974c6afe09d273e074b1,Household Checking,Merchant 32,2026-06-08,Merchant 32 #051,-1348,,Posted,Shopping,2026-10-20T01:01:48.778Z
+110ff73cec121bab483178a393fa3326b9b6139feb2b69b2aead7c368cb3b4d2,Household Checking,Phone Carrier,2026-06-08,Phone Carrier #052,-17782,,Posted,Mobile Phone,2026-10-20T01:01:48.778Z
+7bdfcd8efb489a21fe4132f44fb0d735a602af0be8498edb5f9a43f89c0e2eeb,Household Checking,Water District,2026-06-08,Water District #053,-12501,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+1f4af027a8cc20c3cc3a782d45ac3b6886a2ea6a1f676470fac66458c9cf25a7,Household Checking,Merchant 28,2026-06-08,Merchant 28 #054,-1597,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+d8df449a05ac283904ade1b384916e88bb8b3586eb6f2f639f44e9e522356348,Household Checking,Merchant 15,2026-06-08,Merchant 15 #055,-3183,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+0b25a5cb14457d06b49a25c23640ca084d928a6c7f1d288c03e274ee295d6f1b,Household Checking,Funds Transfer,2026-06-08,Funds Transfer #056,147293,,Posted,Transfer,2026-10-20T01:01:48.778Z
+af7a9feefacaae4b22cdfe0c33743379561fa9f26365d35139fe27413acd683e,Household Checking,Funds Transfer,2026-06-08,Funds Transfer #057,115707,,Posted,Transfer,2026-10-20T01:01:48.778Z
+08aa1f659787a4f77a2466d8249894490674e654c40f46e36605eb49b0ada108,Household Checking,Streaming Service,2026-06-09,Streaming Service #058,-3052,,Posted,Television,2026-10-20T01:01:48.778Z
+624b0e5cd3885831fff84da00357d7c8084d4999d25f634a5be2c08d61b3ee4f,Household Checking,Merchant 11,2026-06-09,Merchant 11 #059,-1279,,Posted,Food & Dining,2026-10-20T01:01:48.778Z
+7afc77494073762e324229dabc3bc020a39901a5fb24bb81c01ecfe6e2b56669,Household Checking,Merchant 12,2026-06-09,Merchant 12 #060,-10911,,Posted,Doctor,2026-10-20T01:01:48.778Z
+f89d46dff0177e5c6d3a8f187f4c7b75ceba7b526862e82aecb1e6eab6b72c4b,Household Checking,Electric Co,2026-06-10,Electric Co #061,-15694,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+6cc204fd11bbf63c403d9df136143bd69cf5a3ab7f3c8febbe0e73848fe3a0cf,Household Checking,Automatic Loan Payment,2026-06-10,Automatic Loan Payment #062,-903,,Posted,Transfer,2026-10-20T01:01:48.778Z
+31267bc77baedaa4788ba2f423be641b91217e6c8f85110ec9f472919abcb39c,Household Checking,Online Store,2026-06-10,Online Store #063,-585,,Posted,Shopping,2026-10-20T01:01:48.778Z
+c7cfc2e22fda5d9c9a9bad208311a0c9cea43249895a629a958161ce4a4b5855,Household Checking,Online Store,2026-06-10,Online Store #064,-984,,Posted,Shopping,2026-10-20T01:01:48.778Z
+4022f815111a467586aa734f226984a177ae6eba0f3489fa616a97abcca36307,Household Checking,Barrelhead,2026-06-11,Barrelhead #065,124229,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+f1ba4b451be5624180245bc7aa3f02e9bf4f99c742759c93726e40e3bb8ce513,Household Checking,Merchant 27,2026-06-15,Merchant 27 #066,-36515,,Posted,Financial,2026-10-20T01:01:48.778Z
+f8ade53c3fd4362c924477e4451ceb4a93084e2b52665384e05352addf029b39,Household Checking,Transfer to Loan,2026-06-15,Transfer to Loan #067,-71681,,Posted,Transfer,2026-10-20T01:01:48.778Z
+f8b8c9b3394213218e77d4d71f5433ec66a8061214fb60c82d596e934f5c91c5,Household Checking,Merchant 09,2026-06-15,Merchant 09 #068,-1326,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+c6de1e1e82a120861065404831d975b1101b75a52647b457be5d02cf74f9b4cf,Household Checking,Merchant 09,2026-06-15,Merchant 09 #069,-1615,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+7806f102de539a5dc880a562082a73a70568fab1cf4252f8cb2ab325e686b93a,Household Checking,Merchant 18,2026-06-15,Merchant 18 #070,-1890,,Posted,Service & Parts,2026-10-20T01:01:48.778Z
+a2e9851d826bba53651c16b8535de26ff4f056b2d7899744825b72105700dc51,Household Checking,Merchant 31,2026-06-15,Merchant 31 #071,-461,,Posted,Groceries,2026-10-20T01:01:48.778Z
+6950cba6405cd965f0f53e107893dae50784f9127e924c522677122297fd1df4,Household Checking,Merchant 28,2026-06-15,Merchant 28 #072,-1001,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+3bd918b3fa2f733127701c69148a243b9f93c9843c0202a0d6c56c9d41109105,Household Checking,Merchant 02,2026-06-15,Merchant 02 #073,-1767,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+5c6200855b3be7f551028c605446fdbd9c4cb6ca2f7dc5572e2d40a92609d4ab,Household Checking,Card Payment,2026-06-16,Card Payment #074,-3301,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+67c07bd2227bc8a10e60308e0e7b4f0efe9566f698fad10aaff6eb3c4cab514c,Household Checking,Merchant 02,2026-06-16,Merchant 02 #075,-2306,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+b31364bf5e218d4e40e3cba09f882eccd71bc7a5b58e0002083ac36804f392c5,Household Checking,Merchant 21,2026-06-17,Merchant 21 #076,-12299,,Posted,Bills & Utilities,2026-10-20T01:01:48.778Z
+0084a23e9a75342746d4aab8b1972aa0bda62d30f7dacbc33db0573353d3bf55,Household Checking,Merchant 08,2026-06-22,Merchant 08 #077,-7814,,Posted,Utilities,2026-10-20T01:01:48.778Z
+3cbde8d64d15062721674a20abc76c75c86dd35104bf7bc7ab80207f2ee781c3,Household Checking,Merchant 10,2026-06-22,Merchant 10 #078,-1976,,Posted,Groceries,2026-10-20T01:01:48.778Z
+6e976fa5e2bbc0c8e4337a017fdbef359d37a551acfbcd4ccea4dd352b40fcfc,Household Checking,Merchant 03,2026-06-22,Merchant 03 #079,-2204,,Posted,Food & Dining,2026-10-20T01:01:48.778Z
+1601d0c1ead1abc52b32733cab46d89c2180171c2fc1a05e57b96aa0f19f1c8a,Household Checking,Merchant 31,2026-06-22,Merchant 31 #080,-1189,,Posted,Groceries,2026-10-20T01:01:48.778Z
+88e4ef307a8d51cbfcf32a00119af5c7aa59d9ef52ff8d47dc2cfe119c99a82a,Household Checking,Merchant 28,2026-06-22,Merchant 28 #081,-1354,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+0bbd34dd3b5409b2cfd835ed1ea370add650ff31bc3812a9e2901297bf45b30a,Household Checking,Merchant 32,2026-06-22,Merchant 32 #082,-5446,,Posted,Shopping,2026-10-20T01:01:48.778Z
+51e0c6a972132b1d6bbe57e6b852616147f63c360c280a968e664b844d4eb286,Household Checking,Funds Transfer,2026-06-22,Funds Transfer #083,42564,,Posted,Transfer,2026-10-20T01:01:48.778Z
+5cf8a8e64c46152d6656d5e690709ad517821fae895dd33c58d2d7e7873a4db5,Household Checking,Deposit,2026-06-22,Deposit #084,10881,,Posted,Income,2026-10-20T01:01:48.778Z
+004d3cae573114859b497f80af135090aafa031735c3ada549268c96ffe67eb8,Household Checking,Deposit,2026-06-22,Deposit #085,788,,Posted,Income,2026-10-20T01:01:48.778Z
+162801f209b06c5f483c5723864661c783f7d8f0cd1e46a365bd421ff4510e37,Household Checking,Merchant 30,2026-06-23,Merchant 30 #086,-15954,,Posted,Loan,2026-10-20T01:01:48.778Z
+cd0df3eecad1c5fced5008ca6080478560b8547178629cec7795b7149973287e,Household Checking,Barrelhead,2026-06-25,Barrelhead #087,99920,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+35eee6aec706d4c6391cfcd026aa3cbadc13144f1ede008a0508e1803a6b4b11,Household Checking,Transfer to Loan,2026-06-26,Transfer to Loan #088,-178559,,Posted,Transfer,2026-10-20T01:01:48.778Z
+c3a583d28c75e7c4f2327c2722e6ad65876c4d87498c5b207432d101a5f68643,Household Checking,Merchant 19,2026-06-29,Merchant 19 #089,-1308,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+2aa96b8b926406eb9fc9d179687ce25a29eef17989009527652fe0d93e3aa6c8,Household Checking,Online Store,2026-06-29,Online Store #090,-2124,,Posted,Shopping,2026-10-20T01:01:48.778Z
+5b831771bae69f3a71f7c5e55cd45611593482c02405bde246afad0df50f912c,Household Checking,Online Store,2026-06-29,Online Store #091,-3488,,Posted,Shopping,2026-10-20T01:01:48.778Z
+207b846e7b016594f7666856a83a7c1441dfb7f85075f675622bed9368ff8342,Household Checking,Spouse Payroll,2026-06-29,Spouse Payroll #092,96100,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+37ffe2a790412e228e1e084a5096b3b3bc493333e6721b28029322dba2ddea7e,Household Checking,Transfer to Loan,2026-06-30,Transfer to Loan #093,-38226,,Posted,Transfer,2026-10-20T01:01:48.778Z
+93bacbd1e19202ff90d0f6b52e134267473063d293bb6b3218ca299edaf5787d,Household Checking,Merchant 01,2026-07-01,Merchant 01 #094,-4149,,Posted,Utilities,2026-10-20T01:01:48.778Z
+4964fce7f9ba8f64f52579303f159e1da0aee3dec2df4918f802234a29c26096,Household Checking,Alex Transfer,2026-07-01,Alex Transfer #095,102795,,Posted,Transfer,2026-10-20T01:01:48.778Z
+c519caafe109f09c7273fcd82417a14e0f288b8422cbdfd725771ec90020880d,Household Checking,Online Store,2026-07-02,Online Store #096,-388,,Posted,Hosting,2026-10-20T01:01:48.778Z
+fd5c4e61571c100822de919248ae212d528927732c20f42208e511c10830eab5,Household Checking,Online Store,2026-07-06,Online Store #097,-1544,,Posted,Pharmacy,2026-10-20T01:01:48.778Z
+d469f1fceeb6a3c53346d69f9ee73ca1073453d2a17f63e5667688a846ab5de6,Household Checking,Merchant 28,2026-07-06,Merchant 28 #098,-1175,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+3457b2f0815dfe8ad231d51dfbfc2b22c6de39f9235728a81e0e4be45f4e545e,Household Checking,Merchant 10,2026-07-06,Merchant 10 #099,-3616,,Posted,Groceries,2026-10-20T01:01:48.778Z
+b6c3ed62a3f2a7faf01a638c186725d8ef17fcdd076c70a7f383251200ab79c2,Household Checking,Phone Carrier,2026-07-07,Phone Carrier #100,-20263,,Posted,Mobile Phone,2026-10-20T01:01:48.778Z
+ac3f6a453761819b18bdc6aeb7a125f261a30174b3573b39811de4e868afd724,Household Checking,Home Loan,2026-07-08,Home Loan #101,-322443,,Posted,Mortgage & Rent,2026-10-20T01:01:48.778Z
+c416cf4aa79c309ac9d7b12b7f87932bd3690b15b1eb6cd5c11eb1958880d310,Household Checking,Credit Card,2026-07-08,Credit Card #102,-49464,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+280a6c5862f3e5c6fa51636e3925bfdac8f3a7d6add5d6f053f083d1e75eec9a,Household Checking,Water District,2026-07-08,Water District #103,-10527,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+5745f49b52459501acfab4d9ed61fd35b0f57a86eebdff0d9f7716891c55baae,Household Checking,Funds Transfer,2026-07-08,Funds Transfer #104,154920,,Posted,Transfer,2026-10-20T01:01:48.778Z
+a4cd9ba31e8777d40da1737df9c682eb038d20751e964363ffaf2c4d60c0679a,Household Checking,Funds Transfer,2026-07-08,Funds Transfer #105,83835,,Posted,Transfer,2026-10-20T01:01:48.778Z
+cac2724593e2e728a3786c7f82ed55b822dfaf6f297c1ecebd9cfe9ddab0dfe8,Household Checking,Streaming Service,2026-07-09,Streaming Service #106,-2269,,Posted,Television,2026-10-20T01:01:48.778Z
+c79a9fa789acc797088ca0ab0fc70ed0e0046d26bc53d795c8a07f400573794c,Household Checking,Merchant 20,2026-07-09,Merchant 20 #107,-1771,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+1db45bd6238653f459fd75b1dcae66cb783cf1e8203a84a042b269fe6b14027a,Household Checking,Barrelhead,2026-07-09,Barrelhead #108,166624,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+2dc34167c088d8d74b0bbfbb9033614af431681e10fb6c5c196a6c501205c164,Household Checking,Electric Co,2026-07-10,Electric Co #109,-22316,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+ea96dc874e57257381ca322fabe0cf33e2a548822baaee954ac1c5ecb0432119,Household Checking,Merchant 31,2026-07-13,Merchant 31 #110,-594,,Posted,Groceries,2026-10-20T01:01:48.778Z
+affeb9493ffa94488ef5a7fb4945266deef4eb36ccfbb0bd517b5271a195dd01,Household Checking,Merchant 09,2026-07-13,Merchant 09 #111,-2593,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+521633b5bb03fdb0329b3e6396176a8896c35765c154544e7c688642a49de474,Household Checking,Merchant 17,2026-07-13,Merchant 17 #112,-3474,,Posted,Restaurants,2026-10-20T01:01:48.778Z
+40a206193047c278bb6625298a9ca473b7560c84aed9715dbc99c541b09bb6b6,Household Checking,Merchant 28,2026-07-13,Merchant 28 #113,-1119,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+5c5743b5986a60b6e46ff051ce05a05d272cb2c88ce1fb6e5fc4a2875d50fdc0,Household Checking,Online Store,2026-07-14,Online Store #114,-1925,,Posted,Shopping,2026-10-20T01:01:48.778Z
+1742cb8ca5ece5721d0212bd1cbe53da86925b0862f9203d3b1f17c0295043dd,Household Checking,Merchant 27,2026-07-15,Merchant 27 #115,-63309,,Posted,Financial,2026-10-20T01:01:48.778Z
+b7aba843d90e26e17fae9c1f98135f490474849e91de7af41a1cda80f51de659,Household Checking,Merchant 18,2026-07-15,Merchant 18 #116,-1723,,Posted,Service & Parts,2026-10-20T01:01:48.778Z
+b07d09640bc57e9e4fa8b05bfa083196756c7a66dd0c6d7edb329a33541393f2,Household Checking,Automatic Loan Payment,2026-07-16,Automatic Loan Payment #117,-369,,Posted,Transfer,2026-10-20T01:01:48.778Z
+af6c11c5f9ad1280bb8654e465345555659988115fcf7a922ea0ff586fe5e3a0,Household Checking,Card Payment,2026-07-17,Card Payment #118,-3813,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+8457eebc6b8f462cb09fad4b5f4642e7076e55ac58d499393f84cb728f033f34,Household Checking,Merchant 08,2026-07-20,Merchant 08 #119,-14951,,Posted,Utilities,2026-10-20T01:01:48.778Z
+092815c83ea6b8658fa8e661f046524930a899344f97913687d5246b56d1e686,Household Checking,Merchant 28,2026-07-20,Merchant 28 #120,-1684,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+03063a0fa88869d260707748c60c1fe882e595ff106ca6e985299bb82b5e3eb4,Household Checking,Merchant 33,2026-07-20,Merchant 33 #121,-4733,,Posted,Restaurants,2026-10-20T01:01:48.778Z
+4a2fcd0a693622c99dc6a3cf16355272485254867338fec23356dbd52b7ac3c7,Household Checking,Barrelhead,2026-07-20,Barrelhead #122,-4121,,Posted,Health & Fitness,2026-10-20T01:01:48.778Z
+db6fca5baa89406ffad0e6c6cd4c693bda9bc9eba4876bfc259354f5eae9dc38,Household Checking,Merchant 30,2026-07-23,Merchant 30 #123,-22914,,Posted,Loan,2026-10-20T01:01:48.778Z
+c66c669386d5ce63990a03684000c786583a37ad91240588032b4fb61eb7e1fe,Household Checking,Merchant 21,2026-07-23,Merchant 21 #124,-12621,,Posted,Bills & Utilities,2026-10-20T01:01:48.778Z
+8f6a6d96cfc095ebd021ad8b12f39aa3b8890363a4c11631e882822567551ba1,Household Checking,Barrelhead,2026-07-23,Barrelhead #125,122626,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+c14ae5663e0ec53f369a356a1a882ded78caae41d7ef2fb26fc0cbad07f7a0d8,Household Checking,Transfer to Loan,2026-07-24,Transfer to Loan #126,-120330,,Posted,Transfer,2026-10-20T01:01:48.778Z
+c53419c0f9612c222bf287e23beeece3aa1b892444c65f2d2b1a402731a6fa46,Household Checking,Alex Transfer,2026-07-28,Alex Transfer #127,129098,,Posted,Transfer,2026-10-20T01:01:48.778Z
+7ee2ecd8fcd587bca98c0e0a3ac676444fd93cd6cd96f6ab1e755af335fa6add,Household Checking,Merchant 19,2026-07-29,Merchant 19 #128,-779,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+1b4670bbf1a2a338ab4c3c9fef268999b5c89130d1d7872781bf6664cd50c092,Household Checking,Online Store,2026-07-30,Online Store #129,-1412,,Posted,Shopping,2026-10-20T01:01:48.778Z
+6569737bdc7d57181d9fdc2344bc24a82379a4e41e5a32da72d347fe8daf01e6,Household Checking,Online Store,2026-07-30,Online Store #130,-1123,,Posted,Shopping,2026-10-20T01:01:48.778Z
+51a00326d63c46021814fb121007ef697277d2f3377e9101754823018b1efc93,Household Checking,Merchant 09,2026-07-30,Merchant 09 #131,-3748,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+4cebb279cc8f12cc687f42ff0813ec2cb901764195eb9f34839a448efaf6b5da,Household Checking,Merchant 01,2026-07-31,Merchant 01 #132,-4357,,Posted,Utilities,2026-10-20T01:01:48.778Z
+8d9bdd370577bb23d6ec16b16f6c3757e452e71582208a60951b856c90702d83,Household Checking,Online Store,2026-07-31,Online Store #133,-1692,,Posted,Shopping,2026-10-20T01:01:48.778Z
+39a718a79e132aea2cf28361d86eb929bdf8c1f66a0e1ce83fafe1d075627cfd,Household Checking,Online Store,2026-07-31,Online Store #134,-1224,,Posted,Shopping,2026-10-20T01:01:48.778Z
+e1950a56c2e7089b4b04547b06f8637345f1223f1c5f59a76d8d79a501149c7b,Household Checking,Online Store,2026-07-31,Online Store #135,-657,,Posted,Shopping,2026-10-20T01:01:48.778Z
+cb7942718489383a703c29768530df0cdbf206356bdf48ee806f1f27382c8557,Household Checking,Online Store,2026-07-31,Online Store #136,-3121,,Posted,Shopping,2026-10-20T01:01:48.778Z
+8b43d965907ec0a83e8198e590ff9c5aa263f4ffbce0867d48a39610b92f5ec1,Household Checking,Online Store,2026-08-03,Online Store #137,-347,,Posted,Hosting,2026-10-20T01:01:48.778Z
+34f9fb4b824adac09aa91e69eb50e5fcc8db03334dfae5bde5b41a5a1e248059,Household Checking,Merchant 24,2026-08-03,Merchant 24 #138,-1415,,Posted,Restaurants,2026-10-20T01:01:48.778Z
+9ce2cad52d06e277f20bcc1dfe2df9ee6f29c6a1a191f0167436dc6502123099,Household Checking,Barrelhead,2026-08-03,Barrelhead #139,-1804,,Posted,Health & Fitness,2026-10-20T01:01:48.778Z
+f381487d75eaeab72838d79f2847e3a2bb8cffdb18a1f95c2232d11ea499b0a4,Household Checking,Spouse Payroll,2026-08-03,Spouse Payroll #140,95280,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+786d83887ff50cc5380e726495d73d94577933f1340b80415be67dd93690b56d,Household Checking,Merchant 16,2026-08-06,Merchant 16 #141,-1583,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+138145ff1060888f94f94a95a0fb9c9c2350bdefb4db37758e24724dd979223f,Household Checking,Merchant 29,2026-08-06,Merchant 29 #142,-3236,,Posted,Food & Dining,2026-10-20T01:01:48.778Z
+ec88606dc82a53ebb713f5737837025f9bc90ba5d5ae2a0ce3b691f813da2c5f,Household Checking,Barrelhead,2026-08-06,Barrelhead #143,107142,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+04086953dc8358fbe89fbea58bf9b93931d68ede1d6626cd7f46ee2f47db5a32,Household Checking,Phone Carrier,2026-08-07,Phone Carrier #144,-11567,,Posted,Mobile Phone,2026-10-20T01:01:48.778Z
+1c023f3235b90f6dfc1592c92f0aa901efc096c1a6a420f4ba521652b8ddef6b,Household Checking,Home Loan,2026-08-10,Home Loan #145,-185663,,Posted,Mortgage & Rent,2026-10-20T01:01:48.778Z
+e194b723210bdeed57d205270ff6e91bc773a2c8b42c253bc848f8e0ce302d7b,Household Checking,Credit Card,2026-08-10,Credit Card #146,-74950,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+7e4485e371718146d5ea4d2b00be7440a97be0518b6c6e5fdbbb36d0a9faeab6,Household Checking,Automatic Loan Payment,2026-08-10,Automatic Loan Payment #147,-552,,Posted,Transfer,2026-10-20T01:01:48.778Z
+4e0f371da1be2a0a8c8ad39131da7d4f03c31f1465bdd71543a5007d9b662c84,Household Checking,Merchant 32,2026-08-10,Merchant 32 #148,-2175,,Posted,Shopping,2026-10-20T01:01:48.778Z
+8032724df1ef3ebeafdaa88aa4bf699869b7228528d5478a26c4823e590c8dd0,Household Checking,Merchant 28,2026-08-10,Merchant 28 #149,-1533,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+bb1535debb7024b17179e66b8fe261e6ca9dd41c25bfaebbe045436d695b8a9e,Household Checking,Streaming Service,2026-08-10,Streaming Service #150,-2573,,Posted,Television,2026-10-20T01:01:48.778Z
+21533f304e8452d51f7800427fd9efb91ab8a9b55e31bbbe36e765b29c649fae,Household Checking,Water District,2026-08-10,Water District #151,-10286,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+39147fb32ca0e2df2f3904df3db7a5fc21248892075f8f07e44dd624a780dd47,Household Checking,Merchant 32,2026-08-11,Merchant 32 #152,-8725,,Posted,Shopping,2026-10-20T01:01:48.778Z
+0e7aa8dd98cc445f0a5c9fa966751ceaa2b6d3c27493a6c66ea19e6f5b449331,Household Checking,Barrelhead,2026-08-11,Barrelhead #153,-537,,Posted,Health & Fitness,2026-10-20T01:01:48.778Z
+43b5dacad24828549f62c8e45b0486f2ce23ff70369151a645b1b909ddd6cb76,Household Checking,Electric Co,2026-08-12,Electric Co #154,-13287,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+d120bdb1ff5f90cba94b0ff29f17ffec1327495151aee404b5ee7daca17ac368,Household Checking,Merchant 27,2026-08-13,Merchant 27 #155,-56460,,Posted,Financial,2026-10-20T01:01:48.778Z
+71ba1f87b6503e76a4f8219bc5e71284060ae2adc866d84f33daaa273d4180a8,Household Checking,Merchant 33,2026-08-13,Merchant 33 #156,-3838,,Posted,Restaurants,2026-10-20T01:01:48.778Z
+db22d7cd6e0a3805130b558d5cd4b368a477577353f64b7f1eb64027dfb39c55,Household Checking,Funds Transfer,2026-08-13,Funds Transfer #157,206524,,Posted,Transfer,2026-10-20T01:01:48.778Z
+b807ff0dd0b4d94f19353ca8b0fb148ee9b73c644e3e2dafcf056ed1201990fc,Household Checking,Online Store,2026-08-14,Online Store #158,-1536,,Posted,Shopping,2026-10-20T01:01:48.778Z
+c825f7261f3cc94619ebdaa2539df123fe0ccd29b2d6d302d791d0f78f3d160f,Household Checking,Merchant 18,2026-08-14,Merchant 18 #159,-1752,,Posted,Service & Parts,2026-10-20T01:01:48.778Z
+eb5a0f256adeb8686408cecf5f101e1a65cb113ae8a8da96d7f6494d487c2324,Household Checking,Card Payment,2026-08-17,Card Payment #160,-3872,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+ea269779d6f5b349330e39c02e666b3bede84de7b18aec1effb1714cad5c1632,Household Checking,Merchant 25,2026-08-17,Merchant 25 #161,-5916,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+ff09524b08619f49db25638d8a5fcd8923d14e895ca68adbe9f41aa4e77433de,Household Checking,Merchant 34,2026-08-17,Merchant 34 #162,-3172,,Posted,Eyecare,2026-10-20T01:01:48.778Z
+b70b28329b4faefe75fb6da873c59fa28b7b4ff55410d389edc2b05195157671,Household Checking,Merchant 02,2026-08-17,Merchant 02 #163,-2090,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+14bb471620dc120a54fa449b59911df26f927cc0f70bea1dffaf0199670d9ed5,Household Checking,Merchant 28,2026-08-17,Merchant 28 #164,-1638,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+034a8b6e33495fe5da91616d757886647650f5a4e8a06b36017df8ef4655a128,Household Checking,Merchant 08,2026-08-18,Merchant 08 #165,-11216,,Posted,Utilities,2026-10-20T01:01:48.778Z
+59765abc3e79f349ffe3016f6934722a367eb79a9f3770ea5e5e566a955a902a,Household Checking,Merchant 20,2026-08-18,Merchant 20 #166,-6256,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+33b5f0f5a0f01d8d91ef2d02b1d46dc859f350928cc9c89e9ae307bd3835bea4,Household Checking,Merchant 21,2026-08-19,Merchant 21 #167,-8959,,Posted,Bills & Utilities,2026-10-20T01:01:48.778Z
+78097892ae8cd1218c1a5ec0639061ae0aa5f4c0294e5e70559786e7009c16a9,Household Checking,Barrelhead,2026-08-20,Barrelhead #168,170644,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+c7faf78bca5d8c9308743ff0f758578280b3213df96eb96cd9ef60ae25ba9c5f,Household Checking,Merchant Refund,2026-08-20,Merchant Refund #169,4955,,Posted,Income,2026-10-20T01:01:48.778Z
+d060621298abafe63147be9ec639b9c5ae867acf1cd21ea18d74ac906a850c6a,Household Checking,Merchant 30,2026-08-24,Merchant 30 #170,-29248,,Posted,Loan,2026-10-20T01:01:48.778Z
+4145c6295ad301e95d1db9e5733af20f967274db38d6405028ec693738be88e4,Household Checking,Merchant 28,2026-08-24,Merchant 28 #171,-1291,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+d6bdaf11d5b152934fdcd6b8d5b1b6d9d4e70ce57110cfd5a1fc2722f81afa33,Household Checking,Merchant 28,2026-08-24,Merchant 28 #172,-1901,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+7ce0d53e6b889cd0b8a5d33c787aceba844dce6ff6a46a56280b7c5844e0d555,Household Checking,Merchant 15,2026-08-24,Merchant 15 #173,-1198,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+38821ae3dcb7e851f2d386b8086b18598f83b385b2f0cc6a79d3b602e5248b07,Household Checking,Merchant 23,2026-08-24,Merchant 23 #174,-1848,,Posted,Food & Dining,2026-10-20T01:01:48.778Z
+f207279319b3a000d8d7f4e2c601667271fa90bb9cae0d53969cde187f714fb1,Household Checking,Transfer to Loan,2026-08-25,Transfer to Loan #175,-215090,,Posted,Transfer,2026-10-20T01:01:48.778Z
+077b5cef8724ad22c0c2376488cd602c556c4e6a5e8f5f45191036e89a63e661,Household Checking,Barrelhead,2026-08-25,Barrelhead #176,-905,,Posted,Health & Fitness,2026-10-20T01:01:48.778Z
+f55cf38c6d97458b07435948eb86ca698d9c6a0d9ff75a9d5c3c5ef7c256cb62,Household Checking,Merchant 01,2026-08-31,Merchant 01 #177,-4671,,Posted,Utilities,2026-10-20T01:01:48.778Z
+6372beca9efa141ce336c995b49506d678ce06747c524cf2a7f39aaa87780234,Household Checking,Merchant 19,2026-08-31,Merchant 19 #178,-877,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+6d8d75678c70b8b55b27c91f08d733ffd91d9720beb228009a571ec853565306,Household Checking,Merchant 28,2026-08-31,Merchant 28 #179,-1846,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+413a02797f6e2db236b358f1db890ed6bd650ec9fc9bf624c06ff013dae3ca2d,Household Checking,Merchant 28,2026-09-01,Merchant 28 #180,-1652,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+e38a25df91fc337757c2e468a65721c9e42e525e54e3243dbca5cceff89e1a5e,Household Checking,Alex Transfer,2026-09-01,Alex Transfer #181,137485,,Posted,Transfer,2026-10-20T01:01:48.778Z
+bd25676f7fe4a443735a8d150759f28374f99605338a57ca59dacadf8befc00b,Household Checking,Online Store,2026-09-02,Online Store #182,-360,,Posted,Hosting,2026-10-20T01:01:48.778Z
+9f678e8d2363b53a2daa52d62574d08a74eef42009e24a88530db9c204481ed2,Household Checking,Barrelhead,2026-09-03,Barrelhead #183,109721,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+4706aa50ffd81bd97d5d65b936ef9de07f2bff0777c4e86859b6a67d83dad179,Household Checking,Funds Transfer,2026-09-04,Funds Transfer #184,68942,,Posted,Transfer,2026-10-20T01:01:48.778Z
+bf4cc965a118204e93e472bfc846c219ef8fa6dc86d76c193b83361203104a07,Household Checking,Transfer Charge,2026-09-08,Transfer Charge #185,-858,,Posted,Banking Fee,2026-10-20T01:01:48.778Z
+81d15428a054a7e8a83489278c697ed29776de626527624a6f2db7dafe79340b,Household Checking,Home Loan,2026-09-08,Home Loan #186,-180984,,Posted,Mortgage & Rent,2026-10-20T01:01:48.778Z
+aea93aa2f84550912f4a35e08a8a1cf60e3381f2fc176cf0052b3603b0a6e655,Household Checking,Credit Card,2026-09-08,Credit Card #187,-61434,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+03e687bdf4a2b4a94f7fe852e184f451ad11058900830e6dc4942ebff86286fc,Household Checking,Merchant 04,2026-09-08,Merchant 04 #188,-6764,,Posted,Gas,2026-10-20T01:01:48.778Z
+1b98a35c70625bb01c97a6eb2d2cf1c1fe73bb8acb23ee5f569b24a7dbf8d010,Household Checking,Merchant 04,2026-09-08,Merchant 04 #189,-9283,,Posted,Gas,2026-10-20T01:01:48.778Z
+fec97c35e64d5511d7753f38141dc7e26df9da3a0a6df2d36cf1c6d0d1dc453d,Household Checking,Phone Carrier,2026-09-08,Phone Carrier #190,-12174,,Posted,Mobile Phone,2026-10-20T01:01:48.778Z
+e1c198b5a44164f11e3081aaacefdae9950856dda7080be4bbdfc4415f3d9332,Household Checking,Water District,2026-09-08,Water District #191,-7312,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+f4add7a5a11f8a2e60b0cf34c40f3cb9ca9c9197665b07bdafca90cdebc9052c,Household Checking,Merchant 02,2026-09-08,Merchant 02 #192,-2103,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+15dcabef1c8dc90db5219881975f12be3a11bd9e50d8914b7a5c26dbff6f39a2,Household Checking,Account Transfer,2026-09-08,Account Transfer #193,11231,,Posted,Transfer,2026-10-20T01:01:48.778Z
+8050d82428984993f9a30d9d83c5d91424001c19f4f75ab7e7f4cc99ba675fed,Household Checking,Streaming Service,2026-09-09,Streaming Service #194,-3909,,Posted,Television,2026-10-20T01:01:48.778Z
+43a3621926f51f89ae1c21f8caa32a89398fae1379b2aca35c3d4ea17252a85a,Household Checking,Funds Transfer,2026-09-09,Funds Transfer #195,223173,,Posted,Transfer,2026-10-20T01:01:48.778Z
+78e3cd9e287ed92a975efd29e666fca9f4da6a5f2fd4ee504e76f38a8e672edb,Household Checking,Automatic Loan Payment,2026-09-10,Automatic Loan Payment #196,-203,,Posted,Transfer,2026-10-20T01:01:48.778Z
+da9d3dcace46d1a6c2d8d1e174326bf2b5dabbbe8c2467cf3f149c708381e32b,Household Checking,Electric Co,2026-09-11,Electric Co #197,-14130,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+feb2bab297709a90518b8e4dc940558a3ec2f70d0e8a16483017884b8bcd9d83,Household Checking,Merchant 17,2026-09-14,Merchant 17 #198,-7686,,Posted,Restaurants,2026-10-20T01:01:48.778Z
+16bdf2e7b0ed7604e9fe3bfb56f320239927e6e2ffafd793b09eaf6061ea3e24,Household Checking,Merchant 31,2026-09-14,Merchant 31 #199,-441,,Posted,Groceries,2026-10-20T01:01:48.778Z
+6bfec166e501fc2ac8b20dcc8f55aa30d7eea94fb74a2d3047681cc798a53adf,Household Checking,Merchant 28,2026-09-14,Merchant 28 #200,-2163,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+3b60e354db894dab0cd83db49d09d056dcdaf49ebda44adbd48a7477d612e19c,Household Checking,Merchant 07,2026-09-14,Merchant 07 #201,-24397,,Posted,Business Services,2026-10-20T01:01:48.778Z
+5497c01ecdd36f6cd676470b71dd34ee452549d98ac7c92a3f5afcf631863ebb,Household Checking,Merchant 18,2026-09-14,Merchant 18 #202,-1614,,Posted,Service & Parts,2026-10-20T01:01:48.778Z
+63450774b73cb58c9dacb64b0310169dff57045b45b7cba2a500c3bba8a926f9,Household Checking,Merchant 27,2026-09-15,Merchant 27 #203,-30580,,Posted,Financial,2026-10-20T01:01:48.778Z
+137b19b5026d78d306c390cb3459a71074794b69e441f20a1e63ca9f5c56c078,Household Checking,Automatic Loan Payment,2026-09-15,Automatic Loan Payment #204,-5698,,Posted,Transfer,2026-10-20T01:01:48.778Z
+5430dbe1582ebcb57080fa3d8d51ad84b3316e9bc49b29ce9a4107b5950c2b27,Household Checking,Merchant 14,2026-09-15,Merchant 14 #205,-4957,,Posted,Restaurants,2026-10-20T01:01:48.778Z
+4cf2c6b74f34fff929e1f3f9fa6d97164eee8cb8f636a3a11825e82a798104a7,Household Checking,Card Payment,2026-09-16,Card Payment #206,-4376,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+4b59c51f7eedd1262aabc491cf2bbbc39f9b382c2348e9c6c9b1957f4c4f8bee,Household Checking,Transfer to Loan,2026-09-16,Transfer to Loan #207,-3784,,Posted,Transfer,2026-10-20T01:01:48.778Z
+5592d58614335c762894a9a86306519aa482101e431ca53fb78d4d8606f3962a,Household Checking,Barrelhead,2026-09-17,Barrelhead #208,121320,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+9e61012fc0146d1b985f77e977f98eb5226da2ac50d83adb04b57236e8b1eb42,Household Checking,Merchant 08,2026-09-18,Merchant 08 #209,-8405,,Posted,Utilities,2026-10-20T01:01:48.778Z
+2560f2a34151e8110bf6b5e8d3bf7040a14e72536a2a9dfbcc1ce4cd059195c9,Household Checking,Merchant 19,2026-09-18,Merchant 19 #210,-6617,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+e92a9c1d7a9a200715c832c4318d3b39bce9d9457be05e3b1a01f36fee12db02,Household Checking,Merchant 21,2026-09-18,Merchant 21 #211,-8663,,Posted,Bills & Utilities,2026-10-20T01:01:48.778Z
+dbf06abb029434aaa5168c1b67c178fd51c8a0e251e6b30bc56c8f3e5f36172a,Household Checking,Merchant 28,2026-09-21,Merchant 28 #212,-807,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+5dafb4e71d9f35c0fa07cd15385b57d45a585cb1f0da093d866effc862448c5a,Household Checking,Online Store,2026-09-21,Online Store #213,-1655,,Posted,Shopping,2026-10-20T01:01:48.778Z
+5503ac76df9314ab3ba094bcdb4e4686c5f5a82edf178bc615fcaa4fde1b3c89,Household Checking,Merchant 05,2026-09-21,Merchant 05 #214,-2944,,Posted,Food & Dining,2026-10-20T01:01:48.778Z
+4a5400e8ecce38bfd7a152cb7a15c76fdb9423ac8e08931eb0484579a84a0709,Household Checking,Merchant 31,2026-09-21,Merchant 31 #215,-694,,Posted,Groceries,2026-10-20T01:01:48.778Z
+8f9e8b651b9b07919dd19819271c09bb9db176b641ed3d2b13531ff46b525fff,Household Checking,Merchant 28,2026-09-21,Merchant 28 #216,-1342,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+ad5c89003ae1e9e39f24c609c43dac91fa010c2a130d484b94d1a04adbe4aba2,Household Checking,Alex Transfer,2026-09-22,Alex Transfer #217,70227,,Posted,Transfer,2026-10-20T01:01:48.778Z
+d4c11635a65f30cba2bb878df688f7030d44ef588519752dbeef4e4e9fe9b279,Household Checking,Merchant 30,2026-09-23,Merchant 30 #218,-27782,,Posted,Loan,2026-10-20T01:01:48.778Z
+1b52b4988bc641f52a853cf891c0e6b24e35ec6f1528e0f1ff11a0481890e46e,Household Checking,Merchant 28,2026-09-24,Merchant 28 #219,-1291,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+902807a54d82c5697345109bd39cb2618c7640c844125b5afe451f63c25ffc35,Household Checking,Transfer to Loan,2026-09-28,Transfer to Loan #220,-232141,,Posted,Transfer,2026-10-20T01:01:48.778Z
+562b43bde07dd522a9a2e7868ecf7f94edade346d480faad80abc55ada75ff99,Household Checking,Transfer to Loan,2026-09-28,Transfer to Loan #221,-375,,Posted,Transfer,2026-10-20T01:01:48.778Z
+5ca5e3992e8aeb2a14c4fbc94f0b06f6ccd88a9e0f528832c8ef5b5dca061fb5,Household Checking,Merchant 28,2026-09-28,Merchant 28 #222,-2871,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+db6dc9dba62b39da354551c1f6533722cc3e196982e7b71b9d2d3a512fa852ea,Household Checking,Merchant 02,2026-09-28,Merchant 02 #223,-3312,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+e4f0daea2da08dafdd84682e72b4dc093cd07effd03dc0b684b30039707683fb,Household Checking,Merchant 16,2026-09-28,Merchant 16 #224,-1261,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+abb26ef28c568f2a1fe608484b193a3bb3b838286c34b18268ca4a11a3228427,Household Checking,Merchant 19,2026-09-29,Merchant 19 #225,-932,,Posted,Uncategorized,2026-10-20T01:01:48.778Z
+1485266bd91494494f028162a6b0dd84ab4522a2c78e13b1c7da6c7ab713d701,Household Checking,Funds Transfer,2026-09-29,Funds Transfer #226,106575,,Posted,Transfer,2026-10-20T01:01:48.778Z
+ddc8f434c3c0ded4f322bd7dbbf94bc487efb2fc2901e091d530e789c8840ee5,Household Checking,Merchant 32,2026-09-30,Merchant 32 #227,-3008,,Posted,Shopping,2026-10-20T01:01:48.778Z
+75225f840c8ca2de80423abd38b1af924522e2de6e2d142c1f2270f118c83db1,Household Checking,Merchant 01,2026-10-01,Merchant 01 #228,-3757,,Posted,Utilities,2026-10-18T21:33:36.276Z
+48d902e3239e8726d8c68ac4bbf5cbc6b62829b24ac9e5820902b9ab21b19841,Household Checking,Online Store,2026-10-01,Online Store #229,-397,,Posted,Hosting,2026-10-18T21:33:36.276Z
+d343722ba1824a9cf733970375a0535eb95eadecc145236f13804693d2d5322b,Household Checking,Merchant 28,2026-10-01,Merchant 28 #230,-1001,,Posted,Fast Food,2026-10-18T21:33:36.276Z
+a8448a97184b8bd312e5b0988fb84b5a21832ea8907c11af50093c2efcaaad9d,Household Checking,Barrelhead,2026-10-01,Barrelhead #231,101882,,Posted,Paycheck,2026-10-18T21:33:36.276Z
+01f8a394ea744eab5c9d9cdceb64f1e5b2c4fc1509bbcf0022a5dd56e761a51b,Household Checking,Merchant 10,2026-10-02,Merchant 10 #232,-7563,,Posted,Groceries,2026-10-18T21:33:36.276Z
+ff9aa92d7494d6bb27bd76776bf892840c125fee1d43661f0ace151fef03b984,Household Checking,Online Store,2026-10-02,Online Store #233,-3492,,Posted,Shopping,2026-10-18T21:33:36.276Z
+61e46a53a41908559816d89b538d5ca62caf179922f0488ebe5088280303168d,Household Checking,Online Store,2026-10-02,Online Store #234,-1414,,Posted,Shopping,2026-10-18T21:33:36.276Z
+6eb370c5c9a504b738ef738345061b1d4e21ef71f28d18b01c609b01a13b6101,Household Checking,Merchant 02,2026-10-05,Merchant 02 #235,-3138,,Posted,Fast Food,2026-10-18T21:33:36.276Z
+13fc610ca8c75d54b5c049ef08ae7751ddabb7c5aea8c78e28ffaa73f464eaef,Household Checking,Online Store,2026-10-05,Online Store #236,-2238,,Posted,Shopping,2026-10-18T21:33:36.276Z
+fff14c998bc651b14101688b6682d1309dba2be5eb02e4ec8c1261d16a894bd9,Household Checking,Merchant 06,2026-10-05,Merchant 06 #237,-1963,,Posted,Uncategorized,2026-10-18T21:33:36.276Z
+f0e33edc6381d179a8c2757caffb3bc934656eadbd0b03c03abe3460ca7d79a3,Household Checking,Merchant 15,2026-10-05,Merchant 15 #238,-1491,,Posted,Uncategorized,2026-10-18T21:33:36.276Z
+382106c4d2290457c8c190a091f49b680083dcc1de73e0419d36e36e22dce8f4,Household Checking,Merchant 28,2026-10-05,Merchant 28 #239,-3800,,Posted,Fast Food,2026-10-18T21:33:36.276Z
+27c2bf7597886537d195ddba1ad0c38a52ca670cef60cc996c66efee128e7a1e,Household Checking,Merchant 16,2026-10-05,Merchant 16 #240,-1510,,Posted,Fast Food,2026-10-18T21:33:36.276Z
+607f82c5433ed240a1f7477f8db5f03652337cf2fa3265e5d2338ef062e32671,Household Checking,Online Store,2026-10-05,Online Store #241,-1418,,Posted,Shopping,2026-10-18T21:33:36.276Z
+48fd610a6a65a2c585f21182faf7831629cb2a8563117c3b159e8dbb27cbdcc7,Household Checking,Online Store,2026-10-06,Online Store #242,-1038,,Posted,Shopping,2026-10-18T21:33:36.276Z
+e0882404c353bd437fda99a9745a1da8885e16806136a55d13c313f8f14a8c55,Household Checking,Online Store,2026-10-06,Online Store #243,-3178,,Posted,Shopping,2026-10-18T21:33:36.276Z
+4cf867ee97a0bc14fa50711f1ba014ca9b55f5ec57186fc97a19609acaca75fc,Household Checking,Phone Carrier,2026-10-07,Phone Carrier #244,-13897,,Posted,Mobile Phone,2026-10-18T21:33:36.276Z
+53c52e4c341e4c9596852512888dd387c4178c252eacb53e98eb12b31e610d06,Household Checking,Home Loan,2026-10-08,Home Loan #245,-190002,,Posted,Mortgage & Rent,2026-10-18T21:33:36.276Z
+c1f31130cab2aea1512efc0200c06d8243a0a196cac7bca46c885532536f4c9a,Household Checking,Credit Card,2026-10-08,Credit Card #246,-76316,,Posted,Credit Card Payment,2026-10-18T21:33:36.276Z
+7f7fc90b0437d237af6ab455ab7ad93d02491269df8368f88f7cf6ed6d5709b7,Household Checking,Water District,2026-10-08,Water District #247,-6416,,Posted,Uncategorized,2026-10-18T21:33:36.276Z
+591902af6caca13164393b5ff98bf0b217ed6992d3f1f74504742b9f9138e28d,Household Checking,Funds Transfer,2026-10-08,Funds Transfer #248,128834,,Posted,Transfer,2026-10-18T21:33:36.276Z
+e15820954650a0f732536a421a6e2ea9625feec483b30c1adbe06f56cce1528b,Household Checking,Electric Co,2026-10-09,Electric Co #249,-18745,,Posted,Uncategorized,2026-10-18T21:33:36.276Z
+0bbb06cdd7f2d4bd5f6876fbd349a27a207bf178d0e07380f89f64349266722d,Household Checking,Streaming Service,2026-10-09,Streaming Service #250,-1869,,Posted,Television,2026-10-18T21:33:36.276Z
+8f445f3cac0b77f4030e97500554cc881d2cc0f4b1fb5ff70c6c0fc2526d611b,Household Checking,Merchant 26,2026-10-09,Merchant 26 #251,-9865,,Posted,Home Improvement,2026-10-18T21:33:36.276Z
+745bca764336d9e9e51c7bb5938477cb46764b798a6b906b766ee97f86bd1b22,Household Checking,Merchant 18,2026-10-13,Merchant 18 #252,-2409,,Posted,Service & Parts,2026-10-20T01:01:48.778Z
+810c2ccca88beab9f64adc515d2a513c48c3265290e3d38e3474b30c12dc20dd,Household Checking,Merchant 02,2026-10-13,Merchant 02 #253,-3218,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+4c9ae0e99c08b3e2bb12ed288b517dc6c786bc4609383f4773bbaf64df47645e,Household Checking,Merchant 28,2026-10-13,Merchant 28 #254,-1480,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+741b8fa58301b10eb45e85f995d2fd91e6e61d7e1075ce0c4a21aa75decaf180,Household Checking,Merchant 27,2026-10-14,Merchant 27 #255,-58294,,Posted,Financial,2026-10-20T01:01:48.778Z
+f0b082a52523901baa61619f792d0049cd733e92cdd7e44e6f4d0868ed0533bd,Household Checking,Merchant 05,2026-10-15,Merchant 05 #256,-12889,,Posted,Food & Dining,2026-10-20T01:01:48.778Z
+ab9d8109e42be08049687cd83a9dbef2761e8ecde659b5a27806426967250814,Household Checking,Merchant 02,2026-10-15,Merchant 02 #257,-2584,,Posted,Fast Food,2026-10-20T01:01:48.778Z
+c1176ee68b9dfa78456a9f8711b273ec5f384afb3bb8a3d36009c3bc7243c0ad,Household Checking,Barrelhead,2026-10-15,Barrelhead #258,77540,,Posted,Paycheck,2026-10-20T01:01:48.778Z
+d0ea8ed7b43a19e60cddf4c0a19a6ff66f6a0805166e766c7d3f2eab00199883,Household Checking,Card Payment,2026-10-16,Card Payment #259,-3216,,Posted,Credit Card Payment,2026-10-20T01:01:48.778Z
+afba2c1ddec5a1376ffaaa0777c28febf510de028da67a70483308c03c5ba623,Household Checking,Automatic Loan Payment,2026-10-16,Automatic Loan Payment #260,-375,,Posted,Transfer,2026-10-20T01:01:48.778Z
+28880c67694abb8d51aa977913fa879e5c6540c1ac4dbc244eb2250ea2c8b7b4,Household Checking,Online Store,2026-10-16,Online Store #261,-10382,,Posted,Shopping,2026-10-20T01:01:48.778Z

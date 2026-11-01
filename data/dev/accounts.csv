@@ -1,0 +1,54 @@
+name,match_text,type,institution,mask,opening_balance_cents,opening_on,expected_amount_cents,due_day,schedule_active,archived,created_at
+Household Checking,Household Checking,checking,Sample Bank,0000,688835,2026-09-30,,,false,false,2026-10-18T20:05:11.890Z
+Streaming Service,Streaming Service,bill,,,0,,3269,9,true,false,2026-10-18T20:05:11.892Z
+Home Loan,Home Loan,loan,,,-27668721,2026-09-30,254877,8,true,false,2026-10-18T20:05:11.892Z
+Phone Carrier,Phone Carrier,bill,,,0,,23017,7,true,false,2026-10-18T20:05:11.893Z
+Barrelhead,Barrelhead,income,,,0,,108095,15,true,false,2026-10-18T20:05:11.893Z
+Credit Card,Credit Card,credit_card,,,-107550,2026-09-30,66513,8,true,false,2026-10-18T20:05:11.894Z
+Online Store,Online Store,household,,,0,,,,false,false,2026-10-18T20:08:56.340Z
+Electric Co,Electric Co,bill,,,0,,,,false,false,2026-10-18T20:28:21.651Z
+Merchant 26,Merchant 26,other,,,0,,,,false,false,2026-10-18T21:33:36.276Z
+Water District,Water District,bill,,,0,,10479,8,true,false,2026-10-18T21:33:36.276Z
+Funds Transfer,Funds Transfer,income,,,0,,,,false,false,2026-10-18T21:33:36.276Z
+Merchant 02,Merchant 02,other,,,0,,,,false,false,2026-10-18T21:33:36.276Z
+Merchant 06,Merchant 06,other,,,0,,,,false,false,2026-10-18T21:33:36.276Z
+Merchant 15,Merchant 15,other,,,0,,,,false,false,2026-10-18T21:33:36.276Z
+Merchant 28,Merchant 28,other,,,0,,,,false,false,2026-10-18T21:33:36.276Z
+Merchant 16,Merchant 16,other,,,0,,,,false,false,2026-10-18T21:33:36.276Z
+Merchant 10,Merchant 10,other,,,0,,,,false,false,2026-10-18T21:33:36.276Z
+Merchant 01,Merchant 01,other,,,0,,,,false,false,2026-10-18T21:33:36.276Z
+Card Payment,Card Payment,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Automatic Loan Payment,Automatic Loan Payment,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 05,Merchant 05,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 27,Merchant 27,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 18,Merchant 18,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 32,Merchant 32,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 19,Merchant 19,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Transfer to Loan,Transfer to Loan,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 30,Merchant 30,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Alex Transfer,Alex Transfer,income,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 31,Merchant 31,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 08,Merchant 08,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 21,Merchant 21,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 14,Merchant 14,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 17,Merchant 17,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 07,Merchant 07,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Transfer Charge,Transfer Charge,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 04,Merchant 04,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Account Transfer,Account Transfer,income,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 23,Merchant 23,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant Refund,Merchant Refund,income,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 20,Merchant 20,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 25,Merchant 25,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 34,Merchant 34,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 33,Merchant 33,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 29,Merchant 29,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 24,Merchant 24,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Spouse Payroll,Spouse Payroll,income,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 09,Merchant 09,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 03,Merchant 03,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Deposit,Deposit,income,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 11,Merchant 11,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 12,Merchant 12,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 13,Merchant 13,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
+Merchant 22,Merchant 22,other,,,0,,,,false,false,2026-10-20T01:01:48.778Z
