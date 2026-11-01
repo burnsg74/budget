@@ -2,7 +2,7 @@
   import BarChart from "../components/BarChart.svelte";
   import LineChart from "../components/LineChart.svelte";
   import Money from "../components/Money.svelte";
-  import { isLiabilityType } from "../lib/accountTypes.js";
+  import { isLiabilityType, isOverdraftAccount } from "../lib/accountTypes.js";
   import { data } from "../lib/data.svelte.js";
   import { formatMonth, isIsoDate, monthOf, monthRange, todayIso } from "../lib/dates.js";
   import { formatCents, formatHeldBalance } from "../lib/money.js";
@@ -37,7 +37,9 @@
 
   // ---- job-search floor -------------------------------------------------------
   const byName = (a, b) => a.name.localeCompare(b.name);
-  const incomeAccounts = $derived(data.accounts.filter((a) => a.type === "income" && !a.archived).sort(byName));
+  const incomeAccounts = $derived(
+    data.accounts.filter((a) => a.type === "income" && !a.archived && !isOverdraftAccount(a)).sort(byName),
+  );
   const myIncome = $derived(settings.resolveMyIncome(data.accounts));
   const typical = $derived(typicalSpending(data.accounts, data.transactions, today, 3));
   const floor = $derived(
@@ -57,7 +59,7 @@
   let spendingAccount = $state("");
   const spendableAccounts = $derived(
     data.accounts
-      .filter((a) => a.type === "checking" || a.type === "bill" || a.type === "household" || a.type === "other")
+      .filter((a) => (a.type === "checking" || a.type === "bill" || a.type === "household" || a.type === "other") && !isOverdraftAccount(a))
       .sort(byName),
   );
   const spendingMonthly = $derived.by(() => {

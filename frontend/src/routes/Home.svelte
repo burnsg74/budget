@@ -1,5 +1,7 @@
 <script>
+  import BalanceField from "../components/BalanceField.svelte";
   import Money from "../components/Money.svelte";
+  import { balanceOf, loanAnchorAccount, openingForTarget } from "../lib/balances.js";
   import { data } from "../lib/data.svelte.js";
   import { formatDate, formatMonthLong, formatShortDate, monthOf, todayIso } from "../lib/dates.js";
   import { formatHeldBalance } from "../lib/money.js";
@@ -15,6 +17,19 @@
   );
 
   const nextIncome = $derived(model.upcoming.find((u) => u.direction === "in"));
+  const soleChecking = $derived.by(() => {
+    const tracked = model.balances.checking;
+    if (tracked.length !== 1) return null;
+    return data.accounts.find((account) => account.name === tracked[0].name) ?? null;
+  });
+  const loanAnchor = $derived(loanAnchorAccount(data.accounts));
+
+  function setBalance(account, currentCents, targetCents) {
+    if (!account || currentCents === null) return;
+    return data.updateAccount(account.name, {
+      opening_balance_cents: openingForTarget(account.opening_balance_cents, currentCents, targetCents),
+    });
+  }
 </script>
 
 <div class="head">
@@ -38,7 +53,15 @@
 <section class="cards">
   <div class="panel stat">
     <span class="label">Checking now</span>
-    <span class="value"><Money cents={model.cashNowCents} /></span>
+    {#if soleChecking}
+      <BalanceField
+        cents={balanceOf(soleChecking, data.transactions)}
+        size="stat"
+        onsave={(target) => setBalance(soleChecking, balanceOf(soleChecking, data.transactions), target)}
+      />
+    {:else}
+      <span class="value"><Money cents={model.cashNowCents} /></span>
+    {/if}
   </div>
   <div class="panel stat">
     <span class="label">Projected end of month</span>
@@ -54,6 +77,23 @@
     <span class="value"><Money cents={model.gap.gapCents} tint="both" /></span>
     <span class="muted small">
       <Money cents={model.gap.incomeCents} tint="none" /> in · <Money cents={model.gap.outflowCents} tint="none" /> out
+    </span>
+  </div>
+  <div class="panel stat">
+    <span class="label">Borrowed from loan</span>
+    {#if loanAnchor}
+      <BalanceField
+        cents={model.borrowed.borrowedCents}
+        size="stat"
+        tint="none"
+        onsave={(target) => setBalance(loanAnchor, model.borrowed.borrowedCents, target)}
+      />
+    {:else}
+      <span class="value"><Money cents={model.borrowed.borrowedCents} tint="none" /></span>
+    {/if}
+    <span class="muted small">
+      This month <Money cents={model.borrowed.monthDrawCents} tint="none" /> drawn ·
+      <Money cents={model.borrowed.monthRepayCents} tint="none" /> repaid
     </span>
   </div>
   <div class="panel stat">

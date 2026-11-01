@@ -4,7 +4,7 @@
 //           + SUM(amount) of Posted txns where account = this AND posted_on > opening_on
 //           + (credit_card / loan) SUM(-amount) of Posted txns where matched_account = this
 //             AND account != this AND posted_on > opening_on
-import { isBalanceType, isLiabilityType } from "./accountTypes.js";
+import { isBalanceType, isLiabilityType, isOverdraftAccount } from "./accountTypes.js";
 import { addDays, eachDate } from "./dates.js";
 
 const POSTED = "Posted";
@@ -68,6 +68,70 @@ export function balanceSeries(account, transactions, from, to) {
   const dayAfterOpening = addDays(account.opening_on, 1);
   const walkStart = from > dayAfterOpening ? from : dayAfterOpening;
   for (const day of eachDate(walkStart, to)) {
+    balance += deltaByDate.get(day) ?? 0;
+    series.push({ date: day, cents: balance });
+  }
+  return series;
+}
+
+/** Opening anchor that makes a derived balance equal `targetCents`. */
+export function openingForTarget(openingCents, currentCents, targetCents) {
+  return openingCents + (targetCents - currentCents);
+}
+
+function overdraftLines(accounts) {
+  return accounts.filter(isOverdraftAccount);
+}
+
+/** Account whose opening anchor holds the checking-loan level. Funds Transfer when present. */
+export function loanAnchorAccount(accounts) {
+  const lines = overdraftLines(accounts).filter((account) => !account.archived);
+  return lines.find((account) => account.name === "Funds Transfer") ?? lines[0] ?? null;
+}
+
+function loanOpeningCents(lines) {
+  return lines.reduce((total, account) => total + (account.opening_balance_cents || 0), 0);
+}
+
+/**
+ * Amount still borrowed on the checking loan.
+ * Opening anchors on the checking-loan accounts, plus posted draws and repayments
+ * matched to them through `asOf` (default: everything). Draws are positive.
+ */
+export function checkingLoanBalance(accounts, transactions, asOf = null) {
+  const lines = overdraftLines(accounts);
+  const names = new Set(lines.map((account) => account.name));
+  let balance = loanOpeningCents(lines);
+  for (const tx of transactions) {
+    if (tx.status !== POSTED || !names.has(tx.matched_account)) continue;
+    if (asOf && tx.posted_on > asOf) continue;
+    balance += tx.amount_cents;
+  }
+  return balance;
+}
+
+/**
+ * Daily checking-loan balance from `from` through `to`.
+ * Activity before `from` is already in the first point, so the series stays level with the anchor.
+ */
+export function checkingLoanSeries(accounts, transactions, from, to) {
+  const lines = overdraftLines(accounts);
+  if (lines.length === 0 || !from || from > to) return [];
+
+  const names = new Set(lines.map((account) => account.name));
+  const deltaByDate = new Map();
+  for (const tx of transactions) {
+    if (tx.status !== POSTED || !names.has(tx.matched_account) || tx.posted_on > to) continue;
+    deltaByDate.set(tx.posted_on, (deltaByDate.get(tx.posted_on) ?? 0) + tx.amount_cents);
+  }
+
+  let balance = loanOpeningCents(lines);
+  for (const [date, cents] of deltaByDate) {
+    if (date < from) balance += cents;
+  }
+
+  const series = [];
+  for (const day of eachDate(from, to)) {
     balance += deltaByDate.get(day) ?? 0;
     series.push({ date: day, cents: balance });
   }

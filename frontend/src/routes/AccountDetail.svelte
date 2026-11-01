@@ -1,10 +1,11 @@
 <script>
   import LineChart from "../components/LineChart.svelte";
   import BarChart from "../components/BarChart.svelte";
+  import BalanceField from "../components/BalanceField.svelte";
   import Money from "../components/Money.svelte";
-  import { ACCOUNT_TYPES, TYPE_LABELS, isBalanceType, isLiabilityType } from "../lib/accountTypes.js";
-  import { CADENCE_OPTIONS } from "../lib/cadence.js";
-  import { balanceOf, balanceSeries } from "../lib/balances.js";
+  import { ACCOUNT_TYPES, TYPE_LABELS, isBalanceType, isLiabilityType, isOverdraftAccount } from "../lib/accountTypes.js";
+  import { CADENCE_LABELS, CADENCE_OPTIONS } from "../lib/cadence.js";
+  import { balanceOf, balanceSeries, checkingLoanBalance, checkingLoanSeries, loanAnchorAccount, openingForTarget } from "../lib/balances.js";
   import { data } from "../lib/data.svelte.js";
   import { addDays, formatDate, formatMonth, monthOf, todayIso } from "../lib/dates.js";
   import { centsToInput, dollarsToCents, formatCents, formatHeldBalance } from "../lib/money.js";
@@ -22,10 +23,11 @@
   );
   const balance = $derived(account ? balanceOf(account, data.transactions) : null);
   const graphKind = $derived(account ? detailGraphKind(account) : "monthly");
+  const liability = $derived(account ? isLiabilityType(account.type) : false);
+  const loanAnchor = $derived(loanAnchorAccount(data.accounts));
+  const loanBalance = $derived(checkingLoanBalance(data.accounts, data.transactions));
 
-  const balanceChart = $derived.by(() => {
-    if (!account || graphKind !== "balance") return null;
-    const series = balanceSeries(account, data.transactions, account.opening_on, today);
+  function chartPoints(series) {
     // Daily points are plentiful; the chart only needs to show shape, so thin long ranges.
     const stride = Math.max(1, Math.ceil(series.length / 120));
     const thinned = series.filter((_, i) => i % stride === 0 || i === series.length - 1);
@@ -33,35 +35,40 @@
       labels: thinned.map((p) => formatDate(p.date)),
       values: thinned.map((p) => p.cents),
     };
+  }
+
+  const balanceChart = $derived.by(() => {
+    if (!account || graphKind !== "balance") return null;
+    return chartPoints(balanceSeries(account, data.transactions, account.opening_on, today));
+  });
+
+  const loanChart = $derived.by(() => {
+    if (!account || account.type !== "checking" || !account.opening_on) return null;
+    if (!data.accounts.some(isOverdraftAccount)) return null;
+    const series = checkingLoanSeries(data.accounts, data.transactions, account.opening_on, today);
+    return series.length === 0 ? null : chartPoints(series);
   });
 
   const monthly = $derived(account && graphKind === "monthly" ? monthlyTotals(data.transactions, name, monthOf(today), 12) : []);
 
   // ---- params ---------------------------------------------------------------
   const typeOptions = ACCOUNT_TYPES.map((value) => ({ value, label: TYPE_LABELS[value] ?? value }));
+  const cadenceField = { key: "cadence", kind: "select", options: CADENCE_OPTIONS };
   const cadence = $derived(account?.cadence || "day");
 
   const fields = $derived.by(() => {
     if (!account) return [];
-    const amountLabel =
-      cadence === "biweekly" ? "Per paycheck" : cadence === "month" ? "Once a month" : "Expected amount";
     const list = [
       { key: "name", label: "Name", kind: "text" },
       { key: "type", label: "Type", kind: "select", options: typeOptions },
       { key: "match_text", label: "Match text", kind: "text" },
-      { key: "institution", label: "Institution", kind: "text", nullable: true },
-      { key: "mask", label: "Mask", kind: "text", nullable: true },
       { key: "opening_balance_cents", label: "Opening balance", kind: "money", balance: true },
       { key: "opening_on", label: "Opening date", kind: "date", nullable: true, balance: true },
-      { key: "expected_amount_cents", label: amountLabel, kind: "money", nullable: true },
-      { key: "cadence", label: "Schedule", kind: "select", options: CADENCE_OPTIONS },
+      { key: "expected_amount_cents", label: CADENCE_LABELS[cadence], kind: "money", nullable: true },
     ];
     if (cadence === "day") list.push({ key: "due_day", label: "Due day", kind: "int", nullable: true });
     if (cadence === "biweekly") list.push({ key: "anchor_on", label: "Anchor date", kind: "date", nullable: true });
-    list.push(
-      { key: "schedule_active", label: "Scheduled", kind: "bool" },
-      { key: "archived", label: "Archived", kind: "bool" },
-    );
+    list.push({ key: "archived", label: "Archived", kind: "bool" });
     return list;
   });
 
@@ -85,7 +92,7 @@
 
   function start(field) {
     if (!account || saving) return;
-    const value = account[field.key];
+    const value = field.key === "cadence" ? account.cadence || "day" : account[field.key];
     if (field.kind === "bool") {
       save(field, !value);
       return;
@@ -143,6 +150,13 @@
     editing = null;
   }
 
+  function setBalance(anchor, currentCents, targetCents) {
+    if (!anchor || currentCents === null) return;
+    return data.updateAccount(anchor.name, {
+      opening_balance_cents: openingForTarget(anchor.opening_balance_cents, currentCents, targetCents),
+    });
+  }
+
   function onkey(event, field) {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -192,6 +206,17 @@
         {/if}
       </section>
 
+      {#if loanChart}
+        <section class="panel">
+          <h2>Checking loan over time</h2>
+          <LineChart
+            labels={loanChart.labels}
+            includeZero={false}
+            series={[{ name: "Borrowed", color: "#9a6700", values: loanChart.values }]}
+          />
+        </section>
+      {/if}
+
       <section class="panel">
         <h2>Transactions <span class="muted">({related.length})</span></h2>
         {#if related.length === 0}
@@ -224,11 +249,38 @@
     </div>
 
     <aside class="panel params">
-      <h2>Params</h2>
       <p class="muted small">Double-click a value to edit. Enter saves, Esc cancels.</p>
       <dl>
         {#each visibleFields as field (field.key)}
-          <dt>{field.label}</dt>
+          <dt>
+            {#if field.key === "expected_amount_cents"}
+              {#if editing === "cadence"}
+                <select
+                  value={draft}
+                  {@attach focus}
+                  onchange={(e) => save(cadenceField, e.currentTarget.value)}
+                  onblur={cancel}
+                  onkeydown={(e) => e.key === "Escape" && cancel()}
+                >
+                  {#each CADENCE_OPTIONS as option (option.value)}
+                    <option value={option.value}>{option.label}</option>
+                  {/each}
+                </select>
+              {:else}
+                <button
+                  type="button"
+                  class="value cadence-label"
+                  title="Double-click to edit"
+                  ondblclick={() => start(cadenceField)}
+                  onkeydown={(e) => (e.key === "Enter" || e.key === "F2") && start(cadenceField)}
+                >
+                  {CADENCE_LABELS[cadence]}
+                </button>
+              {/if}
+            {:else}
+              {field.label}
+            {/if}
+          </dt>
           <dd>
             {#if editing === field.key}
               {#if field.kind === "select"}
@@ -268,7 +320,28 @@
         {/each}
         {#if tracksBalance}
           <dt>Balance</dt>
-          <dd><span class="static">{balance === null ? "not tracked" : formatHeldBalance(balance, isLiabilityType(account.type))}</span></dd>
+          <dd>
+            {#if balance === null}
+              <span class="static">not tracked</span>
+            {:else}
+              <BalanceField
+                cents={liability ? -balance : balance}
+                resting={formatHeldBalance(balance, liability)}
+                tint={liability ? "none" : "negative"}
+                onsave={(target) => setBalance(account, balance, liability ? -target : target)}
+              />
+            {/if}
+          </dd>
+        {/if}
+        {#if account.type === "checking" && loanAnchor}
+          <dt>Loan balance</dt>
+          <dd>
+            <BalanceField
+              cents={loanBalance}
+              tint="none"
+              onsave={(target) => setBalance(loanAnchor, loanBalance, target)}
+            />
+          </dd>
         {/if}
         <dt>Created</dt>
         <dd><span class="static">{account.created_at ? formatDate(account.created_at.slice(0, 10)) : "—"}</span></dd>
@@ -358,8 +431,14 @@
   }
 
   dd input,
-  dd select {
+  dd select,
+  dt select {
     width: 100%;
+  }
+
+  .cadence-label {
+    color: var(--muted);
+    font-size: 12px;
   }
 
   .value {

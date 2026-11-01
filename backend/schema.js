@@ -2,7 +2,7 @@
 import { createHash } from "node:crypto";
 import { parseCsvObjects, stringifyCsv } from "./csv.js";
 
-export const ACCOUNT_TYPES = ["checking", "income", "credit_card", "loan", "bill", "household", "other"];
+export const ACCOUNT_TYPES = ["checking", "income", "credit_card", "loan", "overdraft", "bill", "household", "other"];
 
 /** day = due day of the month; biweekly = every 14 days from anchor_on; month = once a month, no fixed day. */
 export const CADENCES = ["day", "biweekly", "month"];
@@ -11,8 +11,6 @@ export const ACCOUNT_COLUMNS = [
   "name",
   "match_text",
   "type",
-  "institution",
-  "mask",
   "opening_balance_cents",
   "opening_on",
   "expected_amount_cents",
@@ -57,8 +55,6 @@ export function accountFromRow(row) {
     name: row.name,
     match_text: row.match_text,
     type: row.type,
-    institution: row.institution || null,
-    mask: row.mask || null,
     opening_balance_cents: Number(row.opening_balance_cents || 0),
     opening_on: row.opening_on || null,
     expected_amount_cents: toIntOrNull(row.expected_amount_cents),
@@ -76,8 +72,6 @@ export function accountToRow(a) {
     a.name,
     a.match_text,
     a.type,
-    toStr(a.institution),
-    toStr(a.mask),
     toStr(a.opening_balance_cents ?? 0),
     toStr(a.opening_on),
     toStr(a.expected_amount_cents),
@@ -134,6 +128,23 @@ export function stringifyAccounts(accounts) {
 
 export function stringifyTransactions(transactions) {
   return stringifyCsv(TRANSACTION_COLUMNS, transactions.map(transactionToRow));
+}
+
+/**
+ * Latest posted date that can serve as a biweekly payday anchor.
+ * Income uses the last deposit; everything else uses the last posted touch.
+ */
+export function lastAnchorOn(account, transactions) {
+  const name = account.name;
+  const depositsOnly = account.type === "income";
+  let latest = null;
+  for (const t of transactions) {
+    if (t.status !== "Posted") continue;
+    if (t.account !== name && t.matched_account !== name) continue;
+    if (depositsOnly && !(t.amount_cents > 0)) continue;
+    if (!latest || t.posted_on > latest) latest = t.posted_on;
+  }
+  return latest;
 }
 
 /** Throws ValidationError when a (full) account record is invalid. */

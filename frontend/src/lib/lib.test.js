@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { balanceOf, balanceSeries, totalChecking } from "./balances.js";
+import { balanceOf, balanceSeries, checkingLoanBalance, checkingLoanSeries, loanAnchorAccount, openingForTarget, totalChecking } from "./balances.js";
 import { buildMonth, planTransfers, projectCash } from "./month.js";
-import { incomeExpenseByMonth, jobSearchFloor, liabilityBalancesByMonth, monthlyEquivalentCents } from "./reports.js";
+import { incomeExpenseByMonth, jobSearchFloor, liabilityBalancesByMonth, monthlyEquivalentCents, typicalSpending } from "./reports.js";
 import { listUpcoming } from "./upcoming.js";
 import { centsToInput, dollarsToCents } from "./money.js";
 
@@ -10,8 +10,6 @@ const acct = (over) => ({
   name: "x",
   match_text: "x",
   type: "other",
-  institution: null,
-  mask: null,
   opening_balance_cents: 0,
   opening_on: null,
   expected_amount_cents: null,
@@ -81,6 +79,51 @@ test("balanceSeries ends at the current balance", () => {
   assert.equal(series.at(-1).cents, balanceOf(accounts[0], txs, "2026-10-10"));
 });
 
+test("openingForTarget shifts today and an earlier balance by the same amount", () => {
+  const account = accounts[0];
+  const current = balanceOf(account, txs);
+  const earlier = balanceOf(account, txs, "2026-10-01");
+  const target = current + 5000;
+  const opening = openingForTarget(account.opening_balance_cents, current, target);
+  const adjusted = { ...account, opening_balance_cents: opening };
+  assert.equal(balanceOf(adjusted, txs), target);
+  assert.equal(balanceOf(adjusted, txs, "2026-10-01"), earlier + 5000);
+  const series = balanceSeries(adjusted, txs, "2026-09-30", "2026-10-10");
+  assert.equal(series[0].cents, account.opening_balance_cents + 5000);
+  assert.equal(series.at(-1).cents, target);
+});
+
+test("checking loan balance includes the opening anchor and shifts its history", () => {
+  const repay = acct({ name: "Transfer to Loan", type: "overdraft" });
+  const draw = acct({ name: "Funds Transfer", type: "overdraft", opening_balance_cents: 25000 });
+  const extra = [
+    tx({ posted_on: "2026-09-20", amount_cents: 5000, matched_account: "Funds Transfer" }),
+    tx({ posted_on: "2026-10-08", amount_cents: 20000, matched_account: "Funds Transfer" }),
+    tx({ posted_on: "2026-10-18", amount_cents: -8000, matched_account: "Transfer to Loan" }),
+  ];
+  const list = [...accounts, repay, draw];
+  assert.equal(loanAnchorAccount(list).name, "Funds Transfer");
+  assert.equal(checkingLoanBalance(list, extra), 25000 + 5000 + 20000 - 8000);
+  assert.equal(checkingLoanBalance(list, extra, "2026-10-08"), 25000 + 5000 + 20000);
+
+  const series = checkingLoanSeries(list, extra, "2026-10-01", "2026-10-18");
+  assert.equal(series[0].cents, 25000 + 5000);
+  assert.equal(series.find((point) => point.date === "2026-10-08").cents, 25000 + 5000 + 20000);
+  assert.equal(series.at(-1).cents, checkingLoanBalance(list, extra, "2026-10-18"));
+
+  const current = checkingLoanBalance(list, extra);
+  const target = current + 10000;
+  const opening = openingForTarget(draw.opening_balance_cents, current, target);
+  const shifted = list.map((account) => (account.name === draw.name ? { ...account, opening_balance_cents: opening } : account));
+  assert.equal(checkingLoanBalance(shifted, extra), target);
+  assert.equal(checkingLoanSeries(shifted, extra, "2026-10-01", "2026-10-01")[0].cents, series[0].cents + 10000);
+
+  const m = buildMonth(list, extra, "2026-10", "2026-10-10");
+  assert.equal(m.borrowed.borrowedCents, 25000 + 5000 + 20000 - 8000);
+  assert.equal(m.borrowed.monthDrawCents, 20000);
+  assert.equal(m.borrowed.monthRepayCents, 8000);
+});
+
 test("upcoming skips paid accounts and clamps due day to the month", () => {
   const feb = listUpcoming([acct({ name: "A", type: "bill", expected_amount_cents: 5, due_day: 31, schedule_active: true })], [], "2026-02", "2026-02-01");
   assert.equal(feb[0].dueOn, "2026-02-28");
@@ -143,6 +186,48 @@ test("buildMonth: sections, gap, balances", () => {
   assert.equal(m.goesNegative, true);
   assert.equal(m.transfers[0].date, "2026-10-10");
   assert.equal(m.transfers[0].amountCents, 24000);
+});
+
+test("checking loan draws are borrowed, not income or spending", () => {
+  const draw = acct({ name: "Funds Transfer", type: "income" });
+  const repay = acct({ name: "Transfer to Loan", type: "other" });
+  const extra = [
+    tx({ posted_on: "2026-09-20", amount_cents: 50000, matched_account: "Funds Transfer", description: "Funds Transfer" }),
+    tx({ posted_on: "2026-10-08", amount_cents: 20000, matched_account: "Funds Transfer", description: "Funds Transfer" }),
+    tx({ posted_on: "2026-10-18", amount_cents: -8000, matched_account: "Transfer to Loan", description: "Transfer to Loan" }),
+  ];
+  const withLoan = [...accounts, draw, repay];
+  const m = buildMonth(withLoan, [...txs, ...extra], "2026-10", "2026-10-10");
+  const section = (t) => m.sections.find((s) => s.type === t);
+  assert.equal(section("income").postedCents, 0);
+  assert.equal(section("income").items.some((i) => i.name === "Funds Transfer"), false);
+  assert.equal(section("other").postedCents, 0);
+  assert.equal(m.gap.incomeCents, 150000);
+  assert.equal(m.unmatched.count, 0);
+  assert.equal(m.borrowed.borrowedCents, 62000);
+  assert.equal(m.borrowed.monthDrawCents, 20000);
+  assert.equal(m.borrowed.monthRepayCents, 8000);
+
+  const typed = acct({ name: "Line", type: "overdraft" });
+  const byType = buildMonth(
+    [...accounts, typed],
+    [tx({ posted_on: "2026-10-02", amount_cents: 1500, matched_account: "Line", description: "Advance" })],
+    "2026-10",
+    "2026-10-10",
+  );
+  assert.equal(byType.borrowed.borrowedCents, 1500);
+  assert.equal(byType.sections.find((s) => s.type === "income").postedCents, 0);
+
+  const rows = incomeExpenseByMonth(
+    withLoan,
+    [...txs, ...extra, tx({ posted_on: "2026-10-15", amount_cents: 150000, matched_account: "Pay" })],
+    "2026-09-01",
+    "2026-10-31",
+  );
+  assert.equal(rows[1].incomeCents, 150000);
+  assert.equal(rows[1].expenseCents, 84000);
+  assert.equal(rows[1].debtCents, 40000);
+  assert.equal(typicalSpending(withLoan, [...txs, ...extra], "2026-11-01", 1), 4000);
 });
 
 test("reports: income vs expense and liability balances", () => {

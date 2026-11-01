@@ -1,5 +1,5 @@
 // Expected-but-not-yet-seen scheduled items for a month.
-import { isScheduleType } from "./accountTypes.js";
+import { isOverdraftAccount, isScheduleType } from "./accountTypes.js";
 import { addDays, monthBounds } from "./dates.js";
 
 /** A deposit this many days from a payday counts as that payday. Half of 14, so windows do not overlap. */
@@ -93,7 +93,12 @@ function openDates(account, transactions, month) {
 export function listUpcoming(accounts, transactions, month, todayIso) {
   return accounts
     .filter(
-      (a) => !a.archived && a.schedule_active && a.expected_amount_cents !== null && isScheduleType(a.type),
+      (a) =>
+        !a.archived &&
+        a.schedule_active &&
+        a.expected_amount_cents !== null &&
+        isScheduleType(a.type) &&
+        !isOverdraftAccount(a),
     )
     .flatMap((a) =>
       openDates(a, transactions, month).map((dueOn) => ({

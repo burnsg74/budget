@@ -106,6 +106,40 @@ test("transaction create gets a unique hash; hash is immutable; delete works", a
   assert.equal((await call("DELETE", `/api/transactions/${a.body.hash}`)).status, 404);
 });
 
+test("biweekly cadence uses the last deposit as the anchor", async () => {
+  const created = await call("POST", "/api/accounts", {
+    name: "Side Gig",
+    type: "income",
+    expected_amount_cents: 50000,
+    cadence: "month",
+    schedule_active: true,
+  });
+  assert.equal(created.status, 201);
+
+  const tx = await call("POST", "/api/transactions", {
+    account: "Household Checking",
+    matched_account: "Side Gig",
+    posted_on: "2026-09-12",
+    description: "Side Gig pay",
+    amount_cents: 50000,
+  });
+  assert.equal(tx.status, 201);
+
+  const later = await call("POST", "/api/transactions", {
+    account: "Household Checking",
+    matched_account: "Side Gig",
+    posted_on: "2026-09-18",
+    description: "Side Gig fee",
+    amount_cents: -800,
+  });
+  assert.equal(later.status, 201);
+
+  const patched = await call("PATCH", `/api/accounts/${encodeURIComponent("Side Gig")}`, { cadence: "biweekly" });
+  assert.equal(patched.status, 200);
+  assert.equal(patched.body.account.cadence, "biweekly");
+  assert.equal(patched.body.account.anchor_on, "2026-09-12");
+});
+
 test("cannot delete an account that transactions use", async () => {
   const res = await call("DELETE", `/api/accounts/${encodeURIComponent("Barrelhead")}`);
   assert.equal(res.status, 409);

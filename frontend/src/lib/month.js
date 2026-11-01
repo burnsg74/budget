@@ -1,6 +1,6 @@
 // Home page model: one month, grouped by account type, plus cash projection and transfer cues.
-import { SECTIONS } from "./accountTypes.js";
-import { balanceOf, totalChecking } from "./balances.js";
+import { SECTIONS, isOverdraftAccount } from "./accountTypes.js";
+import { balanceOf, checkingLoanBalance, totalChecking } from "./balances.js";
 import { monthBounds } from "./dates.js";
 import { listUpcoming } from "./upcoming.js";
 
@@ -69,6 +69,30 @@ function accountMap(accounts) {
   return new Map(accounts.map((a) => [a.name, a]));
 }
 
+/**
+ * Outstanding checking-loan balance, plus this month's draws and repayments.
+ * Draws are positive deposits; repayments are negative. `monthRepayCents` is the amount paid back.
+ */
+export function borrowedFromLoan(accounts, transactions, month) {
+  const names = new Set(accounts.filter(isOverdraftAccount).map((a) => a.name));
+  const { start, end } = monthBounds(month);
+  let monthDrawCents = 0;
+  let monthRepayCents = 0;
+
+  for (const tx of transactions) {
+    if (tx.status !== "Posted" || !names.has(tx.matched_account)) continue;
+    if (tx.posted_on < start || tx.posted_on > end) continue;
+    if (tx.amount_cents >= 0) monthDrawCents += tx.amount_cents;
+    else monthRepayCents += -tx.amount_cents;
+  }
+
+  return {
+    borrowedCents: checkingLoanBalance(accounts, transactions),
+    monthDrawCents,
+    monthRepayCents,
+  };
+}
+
 /** Posted transactions in the month that look like loan <-> checking movement. */
 export function loanTransfers(accounts, monthTxs) {
   const byName = accountMap(accounts);
@@ -120,6 +144,7 @@ export function buildMonth(accounts, transactions, month, todayIso, { bufferCent
       else unmatched.outCents += -tx.amount_cents;
       continue;
     }
+    if (isOverdraftAccount(matched)) continue;
     const section = sections.get(matched.type) ?? sections.get("other");
     const cents = matched.type === "income" ? tx.amount_cents : -tx.amount_cents;
     const item = itemFor(section, matched.name);
@@ -200,6 +225,7 @@ export function buildMonth(accounts, transactions, month, todayIso, { bufferCent
     endCents: projection.endCents,
     goesNegative: projection.low.balanceCents < 0,
     transfers,
+    borrowed: borrowedFromLoan(accounts, transactions, month),
     loanTransfers: loanTransfers(accounts, monthTxs),
     balances: {
       checking,

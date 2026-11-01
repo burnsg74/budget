@@ -1,5 +1,5 @@
 // Multi-month reports (old lib/reports.ts) plus the job-search income floor.
-import { isBalanceType, isSpendingType } from "./accountTypes.js";
+import { isBalanceType, isOverdraftAccount, isSpendingType } from "./accountTypes.js";
 import { balanceOf } from "./balances.js";
 import { monthBounds, monthOf, monthRange, shiftMonth, toIsoDate } from "./dates.js";
 
@@ -13,16 +13,18 @@ export function defaultRange(todayIso) {
  * income   = matched to income accounts
  * expenses = matched to bill / household / other (old definition)
  * debt     = payments matched to credit_card / loan (shown separately, never in expenses)
+ * Checking-loan draws and repayments are omitted from all three.
  */
 export function incomeExpenseByMonth(accounts, transactions, from, to) {
-  const typeOf = new Map(accounts.map((a) => [a.name, a.type]));
+  const byName = new Map(accounts.map((a) => [a.name, a]));
   const rows = new Map(monthRange(monthOf(from), monthOf(to)).map((m) => [m, { month: m, incomeCents: 0, expenseCents: 0, debtCents: 0 }]));
 
   for (const tx of transactions) {
     if (tx.status !== "Posted" || tx.posted_on < from || tx.posted_on > to) continue;
     const row = rows.get(monthOf(tx.posted_on));
-    const type = tx.matched_account ? typeOf.get(tx.matched_account) : null;
-    if (!row || !type) continue;
+    const matched = tx.matched_account ? byName.get(tx.matched_account) : null;
+    if (!row || !matched || isOverdraftAccount(matched)) continue;
+    const type = matched.type;
     if (type === "income") row.incomeCents += tx.amount_cents;
     else if (isSpendingType(type)) row.expenseCents += -tx.amount_cents;
     else if (type === "credit_card" || type === "loan") row.debtCents += -tx.amount_cents;
@@ -57,15 +59,22 @@ export function liabilityBalancesByMonth(accounts, transactions, from, to) {
 export function spendingSeries(accounts, transactions, accountName, from, to) {
   const account = accounts.find((a) => a.name === accountName);
   if (!account) return [];
-  const typeOf = new Map(accounts.map((a) => [a.name, a.type]));
+  const byName = new Map(accounts.map((a) => [a.name, a]));
   const byDate = new Map();
 
   for (const tx of transactions) {
     if (tx.status !== "Posted" || tx.posted_on < from || tx.posted_on > to) continue;
     let cents = 0;
     if (account.type === "checking") {
-      const matchedType = tx.matched_account ? typeOf.get(tx.matched_account) : null;
-      if (tx.account === account.name && tx.amount_cents < 0 && matchedType !== "credit_card" && matchedType !== "loan") {
+      const matched = tx.matched_account ? byName.get(tx.matched_account) : null;
+      const matchedType = matched?.type;
+      if (
+        tx.account === account.name &&
+        tx.amount_cents < 0 &&
+        matchedType !== "credit_card" &&
+        matchedType !== "loan" &&
+        !isOverdraftAccount(matched)
+      ) {
         cents = -tx.amount_cents;
       }
     } else if (isSpendingType(account.type) && tx.matched_account === account.name) {
@@ -114,7 +123,7 @@ export function jobSearchFloor(accounts, myIncomeNames, { extraSpendingCents = 0
 
   const bills = active.filter((a) => a.type === "bill");
   const debt = active.filter((a) => a.type === "credit_card" || a.type === "loan");
-  const income = active.filter((a) => a.type === "income");
+  const income = active.filter((a) => a.type === "income" && !isOverdraftAccount(a));
   const mine = income.filter((a) => mineSet.has(a.name));
   const others = income.filter((a) => !mineSet.has(a.name));
 
@@ -142,14 +151,15 @@ export function jobSearchFloor(accounts, myIncomeNames, { extraSpendingCents = 0
 
 /** Average monthly spending on household + other over the last `months` complete months. */
 export function typicalSpending(accounts, transactions, todayIso, months = 3) {
-  const typeOf = new Map(accounts.map((a) => [a.name, a.type]));
+  const byName = new Map(accounts.map((a) => [a.name, a]));
   const end = monthBounds(shiftMonth(monthOf(todayIso), -1)).end;
   const start = `${shiftMonth(monthOf(todayIso), -months)}-01`;
   let total = 0;
   for (const tx of transactions) {
     if (tx.status !== "Posted" || tx.posted_on < start || tx.posted_on > end || !tx.matched_account) continue;
-    const type = typeOf.get(tx.matched_account);
-    if (type === "household" || type === "other") total += -tx.amount_cents;
+    const matched = byName.get(tx.matched_account);
+    if (!matched || isOverdraftAccount(matched)) continue;
+    if (matched.type === "household" || matched.type === "other") total += -tx.amount_cents;
   }
   return Math.round(total / months);
 }

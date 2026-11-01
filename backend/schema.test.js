@@ -1,13 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { ValidationError, parseAccounts, stringifyAccounts, validateAccount } from "./schema.js";
+import { ValidationError, lastAnchorOn, parseAccounts, stringifyAccounts, validateAccount } from "./schema.js";
 
 const account = (over) => ({
   name: "Pay",
   match_text: "Pay",
   type: "income",
-  institution: null,
-  mask: null,
   opening_balance_cents: 0,
   opening_on: null,
   expected_amount_cents: 100,
@@ -30,6 +28,11 @@ test("old account rows default to day-of-month", () => {
   assert.equal(rent.anchor_on, null);
   assert.equal(rent.due_day, 1);
   assert.equal(rent.schedule_active, true);
+  assert.equal("institution" in rent, false);
+  assert.equal("mask" in rent, false);
+  const rewritten = stringifyAccounts([rent]);
+  assert.equal(rewritten.split("\n")[0].includes("institution"), false);
+  assert.equal(rewritten.split("\n")[0].includes("mask"), false);
 });
 
 test("cadence and anchor round-trip through the csv", () => {
@@ -52,4 +55,16 @@ test("biweekly schedule requires an anchor date", () => {
     () => validateAccount(account({ cadence: "weekly" })),
     (err) => err instanceof ValidationError && /Invalid cadence/.test(err.message),
   );
+});
+
+test("last paycheck date is the biweekly anchor", () => {
+  const pay = account({ type: "income" });
+  const txs = [
+    { status: "Posted", account: "Household Checking", matched_account: "Pay", posted_on: "2026-10-15", amount_cents: 100000 },
+    { status: "Posted", account: "Household Checking", matched_account: "Pay", posted_on: "2026-10-20", amount_cents: -500 },
+    { status: "Pending", account: "Household Checking", matched_account: "Pay", posted_on: "2026-10-29", amount_cents: 100000 },
+  ];
+  assert.equal(lastAnchorOn(pay, txs), "2026-10-15");
+  assert.equal(lastAnchorOn(account({ type: "bill" }), txs), "2026-10-20");
+  assert.equal(lastAnchorOn(pay, []), null);
 });

@@ -13,6 +13,8 @@ import {
   uniqueHash,
   validateAccount,
   validateTransaction,
+  isIsoDate,
+  lastAnchorOn,
 } from "./schema.js";
 import { IMPORT_ACCOUNT, findAccountMatch } from "./importer.js";
 
@@ -97,7 +99,7 @@ function coerceAccount(input) {
   if ("opening_balance_cents" in out) out.opening_balance_cents = int(out.opening_balance_cents) ?? 0;
   if ("expected_amount_cents" in out) out.expected_amount_cents = int(out.expected_amount_cents);
   if ("due_day" in out) out.due_day = int(out.due_day);
-  for (const key of ["institution", "mask", "opening_on", "anchor_on"]) {
+  for (const key of ["opening_on", "anchor_on"]) {
     if (key in out && (out[key] === "" || out[key] === undefined)) out[key] = null;
   }
   if ("cadence" in out && (out.cadence === "" || out.cadence === undefined || out.cadence === null)) out.cadence = "day";
@@ -170,8 +172,6 @@ export function createStore(dir) {
           name: "",
           match_text: "",
           type: "other",
-          institution: null,
-          mask: null,
           opening_balance_cents: 0,
           opening_on: null,
           expected_amount_cents: null,
@@ -200,6 +200,9 @@ export function createStore(dir) {
         const changes = coerceAccount(pick(patch, ACCOUNT_FIELDS));
         delete changes.created_at;
         const next = { ...state.accounts[index], ...changes };
+        if ((next.cadence || "day") === "biweekly" && !isIsoDate(next.anchor_on)) {
+          next.anchor_on = lastAnchorOn(next, state.transactions);
+        }
         validateAccount(next);
 
         const renamed = next.name !== name;
@@ -279,8 +282,6 @@ export function createStore(dir) {
             name: "",
             match_text: "",
             type: "other",
-            institution: null,
-            mask: null,
             opening_balance_cents: 0,
             opening_on: null,
             expected_amount_cents: null,
