@@ -2,7 +2,7 @@
   import Grid from "../components/Grid.svelte";
   import { data } from "../lib/data.svelte.js";
   import { todayIso } from "../lib/dates.js";
-  import { accountLinkColumn, moneyColumn, nullableText } from "../lib/gridColumns.js";
+  import { accountLinkColumn, moneyColumn } from "../lib/gridColumns.js";
 
   let gridApi = $state(null);
   let quickFilter = $state("");
@@ -16,13 +16,6 @@
     accountLinkColumn((row) => row.matched_account ?? row.account),
     { field: "posted_on", headerName: "Posted", width: 120, sort: "desc", sortIndex: 0 },
     {
-      field: "account",
-      headerName: "Account",
-      width: 190,
-      cellEditor: "agSelectCellEditor",
-      cellEditorParams: { values: names },
-    },
-    {
       field: "matched_account",
       headerName: "Matched account",
       flex: 1,
@@ -31,11 +24,8 @@
       cellEditorParams: { values: ["", ...names] },
       valueParser: (p) => (p.newValue === "" ? null : p.newValue),
     },
-    { field: "description", headerName: "Description", flex: 2, minWidth: 220 },
     moneyColumn("amount_cents", "Amount", { width: 120 }),
-    nullableText("check_number", "Check #", { width: 90 }),
     { field: "status", headerName: "Status", width: 100 },
-    nullableText("classification", "Classification", { width: 150 }),
     { field: "created_at", headerName: "Created", editable: false, hide: true, width: 190 },
   ]);
 
@@ -63,7 +53,7 @@
         if (!node) return;
         gridApi.ensureNodeVisible(node, "middle");
         node.setSelected(true);
-        gridApi.startEditingCell({ rowIndex: node.rowIndex, colKey: "description" });
+        gridApi.startEditingCell({ rowIndex: node.rowIndex, colKey: "matched_account" });
       }, 60);
     } catch {
       // surfaced by the app banner
