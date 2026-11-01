@@ -207,10 +207,7 @@ export function createStore(dir) {
 
         let updated = 0;
         if (renamed) {
-          // Keep the match text in step when it was just the old name.
-          if (state.accounts[index].match_text === name && !("match_text" in changes)) {
-            state.accounts[index].match_text = next.name;
-          }
+          // match_text is independent of the name; only transaction references follow the rename.
           for (const t of state.transactions) {
             let touched = false;
             if (t.account === name) (t.account = next.name), (touched = true);

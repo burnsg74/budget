@@ -78,6 +78,9 @@ test("rename cascades into transactions", async () => {
   assert.equal(after.filter((t) => t.matched_account === "Online Store").length, 0);
   assert.equal(after.find((t) => t.hash === target.hash).matched_account, "Web Shop");
 
+  const renamed = (await call("GET", "/api/accounts")).body.find((a) => a.name === "Web Shop");
+  assert.equal(renamed.match_text, "Online Store");
+
   const clash = await call("PATCH", `/api/accounts/${encodeURIComponent("Web Shop")}`, { name: "Barrelhead" });
   assert.equal(clash.status, 409);
 });

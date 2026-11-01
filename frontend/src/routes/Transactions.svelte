@@ -36,14 +36,6 @@
     nullableText("check_number", "Check #", { width: 90 }),
     { field: "status", headerName: "Status", width: 100 },
     nullableText("classification", "Classification", { width: 150 }),
-    {
-      field: "hash",
-      headerName: "Hash",
-      width: 110,
-      editable: false,
-      valueFormatter: (p) => (p.value ? `${p.value.slice(0, 10)}…` : ""),
-      tooltipValueGetter: (p) => p.value,
-    },
     { field: "created_at", headerName: "Created", editable: false, hide: true, width: 190 },
   ]);
 
@@ -139,7 +131,7 @@
 />
 <p class="hint muted">
   Double-click a cell to edit. Amounts are signed (negative leaves the account). Link a row to an account
-  with Matched account. Hash is the row's permanent identity and is read-only.
+  with Matched account.
 </p>
 
 <style>

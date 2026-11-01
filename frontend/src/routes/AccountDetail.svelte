@@ -2,7 +2,7 @@
   import LineChart from "../components/LineChart.svelte";
   import BarChart from "../components/BarChart.svelte";
   import Money from "../components/Money.svelte";
-  import { ACCOUNT_TYPES, TYPE_LABELS, isLiabilityType } from "../lib/accountTypes.js";
+  import { ACCOUNT_TYPES, TYPE_LABELS, isBalanceType, isLiabilityType } from "../lib/accountTypes.js";
   import { balanceOf, balanceSeries } from "../lib/balances.js";
   import { data } from "../lib/data.svelte.js";
   import { addDays, formatDate, formatMonth, monthOf, todayIso } from "../lib/dates.js";
@@ -43,13 +43,18 @@
     { key: "match_text", label: "Match text", kind: "text" },
     { key: "institution", label: "Institution", kind: "text", nullable: true },
     { key: "mask", label: "Mask", kind: "text", nullable: true },
-    { key: "opening_balance_cents", label: "Opening balance", kind: "money" },
-    { key: "opening_on", label: "Opening date", kind: "date", nullable: true },
+    { key: "opening_balance_cents", label: "Opening balance", kind: "money", balance: true },
+    { key: "opening_on", label: "Opening date", kind: "date", nullable: true, balance: true },
     { key: "expected_amount_cents", label: "Expected amount", kind: "money", nullable: true },
     { key: "due_day", label: "Due day", kind: "int", nullable: true },
     { key: "schedule_active", label: "Scheduled", kind: "bool" },
     { key: "archived", label: "Archived", kind: "bool" },
   ];
+
+  const visibleFields = $derived(
+    fields.filter((field) => !field.balance || (account && isBalanceType(account.type))),
+  );
+  const tracksBalance = $derived(account ? isBalanceType(account.type) : false);
 
   let editing = $state(null);
   let draft = $state("");
@@ -208,7 +213,7 @@
       <h2>Params</h2>
       <p class="muted small">Double-click a value to edit. Enter saves, Esc cancels.</p>
       <dl>
-        {#each fields as field (field.key)}
+        {#each visibleFields as field (field.key)}
           <dt>{field.label}</dt>
           <dd>
             {#if editing === field.key}
@@ -247,8 +252,10 @@
             {/if}
           </dd>
         {/each}
-        <dt>Balance</dt>
-        <dd><span class="static">{balance === null ? "not tracked" : formatHeldBalance(balance, isLiabilityType(account.type))}</span></dd>
+        {#if tracksBalance}
+          <dt>Balance</dt>
+          <dd><span class="static">{balance === null ? "not tracked" : formatHeldBalance(balance, isLiabilityType(account.type))}</span></dd>
+        {/if}
         <dt>Created</dt>
         <dd><span class="static">{account.created_at ? formatDate(account.created_at.slice(0, 10)) : "—"}</span></dd>
       </dl>
