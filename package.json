@@ -10,12 +10,6 @@
     "dev:web": "npm --prefix frontend run dev",
     "build": "npm --prefix frontend run build",
     "start": "NODE_ENV=production node backend/main.js",
-    "test": "node --test \"frontend/src/lib/*.test.js\" \"backend/*.test.js\"",
-    "export:dev": "node --env-file-if-exists=.env.export scripts/export-from-postgres.mjs dev",
-    "export:prod": "node --env-file-if-exists=.env.export scripts/export-from-postgres.mjs prod",
-    "verify": "node --env-file-if-exists=.env.export scripts/verify-balances.mjs"
-  },
-  "devDependencies": {
-    "pg": "^8.23.1"
+    "test": "node --test \"frontend/src/lib/*.test.js\" \"backend/*.test.js\""
   }
 }

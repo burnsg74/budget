@@ -5,9 +5,7 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import {
   ACCOUNT_COLUMNS,
-  ACCOUNT_TYPES,
   TRANSACTION_COLUMNS,
-  ValidationError,
   parseAccounts,
   parseTransactions,
   stringifyAccounts,
@@ -371,5 +369,3 @@ export function createStore(dir) {
     },
   };
 }
-
-export { ACCOUNT_TYPES, ValidationError };

@@ -1,4 +1,4 @@
-// Derived balances. Same rules as the old Postgres app (lib/accounts.ts):
+// Derived balances:
 //   checking / credit_card / loan only, and only when opening_on is set.
 //   balance = opening_balance_cents
 //           + SUM(amount) of Posted txns where account = this AND posted_on > opening_on

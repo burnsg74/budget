@@ -27,7 +27,7 @@ done
 say "Data directory"
 if [[ ! -f "$VAULT_PATH/$DATA_DIR/accounts.csv" || ! -f "$VAULT_PATH/$DATA_DIR/transactions.csv" ]]; then
   echo "No CSVs in $VAULT_PATH/$DATA_DIR" >&2
-  echo "Run once: npm run export:prod   (needs the old Postgres DB)" >&2
+  echo "Place accounts.csv and transactions.csv there (or restore from a backup)." >&2
   exit 1
 fi
 echo "ok: $VAULT_PATH/$DATA_DIR"

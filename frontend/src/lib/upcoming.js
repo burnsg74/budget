@@ -1,4 +1,4 @@
-// Expected-but-not-yet-seen scheduled items for a month (old dashboard.ts#listUpcoming).
+// Expected-but-not-yet-seen scheduled items for a month.
 import { isScheduleType } from "./accountTypes.js";
 import { monthBounds } from "./dates.js";
 
