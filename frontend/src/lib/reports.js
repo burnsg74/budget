@@ -94,15 +94,22 @@ export function detailGraphKind(account) {
   return isBalanceType(account.type) && account.opening_on ? "balance" : "monthly";
 }
 
+/** Monthly figure for an expected amount. Biweekly paychecks average out to 26/12 per month. */
+export function monthlyEquivalentCents(account) {
+  const amount = account.expected_amount_cents ?? 0;
+  if (account.type === "income" && (account.cadence || "day") === "biweekly") return Math.round((amount * 26) / 12);
+  return amount;
+}
+
 /**
  * Minimum income to cover bills without the other earners.
  *   required  = expected bills + required debt payments (active, scheduled, expected amount set)
- *   mine      = expected income from the chosen income accounts
+ *   mine      = expected income from the chosen income accounts (biweekly as a monthly average)
  *   floorCents = required (what the job must at least pay); shortfall = max(0, required - mine)
  */
 export function jobSearchFloor(accounts, myIncomeNames, { extraSpendingCents = 0 } = {}) {
   const active = accounts.filter((a) => !a.archived && a.schedule_active && a.expected_amount_cents !== null);
-  const sum = (list) => list.reduce((n, a) => n + a.expected_amount_cents, 0);
+  const sum = (list) => list.reduce((n, a) => n + monthlyEquivalentCents(a), 0);
   const mineSet = new Set(myIncomeNames);
 
   const bills = active.filter((a) => a.type === "bill");

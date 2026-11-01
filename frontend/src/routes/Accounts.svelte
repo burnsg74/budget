@@ -5,6 +5,7 @@
   import { data } from "../lib/data.svelte.js";
   import {
     accountLinkColumn,
+    cadenceColumn,
     checkboxColumn,
     moneyColumn,
     nullableInt,
@@ -36,7 +37,9 @@
     moneyColumn("balance_cents", "Balance", { editable: false, width: 130 }),
     nullableText("opening_on", "Opening on", { width: 120 }),
     moneyColumn("expected_amount_cents", "Expected", { nullable: true, width: 120 }),
+    cadenceColumn(),
     nullableInt("due_day", "Due day", { width: 90 }),
+    nullableText("anchor_on", "Anchor", { width: 130 }),
     checkboxColumn("schedule_active", "Scheduled"),
     checkboxColumn("archived", "Archived"),
     { field: "created_at", headerName: "Created", editable: false, hide: true, width: 190 },

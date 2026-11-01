@@ -97,9 +97,10 @@ function coerceAccount(input) {
   if ("opening_balance_cents" in out) out.opening_balance_cents = int(out.opening_balance_cents) ?? 0;
   if ("expected_amount_cents" in out) out.expected_amount_cents = int(out.expected_amount_cents);
   if ("due_day" in out) out.due_day = int(out.due_day);
-  for (const key of ["institution", "mask", "opening_on"]) {
+  for (const key of ["institution", "mask", "opening_on", "anchor_on"]) {
     if (key in out && (out[key] === "" || out[key] === undefined)) out[key] = null;
   }
+  if ("cadence" in out && (out.cadence === "" || out.cadence === undefined || out.cadence === null)) out.cadence = "day";
   for (const key of ["schedule_active", "archived"]) {
     if (key in out) out[key] = out[key] === true || out[key] === "true";
   }
@@ -175,6 +176,8 @@ export function createStore(dir) {
           opening_on: null,
           expected_amount_cents: null,
           due_day: null,
+          cadence: "day",
+          anchor_on: null,
           schedule_active: false,
           archived: false,
           ...base,
@@ -282,6 +285,8 @@ export function createStore(dir) {
             opening_on: null,
             expected_amount_cents: null,
             due_day: null,
+            cadence: "day",
+            anchor_on: null,
             schedule_active: false,
             archived: false,
             ...fields,

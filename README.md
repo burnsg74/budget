@@ -19,7 +19,9 @@ deploy/     nginx/budget.conf, ecosystem.config.cjs, setup.sh, deploy.sh, teardo
 
 Override with `DATA_PATH` (absolute directory). See `.env.example`. Real data never goes in this repo.
 
-- `accounts.csv`: `name` (unique key), `match_text`, `type`, `institution`, `mask`, `opening_balance_cents`, `opening_on`, `expected_amount_cents`, `due_day`, `schedule_active`, `archived`, `created_at`
+- `accounts.csv`: `name` (unique key), `match_text`, `type`, `institution`, `mask`, `opening_balance_cents`, `opening_on`, `expected_amount_cents`, `due_day`, `cadence`, `anchor_on`, `schedule_active`, `archived`, `created_at`
+
+`cadence` is `day` (due day of the month; the default, including bills), `biweekly` (every 14 days from `anchor_on`; the expected amount is one paycheck), or `month` (once a month, placed on the last day until a deposit posts). The job-search floor turns a biweekly paycheck into a monthly average (`amount × 26 / 12`). A blank `cadence` on an older file means `day`.
 - `transactions.csv`: `hash` (unique key), `account`, `matched_account` (account names), `posted_on`, `description`, `amount_cents`, `check_number`, `status`, `classification`, `created_at`
 
 Money is integer cents. Balances for checking, loan and credit_card are derived: `opening_balance_cents` plus Posted transactions after `opening_on` (loans and cards also subtract amounts matched to them). There is no stored running balance.

@@ -3,6 +3,7 @@
   import BarChart from "../components/BarChart.svelte";
   import Money from "../components/Money.svelte";
   import { ACCOUNT_TYPES, TYPE_LABELS, isBalanceType, isLiabilityType } from "../lib/accountTypes.js";
+  import { CADENCE_OPTIONS } from "../lib/cadence.js";
   import { balanceOf, balanceSeries } from "../lib/balances.js";
   import { data } from "../lib/data.svelte.js";
   import { addDays, formatDate, formatMonth, monthOf, todayIso } from "../lib/dates.js";
@@ -37,19 +38,32 @@
   const monthly = $derived(account && graphKind === "monthly" ? monthlyTotals(data.transactions, name, monthOf(today), 12) : []);
 
   // ---- params ---------------------------------------------------------------
-  const fields = [
-    { key: "name", label: "Name", kind: "text" },
-    { key: "type", label: "Type", kind: "select" },
-    { key: "match_text", label: "Match text", kind: "text" },
-    { key: "institution", label: "Institution", kind: "text", nullable: true },
-    { key: "mask", label: "Mask", kind: "text", nullable: true },
-    { key: "opening_balance_cents", label: "Opening balance", kind: "money", balance: true },
-    { key: "opening_on", label: "Opening date", kind: "date", nullable: true, balance: true },
-    { key: "expected_amount_cents", label: "Expected amount", kind: "money", nullable: true },
-    { key: "due_day", label: "Due day", kind: "int", nullable: true },
-    { key: "schedule_active", label: "Scheduled", kind: "bool" },
-    { key: "archived", label: "Archived", kind: "bool" },
-  ];
+  const typeOptions = ACCOUNT_TYPES.map((value) => ({ value, label: TYPE_LABELS[value] ?? value }));
+  const cadence = $derived(account?.cadence || "day");
+
+  const fields = $derived.by(() => {
+    if (!account) return [];
+    const amountLabel =
+      cadence === "biweekly" ? "Per paycheck" : cadence === "month" ? "Once a month" : "Expected amount";
+    const list = [
+      { key: "name", label: "Name", kind: "text" },
+      { key: "type", label: "Type", kind: "select", options: typeOptions },
+      { key: "match_text", label: "Match text", kind: "text" },
+      { key: "institution", label: "Institution", kind: "text", nullable: true },
+      { key: "mask", label: "Mask", kind: "text", nullable: true },
+      { key: "opening_balance_cents", label: "Opening balance", kind: "money", balance: true },
+      { key: "opening_on", label: "Opening date", kind: "date", nullable: true, balance: true },
+      { key: "expected_amount_cents", label: amountLabel, kind: "money", nullable: true },
+      { key: "cadence", label: "Schedule", kind: "select", options: CADENCE_OPTIONS },
+    ];
+    if (cadence === "day") list.push({ key: "due_day", label: "Due day", kind: "int", nullable: true });
+    if (cadence === "biweekly") list.push({ key: "anchor_on", label: "Anchor date", kind: "date", nullable: true });
+    list.push(
+      { key: "schedule_active", label: "Scheduled", kind: "bool" },
+      { key: "archived", label: "Archived", kind: "bool" },
+    );
+    return list;
+  });
 
   const visibleFields = $derived(
     fields.filter((field) => !field.balance || (account && isBalanceType(account.type))),
@@ -65,7 +79,7 @@
     if (value === null || value === undefined || value === "") return "—";
     if (field.kind === "money") return formatCents(value);
     if (field.kind === "date") return formatDate(value);
-    if (field.key === "type") return TYPE_LABELS[value] ?? value;
+    if (field.kind === "select") return field.options.find((option) => option.value === value)?.label ?? value;
     return String(value);
   }
 
@@ -225,8 +239,8 @@
                   onblur={cancel}
                   onkeydown={(e) => e.key === "Escape" && cancel()}
                 >
-                  {#each ACCOUNT_TYPES as type (type)}
-                    <option value={type}>{TYPE_LABELS[type]}</option>
+                  {#each field.options as option (option.value)}
+                    <option value={option.value}>{option.label}</option>
                   {/each}
                 </select>
               {:else}

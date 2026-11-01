@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { balanceOf, balanceSeries, totalChecking } from "./balances.js";
 import { buildMonth, planTransfers, projectCash } from "./month.js";
-import { incomeExpenseByMonth, jobSearchFloor, liabilityBalancesByMonth } from "./reports.js";
+import { incomeExpenseByMonth, jobSearchFloor, liabilityBalancesByMonth, monthlyEquivalentCents } from "./reports.js";
 import { listUpcoming } from "./upcoming.js";
 import { centsToInput, dollarsToCents } from "./money.js";
 
@@ -16,6 +16,8 @@ const acct = (over) => ({
   opening_on: null,
   expected_amount_cents: null,
   due_day: null,
+  cadence: "day",
+  anchor_on: null,
   schedule_active: false,
   archived: false,
   created_at: "",
@@ -163,6 +165,101 @@ test("job search floor uses only chosen income", () => {
   assert.equal(f.shortfallCents, 0);
   const none = jobSearchFloor(accounts, []);
   assert.equal(none.shortfallCents, 140000);
+});
+
+test("biweekly income lists every paycheck and a deposit clears only the nearest", () => {
+  const pay = acct({
+    name: "Barrelhead",
+    type: "income",
+    expected_amount_cents: 100000,
+    cadence: "biweekly",
+    anchor_on: "2026-10-15",
+    schedule_active: true,
+  });
+  const dates = (month, extra = []) => listUpcoming([pay], extra, month, `${month}-01`).map((u) => u.dueOn);
+  assert.deepEqual(dates("2026-10"), ["2026-10-01", "2026-10-15", "2026-10-29"]);
+  assert.deepEqual(dates("2026-09"), ["2026-09-03", "2026-09-17"]);
+
+  const deposit = (posted_on) => [tx({ posted_on, amount_cents: 100000, matched_account: "Barrelhead" })];
+  assert.deepEqual(dates("2026-10", deposit("2026-10-01")), ["2026-10-15", "2026-10-29"]);
+  // Nov 1 is 3 days after Oct 29 and 11 days before Nov 12, so it clears only the October payday.
+  assert.deepEqual(dates("2026-10", deposit("2026-11-01")), ["2026-10-01", "2026-10-15"]);
+  assert.deepEqual(dates("2026-11", deposit("2026-11-01")), ["2026-11-12", "2026-11-26"]);
+  assert.deepEqual(dates("2026-10", deposit("2026-10-21")), ["2026-10-01", "2026-10-29"]);
+  assert.deepEqual(dates("2026-10", deposit("2026-10-22")), ["2026-10-01", "2026-10-15", "2026-10-29"]);
+  assert.deepEqual(
+    dates("2026-10", [tx({ posted_on: "2026-10-15", amount_cents: -500, matched_account: "Barrelhead" })]),
+    ["2026-10-01", "2026-10-15", "2026-10-29"],
+  );
+
+  const month = buildMonth(
+    [acct({ name: "Checking", type: "checking", opening_balance_cents: 0, opening_on: "2026-09-30" }), pay],
+    [],
+    "2026-10",
+    "2026-10-01",
+  );
+  assert.equal(month.gap.incomeExpectedCents, 300000);
+});
+
+test("once a month income sits on the last day until a deposit posts", () => {
+  const alex = acct({
+    name: "Alex",
+    type: "income",
+    expected_amount_cents: 50000,
+    cadence: "month",
+    schedule_active: true,
+  });
+  const open = listUpcoming([alex], [], "2026-11", "2026-11-02");
+  assert.equal(open.length, 1);
+  assert.equal(open[0].dueOn, "2026-11-30");
+  assert.equal(open[0].direction, "in");
+  assert.equal(open[0].pastDue, false);
+
+  const paid = listUpcoming(
+    [alex],
+    [tx({ posted_on: "2026-11-12", amount_cents: 48000, matched_account: "Alex" })],
+    "2026-11",
+    "2026-11-13",
+  );
+  assert.deepEqual(paid, []);
+
+  const deduction = listUpcoming(
+    [alex],
+    [tx({ posted_on: "2026-11-04", amount_cents: -100, matched_account: "Alex" })],
+    "2026-11",
+    "2026-11-05",
+  );
+  assert.equal(deduction[0].dueOn, "2026-11-30");
+
+  const checking = acct({ name: "Checking", type: "checking", opening_balance_cents: 0, opening_on: "2026-10-31" });
+  const rent = acct({ name: "Rent", type: "bill", expected_amount_cents: 80000, due_day: 1, schedule_active: true });
+  const month = buildMonth([checking, alex, rent], [], "2026-11", "2026-11-01");
+  assert.equal(month.upcoming.find((u) => u.name === "Alex").dueOn, "2026-11-30");
+  assert.equal(month.gap.incomeExpectedCents, 50000);
+  assert.equal(month.transfers[0].date, "2026-11-01");
+  assert.equal(month.transfers[0].amountCents, 80000);
+});
+
+test("job search floor averages a biweekly paycheck over the year", () => {
+  const job = acct({
+    name: "Job",
+    type: "income",
+    expected_amount_cents: 120000,
+    cadence: "biweekly",
+    anchor_on: "2026-10-15",
+    schedule_active: true,
+  });
+  assert.equal(monthlyEquivalentCents(job), 260000);
+  const spouse = acct({
+    name: "Spouse",
+    type: "income",
+    expected_amount_cents: 90000,
+    cadence: "month",
+    schedule_active: true,
+  });
+  const f = jobSearchFloor([job, spouse], ["Job"]);
+  assert.equal(f.mineCents, 260000);
+  assert.equal(f.othersCents, 90000);
 });
 
 test("money parsing", () => {

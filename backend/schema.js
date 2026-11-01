@@ -4,6 +4,9 @@ import { parseCsvObjects, stringifyCsv } from "./csv.js";
 
 export const ACCOUNT_TYPES = ["checking", "income", "credit_card", "loan", "bill", "household", "other"];
 
+/** day = due day of the month; biweekly = every 14 days from anchor_on; month = once a month, no fixed day. */
+export const CADENCES = ["day", "biweekly", "month"];
+
 export const ACCOUNT_COLUMNS = [
   "name",
   "match_text",
@@ -14,6 +17,8 @@ export const ACCOUNT_COLUMNS = [
   "opening_on",
   "expected_amount_cents",
   "due_day",
+  "cadence",
+  "anchor_on",
   "schedule_active",
   "archived",
   "created_at",
@@ -58,6 +63,8 @@ export function accountFromRow(row) {
     opening_on: row.opening_on || null,
     expected_amount_cents: toIntOrNull(row.expected_amount_cents),
     due_day: toIntOrNull(row.due_day),
+    cadence: row.cadence || "day",
+    anchor_on: row.anchor_on || null,
     schedule_active: toBool(row.schedule_active),
     archived: toBool(row.archived),
     created_at: row.created_at || "",
@@ -75,6 +82,8 @@ export function accountToRow(a) {
     toStr(a.opening_on),
     toStr(a.expected_amount_cents),
     toStr(a.due_day),
+    a.cadence || "day",
+    toStr(a.anchor_on),
     a.schedule_active ? "true" : "false",
     a.archived ? "true" : "false",
     toStr(a.created_at),
@@ -139,6 +148,14 @@ export function validateAccount(a) {
   }
   if (a.due_day !== null && !(Number.isInteger(a.due_day) && a.due_day >= 1 && a.due_day <= 31)) {
     throw new ValidationError("Due day must be 1-31");
+  }
+  const cadence = a.cadence || "day";
+  if (!CADENCES.includes(cadence)) throw new ValidationError(`Invalid cadence: ${a.cadence}`);
+  if (a.anchor_on !== null && a.anchor_on !== undefined && !isIsoDate(a.anchor_on)) {
+    throw new ValidationError("Anchor date must be YYYY-MM-DD");
+  }
+  if (cadence === "biweekly" && a.schedule_active && !isIsoDate(a.anchor_on)) {
+    throw new ValidationError("Every 2 weeks needs an anchor date");
   }
   if (typeof a.schedule_active !== "boolean" || typeof a.archived !== "boolean") {
     throw new ValidationError("schedule_active and archived must be booleans");

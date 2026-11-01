@@ -1,4 +1,5 @@
 // Column-definition helpers shared by the Accounts and Transactions grids.
+import { CADENCE_LABELS, CADENCES } from "./cadence.js";
 import { formatCents, dollarsToCents } from "./money.js";
 import { accountPath } from "./router.svelte.js";
 
@@ -35,6 +36,44 @@ export function nullableText(field, headerName, extra = {}) {
       return v === "" ? null : v;
     },
     ...extra,
+  };
+}
+
+/** Schedule select. Stores day | biweekly | month; the dropdown shows the labels. */
+class CadenceCellEditor {
+  init(params) {
+    this.gui = document.createElement("select");
+    for (const value of CADENCES) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = CADENCE_LABELS[value];
+      this.gui.append(option);
+    }
+    this.gui.value = CADENCES.includes(params.value) ? params.value : "day";
+    this.gui.addEventListener("change", () => params.stopEditing());
+  }
+
+  getGui() {
+    return this.gui;
+  }
+
+  getValue() {
+    return this.gui.value;
+  }
+
+  afterGuiAttached() {
+    this.gui.focus();
+  }
+}
+
+export function cadenceColumn() {
+  return {
+    field: "cadence",
+    headerName: "Schedule",
+    width: 150,
+    valueFormatter: (p) => CADENCE_LABELS[p.value] ?? CADENCE_LABELS.day,
+    filterValueGetter: (p) => CADENCE_LABELS[p.data?.cadence] ?? CADENCE_LABELS.day,
+    cellEditor: CadenceCellEditor,
   };
 }
 
